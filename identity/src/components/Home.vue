@@ -62,7 +62,9 @@ export default {
   methods: {
     confirmDialog (method, params, {id}) {
       // return new Promise((resolve, reject) => { resolve ('test') })
-      return Promise.resolve(window.confirm(`User ${id} wants to run ${method} ${params}`))
+      //return Promise.resolve(window.confirm(`User ${id} wants to run ${method} ${params}`));
+      console.log(`User ${id} wants to run ${method} ${params}`)
+      return Promise.resolve(true);
     }
   },
   created () {
