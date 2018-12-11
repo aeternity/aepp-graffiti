@@ -17,7 +17,7 @@
     name: 'app',
     data () {
       return {
-        goToRoute: '',
+        goToRoute: 'home',
         amount: 0
       }
     },
