@@ -1,7 +1,13 @@
 <template>
   <div id="app">
     <div class="content">
-      <router-view></router-view>
+      <ae-main>
+        <ae-header :name="`Drone Project`">
+          <span class="text-white">test</span>
+        </ae-header>
+        <router-view></router-view>
+      </ae-main>
+
     </div>
   </div>
 </template>

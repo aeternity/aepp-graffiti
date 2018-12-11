@@ -39,7 +39,8 @@ module.exports = {
   },
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
-    port: 9001
+    port: 9001,
+    historyApiFallback: true
   },
   devtool: process.env.NODE_ENV === 'prod' ? '' : 'eval-source-map',
   plugins: [
@@ -108,6 +109,16 @@ module.exports = {
           // extractCSS: true
           // other vue-loader options go here
         }
+      },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [{
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+            outputPath: 'fonts/'
+          }
+        }]
       }
     ]
   }
