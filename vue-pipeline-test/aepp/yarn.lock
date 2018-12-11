@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@aeternity/aepp-components@https://github.com/aeternity/aepp-components":
+"@aeternity/aepp-components@https://github.com/aeternity/aepp-components#develop":
   version "3.0.0"
   resolved "https://github.com/aeternity/aepp-components#3fbca661878583a05e8de8ef59ab8d3679772bd5"
   dependencies:

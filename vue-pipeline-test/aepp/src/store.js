@@ -37,7 +37,7 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    async loadImages ({ state, commit }) {
+    async loadImages ({ commit }) {
       commit(`clearCachedImages`)
       for (let i = 0; i < 100; i++) {
         commit(`addImage`, {

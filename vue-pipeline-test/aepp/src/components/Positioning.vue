@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="w-full p-4 flex justify-center">
-      <ae-button size="large" type="dramatic" @click="moveCanvas(0,10)" >Contribute Art</ae-button>
+      <ae-button size="large" type="dramatic" >Contribute Art</ae-button>
     </div>
     <div class="w-full p-4 flex justify-center">
       <ae-button size="medium" type="exciting" >Learn More</ae-button>

@@ -7,7 +7,6 @@
         </ae-header>
         <router-view></router-view>
       </ae-main>
-
     </div>
   </div>
 </template>
@@ -15,6 +14,7 @@
 <script>
   export default {
     name: 'app',
+    components: {},
     data () {
       return {
         goToRoute: 'home',

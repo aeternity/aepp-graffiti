@@ -20,7 +20,8 @@
                 },
                 stage: null,
                 layer: null,
-                windowImages: []
+                windowImages: [],
+                overlayImageId: null
             }
         },
         computed: {
@@ -29,6 +30,18 @@
             }
         },
         methods: {
+            addOverlayImage(imageObject) {
+                console.log("Adding overlay Image");
+                imageObject.ref = 'overlayImage';
+                this.createImage(imageObject);
+                this.overlayImageId = 'overlayImage';
+            },
+            moveOverlayImage({xDiff, yDiff}) {
+                const oI = this.stage.find(`#${this.overlayImageId}`);
+                const {x, y}  = oI.getPosition();
+                oI.position({x: x + xDiff, y: y + yDiff});
+                this.stage.batchDraw()
+            },
             createImage(imageObject) {
                 let windowImage = new Image()
                 windowImage.onload = () => {
@@ -42,16 +55,22 @@
                     y: imageObject.position.y,
                     image: windowImage,
                     height: windowImage.height,
-                    width: windowImage.width
+                    width: windowImage.width,
+                    id: imageObject.ref ? imageObject.ref : ''
                 })
                 this.layer.add(i)
                 this.layer.draw()
+                return i;
+
             },
             moveCanvas({xDiff, yDiff}) {
                 const {x, y} = this.stage.getPosition()
                 this.stage.position({x: x + xDiff, y: y + yDiff})
+                if(this.overlayImageId) this.moveOverlayImage({xDiff, yDiff});
                 this.stage.batchDraw()
+
                 return this.stage.getPosition();
+
             }
         },
         created() {

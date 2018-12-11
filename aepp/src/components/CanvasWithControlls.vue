@@ -32,6 +32,10 @@
     },
     mounted () {
       this.getPositionFromCanvas()
+      this.$refs.canvas.addOverlayImage({
+        src: `https://picsum.photos/200/300/?random`,
+        position: { x: Math.random(), y: Math.random() }
+      });
       this.moveCanvas(0, 10)
     }
   }
