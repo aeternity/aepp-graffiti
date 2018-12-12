@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import Vue from 'vue'
 import VuexPersist from 'vuex-persist'
 import svgImage from './assets/molumen_audio_cassette.svg'
+import transform from './drone.js'
 
 Vue.use(Vuex)
 
@@ -42,6 +43,9 @@ const store = new Vuex.Store({
     },
     clearCachedImages (state) {
       state.images = []
+    },
+    clearFileAPI (state) {
+      state.uploadedImage.file = null
     }
   },
   actions: {
@@ -58,11 +62,13 @@ const store = new Vuex.Store({
         })
       }
     },
-    uploadImage (context, file) {
+    async uploadImage (context, file) {
       const fReader = new FileReader()
+
       fReader.onload = () => {
         context.commit(`addUploadedImage`, {
           src: fReader.result,
+          file: file,
           position: {
             x: Math.random() * 1000,
             y: Math.random() * 1000
@@ -71,16 +77,28 @@ const store = new Vuex.Store({
       }
       fReader.readAsDataURL(file)
     },
-    transformImage ({ commit, state }) {
+    async transformImage ({ commit, state }) {
       // TODO DO SOME STUFF, CALL SDK ETC
 
-      let image = Object.assign({}, state.uploadedImage);
-
-      if (state.transformedImage) {
-        Object.assign(image, state.transformedImage)
-        image.src = state.uploadedImage.src
+      let image = {
+        position: state.uploadedImage.position
       }
 
+      if (state.uploadedImage.file.name) {
+        console.log('trying')
+        try {
+          console.log('trying')
+          const dronePaint = await transform(state.uploadedImage.file, (p) => console.log(`${p}%`))
+          console.log(dronePaint.svg)
+          image.src = `data:image/svg+xml;base64,${btoa(dronePaint.svg)}`
+        } catch (e) {
+          commit(`clearFileAPI`)
+          console.log(`clearing`)
+        }
+      } else {
+        Object.assign(image, state.transformedImage)
+        console.log(`cleared`)
+      }
       image.size = {
         width: 200 * state.transformationSettings.size / 100,
         height: 200 * state.transformationSettings.size / 100
