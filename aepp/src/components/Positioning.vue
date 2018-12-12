@@ -5,24 +5,34 @@
     </div>
     <div class="w-full p-4">
       <div class="border border-grey-darker border-1">
-        <CanvasWithControlls></CanvasWithControlls>
+        <CanvasWithControlls :show-navigation=true ref="canvas"></CanvasWithControlls>
 
       </div>
     </div>
     <div class="w-full p-4 flex justify-center">
-      <ae-button size="large" type="dramatic" @click="moveCanvas(0,10)" >Contribute Art</ae-button>
-    </div>
-    <div class="w-full p-4 flex justify-center">
-      <ae-button size="medium" type="exciting" >Learn More</ae-button>
+      <ae-button class="mr-4" size="medium" type="normal" @click="back">Back</ae-button>
+      <ae-button size="medium" type="dramatic" @click="next">Continue</ae-button>
     </div>
   </div>
 </template>
 
 <script>
   import CanvasWithControlls from './CanvasWithControlls.vue'
+
   export default {
     name: 'Positioning',
     components: { CanvasWithControlls },
+    methods: {
+      back () {
+        this.$router.push('render')
+      },
+      next () {
+        const { x, y } = this.$refs.canvas.getCurrentCoords()
+        console.log(x,y);
+        this.$store.dispatch(`updateTransformedImage`, { position: { x, y } })
+        this.$router.push('confirm')
+      }
+    }
   }
 </script>
 

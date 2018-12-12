@@ -10,39 +10,61 @@
   export default {
     name: 'CanvasJS',
     components: {},
-    props: [],
+    props: ['draggable'],
     data () {
       return {
-        configKonva: {
-          width: `auto`,
-          height: 200,
-          draggable: true
-        },
         stage: null,
         layer: null,
+        overlayLayer: null,
         windowImages: [],
         overlayImageId: null
       }
     },
     computed: {
-      images() {
+      images () {
         return this.$store.state.images
       }
     },
     methods: {
-      addOverlayImage(imageObject) {
-        console.log("Adding overlay Image");
-        imageObject.ref = 'overlayImage';
-        this.createImage(imageObject);
-        this.overlayImageId = 'overlayImage';
+      addOverlayImage (imageObject) {
+
+        // CREATE NEW LAYER
+        this.overlayLayer = new Konva.Layer()
+        this.stage.add(this.overlayLayer)
+
+        // ADD OBJECT ID & LAYER
+        imageObject.ref = 'overlayImage'
+        imageObject.layer = this.overlayLayer
+
+        // RENDER IMAGE TO CANVAS
+        this.createImage(imageObject)
+
+        // SAVE INFO
+        this.overlayImageId = 'overlayImage'
+
       },
-      moveOverlayImage({xDiff, yDiff}) {
-        const oI = this.stage.find(`#${this.overlayImageId}`)[0];
-        const {x, y}  = oI.position();
-        oI.position({x: x - xDiff, y: y - yDiff});
-        this.stage.batchDraw()
+
+      moveOverlayImage ({ xDiff, yDiff }) {
+
+        // GET CURRENT POS
+        const oI = this.stage.find(`#${this.overlayImageId}`)[0]
+        const { x, y } = oI.position()
+
+        // UPDATE POS
+        oI.position({ x: x - xDiff, y: y - yDiff })
+
+        // RERENDER THE OVERLAY LAYER
+        this.overlayLayer.draw()
+
       },
-      createImage(imageObject) {
+
+      getOverlayPosition () {
+        // GET CURRENT POS
+        const oI = this.stage.find(`#${this.overlayImageId}`)[0]
+        return oI.position()
+      },
+
+      createImage (imageObject) {
         let windowImage = new Image()
         windowImage.onload = () => {
           this.renderImage(windowImage, imageObject)
@@ -54,19 +76,29 @@
           x: imageObject.position.x,
           y: imageObject.position.y,
           image: windowImage,
-          height: windowImage.height,
-          width: windowImage.width,
+          height: imageObject.size.height,
+          width: imageObject.size.width,
           id: imageObject.ref ? imageObject.ref : ''
         })
-        this.layer.add(i)
-        this.layer.draw()
+        if (imageObject.layer) {
+          imageObject.layer.add(i)
+          imageObject.layer.draw()
+        } else {
+          this.layer.add(i)
+          this.layer.draw()
+        }
       },
       moveCanvas ({ xDiff, yDiff }) {
         const { x, y } = this.stage.getPosition()
         this.stage.position({ x: x + xDiff, y: y + yDiff })
         this.stage.batchDraw()
-        if(this.overlayImageId) this.moveOverlayImage({xDiff, yDiff})
-        return this.stage.getPosition();
+        return this.stage.getPosition()
+      },
+      getCanvasDimensions () {
+        return {
+          width: this.stage.width(),
+          height: this.stage.height()
+        }
       }
     },
     created () {
@@ -79,7 +111,7 @@
         container: 'stageWrapper',
         width: width,
         height: 300,
-        draggable: true
+        draggable: this.draggable
       })
 
       this.layer = new Konva.Layer()

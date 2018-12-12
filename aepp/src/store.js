@@ -2,6 +2,7 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
 import VuexPersist from 'vuex-persist'
+import svgImage from './assets/molumen_audio_cassette.svg'
 
 Vue.use(Vuex)
 
@@ -15,7 +16,14 @@ const store = new Vuex.Store({
     images: [],
     uploadedImage: {},
     transformedImage: null,
-    transformationSettings: {}
+    transformationSettings: {
+      size: 50
+    },
+    imageSettings: {
+      max: { width: 10, height: 10 },
+      min: { width: 4, height: 3 }
+    },
+    meterToPixel: 10 // Meter * meterToPixel = Pixel
   },
   plugins: [vuexPersist.plugin],
   getters: {},
@@ -26,7 +34,7 @@ const store = new Vuex.Store({
     addUploadedImage (state, image) {
       state.uploadedImage = image
     },
-    addTransformedImage (state, image) {
+    saveTransformedImage (state, image) {
       state.transformedImage = image
     },
     saveUpdatedSettings (state, settings) {
@@ -41,8 +49,12 @@ const store = new Vuex.Store({
       commit(`clearCachedImages`)
       for (let i = 0; i < 100; i++) {
         commit(`addImage`, {
-          src: `https://picsum.photos/200/300/?random`,
-          position: { x: Math.random() * 1000, y: Math.random() * 1000 }
+          src: svgImage,
+          position: { x: Math.random() * 1000, y: Math.random() * 1000 },
+          size: {
+            width: 200,
+            height: 300
+          }
         })
       }
     },
@@ -50,19 +62,35 @@ const store = new Vuex.Store({
       const fReader = new FileReader()
       fReader.onload = () => {
         context.commit(`addUploadedImage`, {
-          originalName: file.name,
-          fileName: file.name,
-          url: fReader.result
+          src: fReader.result,
+          position: {
+            x: Math.random() * 1000,
+            y: Math.random() * 1000
+          }
         })
       }
       fReader.readAsDataURL(file)
     },
     transformImage ({ commit, state }) {
       // TODO DO SOME STUFF, CALL SDK ETC
-      console.log(JSON.stringify(state.uploadedImage))
-      commit(`addTransformedImage`, state.uploadedImage)
+
+      let image = Object.assign({}, state.uploadedImage);
+
+      if (state.transformedImage) {
+        Object.assign(image, state.transformedImage)
+        image.src = state.uploadedImage.src
+      }
+
+      image.size = {
+        width: 200 * state.transformationSettings.size / 100,
+        height: 200 * state.transformationSettings.size / 100
+      }
+      commit(`saveTransformedImage`, image)
     },
-    async updateSettings ({ commit, state }, update) {
+    updateTransformedImage ({ commit, state }, update) {
+      commit(`saveTransformedImage`, Object.assign(state.transformedImage, update))
+    },
+    updateSettings ({ commit, state }, update) {
       commit(`saveUpdatedSettings`, Object.assign(state.transformationSettings, update))
     }
   }

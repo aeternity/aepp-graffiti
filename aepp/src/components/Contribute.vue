@@ -16,7 +16,7 @@
       </form>
       <div v-if="isSuccess">
         <div class="w-full flex justify-center">
-          <img ref="image" :src="uploadedImage.url" :alt="uploadedImage.name">
+          <img ref="image" class="w-full h-full" :src="uploadedImage.src" :alt="uploadedImage.name">
         </div>
         <div class="w-full flex justify-center p-4">
           <ae-button class="mr-4" type="normal" @click="reset">Reset</ae-button>

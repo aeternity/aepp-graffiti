@@ -7,7 +7,7 @@
       <div class="w-full flex justify-center items-center">
         <div v-if="transformedImage">
           <div class="w-full">
-            <img ref="previewImage" :src="transformedImage.url" :alt="transformedImage.name"/>
+            <img ref="previewImage" :src="transformedImage.src" :alt="transformedImage.name"/>
           </div>
           <div class="w-full mb-8">
             <form>
@@ -68,6 +68,7 @@
       },
       submit () {
         this.setSize()
+        this.$store.dispatch(`transformImage`);
         this.$router.push('positioning');
       }
     },
@@ -77,12 +78,7 @@
       }
     },
     mounted () {
-      if (this.$store.state.transformedImage && this.$store.state.transformedImage.hasOwnProperty('url')) {
-        console.log('Already active')
-        this.size = this.$store.state.transformationSettings.size
-        return
-      }
-      console.log('HERE')
+      this.size = this.$store.state.transformationSettings.size
       this.$store.dispatch(`transformImage`)
     }
   }

@@ -3,6 +3,7 @@ import Home from './components/Home.vue'
 import Contribute from './components/Contribute.vue'
 import Render from './components/Render.vue'
 import Positioning from './components/Positioning.vue'
+import Confirm from './components/Confirm.vue'
 
 export default (store) => {
   const routes = [
@@ -28,6 +29,12 @@ export default (store) => {
       path: '/positioning',
       name: 'positioning',
       component: Positioning,
+      props: route => ({ query: route.query })
+    },
+    {
+      path: '/confirm',
+      name: 'confirm',
+      component: Confirm,
       props: route => ({ query: route.query })
     }
   ]

@@ -5,7 +5,7 @@
     </div>
     <div class="w-full p-4">
       <div class="border border-grey-darker border-1">
-        <CanvasJS></CanvasJS>
+        <CanvasJS :draggable=true ></CanvasJS>
       </div>
     </div>
     <div class="w-full p-4 flex justify-center">
