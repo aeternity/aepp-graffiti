@@ -7,18 +7,18 @@
       <div class="w-full flex justify-center items-center">
         <div v-if="transformedImage">
           <div class="w-full">
-            <img ref="previewImage" :src="transformedImage.src" :alt="transformedImage.name"/>
+            <img @load="updateMetaData" ref="previewImage" :src="transformedImage.src" :alt="transformedImage.name"/>
           </div>
           <div class="w-full mb-8">
             <form>
               <div>
-                <ae-label class="no-margin">Size</ae-label>
+                <ae-label class="no-margin">Scale</ae-label>
                 <div class="flex flex-row justify-space items-center">
                   <div class="w-1/2">
-                    <input ref="" type="range" v-model="size"/>
+                    <input type="range" v-model="scale"/>
                   </div>
                   <div class="w-1/2">
-                    <ae-input class="no-margin" type="number" v-model="size"></ae-input>
+                    <ae-input class="no-margin" type="number" v-model="scale"></ae-input>
                   </div>
                 </div>
               </div>
@@ -43,7 +43,7 @@
     name: 'Render',
     data () {
       return {
-        size: 50
+        scale: 50
       }
     },
     computed: {
@@ -61,24 +61,32 @@
       }
     },
     methods: {
-      setSize () {
+      setScale () {
         this.$store.dispatch('updateSettings', {
-          size: this.size
+          scale: this.scale
         })
       },
       submit () {
-        this.setSize()
-        this.$store.dispatch(`transformImage`);
+        this.setScale()
+        //this.$store.dispatch(`transformImage`);
         this.$router.push('positioning');
+      },
+      updateMetaData() {
+        this.$store.dispatch(`updateTransformedImage`, {
+          originalSize: {
+            width: this.$refs.previewImage.width,
+            height: this.$refs.previewImage.height
+          }
+        })
       }
     },
     watch: {
-      size: function (value) {
-        this.$refs.previewImage.style.transform = `scale(${this.size / 100})`
+      scale: function () {
+        this.$refs.previewImage.style.transform = `scale(${this.scale / 100})`
       }
     },
     mounted () {
-      this.size = this.$store.state.transformationSettings.size
+      this.scale = this.$store.state.transformationSettings.scale
       this.$store.dispatch(`transformImage`)
     }
   }

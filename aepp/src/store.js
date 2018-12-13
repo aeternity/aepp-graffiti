@@ -4,7 +4,7 @@ import Vue from 'vue'
 import VuexPersist from 'vuex-persist'
 import svgImage from './assets/molumen_audio_cassette.svg'
 import transform from './drone.js'
-
+import { getGoodImageDimensions } from './helper.js'
 Vue.use(Vuex)
 
 const vuexPersist = new VuexPersist({
@@ -18,7 +18,7 @@ const store = new Vuex.Store({
     uploadedImage: {},
     transformedImage: null,
     transformationSettings: {
-      size: 50
+      scale: 50
     },
     imageSettings: {
       max: { width: 10, height: 10 },
@@ -55,10 +55,8 @@ const store = new Vuex.Store({
         commit(`addImage`, {
           src: svgImage,
           position: { x: Math.random() * 1000, y: Math.random() * 1000 },
-          size: {
-            width: 200,
-            height: 300
-          }
+          // TODO get correct image height
+          size: getGoodImageDimensions(538, 400, 300, 200)
         })
       }
     },
@@ -81,15 +79,16 @@ const store = new Vuex.Store({
       // TODO DO SOME STUFF, CALL SDK ETC
 
       let image = {
-        position: state.uploadedImage.position
+        position: state.uploadedImage.position,
+        originalSize: {
+          width: state.transformedImage.originalSize ? state.transformedImage.originalSize.width : 0,
+          height: state.transformedImage.originalSize ? state.transformedImage.originalSize.height : 0
+        }
       }
 
       if (state.uploadedImage.file.name) {
-        console.log('trying')
         try {
-          console.log('trying')
           const dronePaint = await transform(state.uploadedImage.file, (p) => console.log(`${p}%`))
-          console.log(dronePaint.svg)
           image.src = `data:image/svg+xml;base64,${btoa(dronePaint.svg)}`
         } catch (e) {
           commit(`clearFileAPI`)
@@ -99,10 +98,12 @@ const store = new Vuex.Store({
         Object.assign(image, state.transformedImage)
         console.log(`cleared`)
       }
-      image.size = {
-        width: 200 * state.transformationSettings.size / 100,
-        height: 200 * state.transformationSettings.size / 100
-      }
+      image.size = getGoodImageDimensions(
+        image.originalSize.width,
+        image.originalSize.height,
+        200 * state.transformationSettings.scale / 100,
+        200 * state.transformationSettings.scale / 100
+      )
       commit(`saveTransformedImage`, image)
     },
     updateTransformedImage ({ commit, state }, update) {

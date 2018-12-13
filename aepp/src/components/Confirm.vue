@@ -25,20 +25,22 @@
 <script>
   import CanvasWithControlls from './CanvasWithControlls.vue'
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
+  //import IPFS from 'ipfs'
 
   export default {
     name: 'Confirm',
     components: { CanvasWithControlls },
-    data() {
+    data () {
       return {
         dronetime: 10,
         bidPerDronetime: 0,
         pub: '',
-        balance: 0
+        balance: 0,
+        client: null
       }
     },
     computed: {
-      bid() {
+      bid () {
         return this.bidPerDronetime * this.dronetime
       }
     },
@@ -48,6 +50,17 @@
       },
       next () {
         // TODO do smart contract stuff
+        const node = new IPFS()
+
+        node.on('ready', async () => {
+          let content = node.types.Buffer.from(this.$store.state.transformedImage.src)
+          const writeResults = await node.files.add(content)
+          let hash = writeResults[0].hash // "Qm...WW"
+
+          let readResults = await node.files.get(hash)
+          console.log('results match: ', readResults[0].content.toString('utf8') === this.$store.state.transformedImage.src)
+
+        })
       }
     },
     created () {
@@ -60,9 +73,9 @@
             ae.balance(address).then(balance => {
               // logs current balance of "A_PUB_ADDRESS"
               console.log('balance', balance)
+              this.balance = Number(balance);
             })
           })
-
       })
     },
     mounted () {
@@ -72,7 +85,7 @@
 </script>
 
 <style scoped>
-.text-5xl {
-  font-size: 3em;
-}
+  .text-5xl {
+    font-size: 3em;
+  }
 </style>

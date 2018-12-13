@@ -17,7 +17,7 @@ const jsLoader = 'babel-loader!standard-loader?error=true'
 // https://github.com/FullHuman/purgecss#extractor
 class TailwindExtractor {
   static extract (content) {
-    return content.match(/[A-z0-9-:\/]+/g) || [];
+    return content.match(/[A-z0-9-:\/]+/g) || []
   }
 }
 
@@ -40,7 +40,8 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     port: 9001,
-    historyApiFallback: true
+    historyApiFallback: true,
+    host: '192.168.1.16'
   },
   devtool: process.env.NODE_ENV === 'prod' ? '' : 'eval-source-map',
   plugins: [

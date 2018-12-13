@@ -9,8 +9,8 @@
           <input type="file" name="image" ref="uploadInput"
                  @change="filesChange($event.target.files)"
                  accept="image/*" class="absolute pin opacity-0 w-full h-full">
-          <p v-if="isInitial" class="p-4">
-            Drag your file(s) here to begin<br> or click to browse
+          <p v-if="isInitial" class="p-4 text-center">
+            Upload Image. <br> Click to browse.
           </p>
         </div>
       </form>
@@ -39,7 +39,7 @@
 
 <script>
 
-  const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_ERROR = 3
+  const STATUS_INITIAL = 0, STATUS_SUCCESS = 2, STATUS_ERROR = 3
 
   export default {
     name: 'Upload',

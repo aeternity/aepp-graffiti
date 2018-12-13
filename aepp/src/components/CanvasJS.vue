@@ -191,7 +191,7 @@
           }
         }
       },
-      onTouchEndEvent(event) {
+      onTouchEndEvent() {
         this.lastDist = 0;
         this.lastPos = {
           x: -1,
@@ -237,7 +237,7 @@
           y: event.clientY - this.$refs.stageWrapper.offsetTop
         }
       },
-      onMouseUpEvent(event) {
+      onMouseUpEvent() {
         this.lastPos = {
           x: -1,
           y: -1
@@ -253,26 +253,21 @@
         // CHECK IF OLD POS IS NOT DEFAULT
         if (x !== -1 && y !== -1) {
           // CHECK IF FINGER MOVED
-          let dist = this.getDistance({
+
+
+          // MOVE CANVAS
+          let diff = {
+            xDiff: event.clientX - offsetLeft - this.lastPos.x,
+            yDiff: event.clientY - offsetTop - this.lastPos.y,
+          }
+
+          this.moveCanvas(diff)
+
+          this.lastPos = {
             x: event.clientX - offsetLeft,
             y: event.clientY - offsetTop
-          }, this.lastPos)
-
-          if (dist > 0) {
-
-            // MOVE CANVAS
-            let diff = {
-              xDiff: event.clientX - offsetLeft - this.lastPos.x,
-              yDiff: event.clientY - offsetTop - this.lastPos.y,
-            }
-
-            this.moveCanvas(diff)
-
-            this.lastPos = {
-              x: event.clientX - offsetLeft,
-              y: event.clientY - offsetTop
-            }
           }
+
         }
       },
     },
