@@ -111,7 +111,7 @@
         container: 'stageWrapper',
         width: width,
         height: 300,
-        draggable: this.draggable
+        draggable: false
       })
 
       this.layer = new Konva.Layer()
@@ -121,6 +121,118 @@
       this.images.forEach(i => {
         this.createImage(i)
       })
+
+      if (this.draggable) {
+        let stage = this.stage
+        let lastDist = 0
+        let lastPos = {
+          x: -1,
+          y: -1
+        }
+
+        function getDistance (p1, p2) {
+          return Math.sqrt(Math.pow((p2.x - p1.x), 2) + Math.pow((p2.y - p1.y), 2))
+        }
+
+        stage.getContent().addEventListener('touchstart', (evt) => {
+          let touch1 = evt.touches[0]
+
+          if(evt.touches.length === 1) {
+            lastPos = {
+              x: touch1.clientX - this.$refs.stageWrapper.offsetLeft,
+              y: touch1.clientY - this.$refs.stageWrapper.offsetTop
+            }
+          }
+
+        })
+
+        stage.getContent().addEventListener('touchmove', (evt) => {
+          let touch1 = evt.touches[0]
+          let touch2 = evt.touches[1]
+
+          if (touch1 && touch2) {
+            let dist = getDistance({
+              x: touch1.clientX,
+              y: touch1.clientY
+            }, {
+              x: touch2.clientX,
+              y: touch2.clientY
+            })
+
+            if (!lastDist) {
+              lastDist = dist
+            }
+            let oldScale = stage.getScaleX()
+
+            let offsetTop = this.$refs.stageWrapper.offsetTop
+            let offsetLeft = this.$refs.stageWrapper.offsetLeft
+
+            let center = {
+              x: (touch1.clientX + touch2.clientX) / 2 - offsetLeft,
+              y: (touch1.clientY + touch2.clientY) / 2 - offsetTop
+            }
+
+            let mousePointTo = {
+              x: center.x / oldScale - stage.x() / oldScale,
+              y: center.y / oldScale - stage.y() / oldScale,
+            }
+
+            let scale = stage.getScaleX() * dist / lastDist
+
+            stage.scaleX(scale)
+            stage.scaleY(scale)
+
+            let newPos = {
+              x: -(mousePointTo.x - center.x / scale) * scale,
+              y: -(mousePointTo.y - center.y / scale) * scale
+            }
+
+            stage.position(newPos)
+
+            stage.draw()
+            lastDist = dist
+          } else if (touch1) {
+            let offsetTop = this.$refs.stageWrapper.offsetTop
+            let offsetLeft = this.$refs.stageWrapper.offsetLeft
+
+            // GET OLD POS
+            let { x, y } = lastPos
+
+            // CHECK IF OLD POS IS NOT DEFAULT
+            if (x !== -1 && y !== -1) {
+              // CHECK IF FINGER MOVED
+              let dist = getDistance({
+                x: touch1.clientX - offsetLeft,
+                y: touch1.clientY - offsetTop
+              }, lastPos)
+
+              if (dist > 0) {
+
+                // MOVE CANVAS
+                let diff = {
+                  xDiff: touch1.clientX - offsetLeft - lastPos.x,
+                  yDiff: touch1.clientY - offsetTop - lastPos.y,
+                }
+
+                this.moveCanvas(diff)
+
+                lastPos = {
+                  x: touch1.clientX - offsetLeft,
+                  y: touch1.clientY - offsetTop
+                }
+              }
+            }
+          }
+        }, false)
+
+        stage.getContent().addEventListener('touchend', function () {
+          lastDist = 0
+          lastPos = {
+            x: -1,
+            y: -1
+          }
+        }, false)
+      }
 
       console.log('canvas mounted')
     }
