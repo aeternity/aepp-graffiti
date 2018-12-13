@@ -4,6 +4,7 @@ import Contribute from './components/Contribute.vue'
 import Render from './components/Render.vue'
 import Positioning from './components/Positioning.vue'
 import Confirm from './components/Confirm.vue'
+import Test from './components/Test.vue'
 
 export default (store) => {
   const routes = [
@@ -35,6 +36,12 @@ export default (store) => {
       path: '/confirm',
       name: 'confirm',
       component: Confirm,
+      props: route => ({ query: route.query })
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: Test,
       props: route => ({ query: route.query })
     }
   ]

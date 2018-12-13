@@ -49,7 +49,7 @@ export default {
   data () {
     return {
       pub: 'ak_c3LfYDjLqdNdWHUCV8NDv1BELhXqfKxhmKfzh4cBMpwj64CD7',
-      priv: 'a7a695f999b1872acb13d5b63a830a8ee060ba688a478a08c6e65dfad8a01cd70bb4ed7927f97b51e1bcb5e1340d12335b2a2b12c8bc5221d63c4bcb39d41e61',
+      priv: '',
       client: null,
       wallet: null,
       balance: null,
@@ -72,7 +72,7 @@ export default {
 
     Wallet({
       url: ' https://ae.piwo.app',
-      internalUrl: 'http://51.15.237.173:3015',
+      internalUrl: 'http://51.15.237.173:3113',
       accounts: [MemoryAccount({keypair: {secretKey: this.priv, publicKey: this.pub}})],
       address: this.pub,
       onTx: this.confirmDialog,

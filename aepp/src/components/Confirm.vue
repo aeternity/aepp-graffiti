@@ -64,7 +64,7 @@
       }
     },
     created () {
-      Aepp().then(ae => {
+      Aepp().then(async ae => {
         console.log('client: ', ae)
         this.client = ae
         ae.address()
@@ -76,6 +76,14 @@
               this.balance = Number(balance);
             })
           })
+
+        const contractAddress = 'ct_XPuc7U9qiccPn33uvNSeDaRpjJZ7i6XMsyWyp5bXdLsngUAVs';
+        const calledMyBids = await this.client.contractCall(contractAddress, 'sophia-address', contractAddress, 'all_bids', {args: '()'}).catch(e => console.error(e));
+        console.log('calledMyBids', calledMyBids);
+
+        const decodedMyBids = await this.client.contractDecodeData('list((address, string, (int, int), int, int))', calledMyBids.result.returnValue).catch(e => console.error(e));
+        console.log('decodedMyBids', decodedMyBids);
+
       })
     },
     mounted () {

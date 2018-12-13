@@ -14,6 +14,9 @@
     <div class="w-full p-4 flex justify-center">
       <ae-button size="medium" type="exciting" >Learn More</ae-button>
     </div>
+    <div class="w-full p-4 flex justify-center">
+      <ae-button size="medium" @click="$router.push('test')" type="exciting" >TEST</ae-button>
+    </div>
   </div>
 </template>
 

@@ -41,7 +41,10 @@ module.exports = {
     contentBase: path.join(__dirname, 'dist'),
     port: 9001,
     historyApiFallback: true,
-    host: '192.168.1.16'
+    allowedHosts: [
+      '192.168.1.16',
+      'localhost'
+    ]
   },
   devtool: process.env.NODE_ENV === 'prod' ? '' : 'eval-source-map',
   plugins: [
