@@ -14,7 +14,8 @@
   "license": "ISC",
   "dependencies": {
     "@aeternity/aepp-components": "^2.0.15",
-    "@aeternity/aepp-sdk": "^1.0.1",
+    "@aeternity/aepp-components-3": "^3.0.0-alpha.8",
+    "@aeternity/aepp-sdk": "^1.1.2",
     "axios": "^0.18.0",
     "dronetracer": "git+ssh://git@github.com/THE-WYE/DroneTracer",
     "ipfs": "^0.33.1",
