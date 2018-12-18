@@ -9,13 +9,13 @@
       </div>
     </div>
     <div class="w-full p-4 flex justify-center">
-      <ae-button size="large" type="dramatic" @click="$router.push(`contribute`)" >Contribute Art</ae-button>
+      <ae-button face="round" fill="primary" @click="$router.push(`contribute`)" >Contribute Art</ae-button>
     </div>
     <div class="w-full p-4 flex justify-center">
-      <ae-button size="medium" type="exciting" >Learn More</ae-button>
+      <ae-button face="round" fill="secondary">Learn More</ae-button>
     </div>
     <div class="w-full p-4 flex justify-center">
-      <ae-button size="medium" @click="$router.push('test')" type="exciting" >TEST</ae-button>
+      <ae-button face="round" fill="alternative" @click="$router.push('test')" type="exciting" >TEST</ae-button>
     </div>
   </div>
 </template>
@@ -28,6 +28,4 @@
   }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

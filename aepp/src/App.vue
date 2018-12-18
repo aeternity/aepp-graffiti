@@ -8,6 +8,8 @@
         <router-view></router-view>
       </ae-main>
 
+      <!-- Find the docs for the component here: http://aeternity.com/aepp-components/ -->
+      <ae-badge>Hello world</ae-badge>
     </div>
   </div>
 </template>
