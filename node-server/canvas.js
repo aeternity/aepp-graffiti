@@ -82,9 +82,7 @@ canvas.render = async () => {
 
 };
 
-canvas.send = (req, res, next) => {
-
-    fs.readFileSync(path.join(__dirname, PATH));
+canvas.send = (req, res) => {
 
     res.writeHead(200, {
         'Content-Type': 'image/png',
