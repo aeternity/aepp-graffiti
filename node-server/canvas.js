@@ -1,14 +1,23 @@
 const fs = require('fs');
 const path = require('path');
 const { createCanvas, Image } = require('canvas');
-
+const blockchain = require('./blockchain.js');
 const canvas = {};
-const shouldRender = false;
-const PATH = './rendered.png';
+const shouldRender = true;
+
+canvas.current_heigth = 0;
+canvas.buffer = null;
 
 canvas.height = 3000;
 canvas.width = 3000;
-canvas.buffer = null;
+
+canvas.updateHeight = async () => canvas.current_heigth = await blockchain.height();
+
+blockchain.init().then(canvas.updateHeight());
+
+canvas.pathByHeight = () => {
+    return `./rendered_height_${canvas.current_heigth}.png`;
+};
 
 canvas.shouldRender = (req, res, next) => {
 
@@ -18,7 +27,7 @@ canvas.shouldRender = (req, res, next) => {
     }
 
     // RERENDER IF THE FILE DOES NOT EXIST
-    if (!fs.existsSync(PATH)) {
+    if (!fs.existsSync(canvas.pathByHeight())) {
         return canvas.render().then(next);
     }
 
@@ -61,7 +70,7 @@ canvas.mergeImages = async (sources) => {
 };
 
 canvas.loadImage = () => {
-    canvas.buffer = fs.readFileSync(path.join(__dirname, PATH));
+    canvas.buffer = fs.readFileSync(path.join(__dirname, canvas.pathByHeight()));
 };
 
 canvas.render = async () => {
@@ -78,7 +87,7 @@ canvas.render = async () => {
 
 
     canvas.buffer = await canvas.mergeImages(imageBuffer);
-    fs.writeFileSync(path.join(__dirname, PATH), canvas.buffer);
+    fs.writeFileSync(path.join(__dirname, canvas.pathByHeight()), canvas.buffer);
 
 };
 

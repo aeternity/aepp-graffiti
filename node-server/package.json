@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aeternity/aepp-sdk": "^1.2.0-next",
     "canvas": "^2.2.0",
     "dronetracer": "git+ssh://git@github.com/THE-WYE/DroneTracer.git",
     "express": "^4.16.4",
