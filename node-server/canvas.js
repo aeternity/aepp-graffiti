@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { createCanvas, Image } = require('canvas');
+const {createCanvas, Image} = require('canvas');
 const blockchain = require('./blockchain.js');
 const canvas = {};
 
@@ -18,6 +18,7 @@ const init = async () => {
     await blockchain.init();
     await updateHeight();
 
+    // use timeout until we have a listener function for new blocks from the sdk
     setInterval(updateHeight, 10000);
 };
 
@@ -54,7 +55,7 @@ canvas.mergeImages = async (sources) => {
         // Resolve source and img when loaded
         const img = new Image();
         img.onerror = () => reject(new Error('Couldn\'t load image'));
-        img.onload = () => resolve(Object.assign({}, source, { img }));
+        img.onload = () => resolve(Object.assign({}, source, {img}));
         img.src = source.src;
     }));
 
