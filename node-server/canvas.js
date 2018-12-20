@@ -24,7 +24,7 @@ canvas.shouldRender = (req, res, next) => {
 
     if (!canvas.buffer) {
         canvas.loadImage();
-        next();
+        return next();
     }
 
     // RERENDER IF A NEW BLOCK OCCURRED
