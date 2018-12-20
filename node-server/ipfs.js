@@ -1,10 +1,7 @@
 const ipfsClient = require('ipfs-http-client');
-const fs = require('fs');
-const path = require('path');
 const Buffer = require('buffer').Buffer;
 
 const ipfsWrap = {};
-const PATH = './rendered.png';
 
 ipfsWrap.node = null;
 
@@ -19,9 +16,9 @@ ipfsWrap.init = () => {
 };
 
 
-ipfsWrap.writeFile = async () => {
-    const buffer = fs.readFileSync(path.join(__dirname, PATH));
-    return await ipfsWrap.node.add({
+ipfsWrap.writeFile = (buffer) => {
+
+    return ipfsWrap.node.add({
         content: buffer
     });
 };
@@ -30,7 +27,6 @@ ipfsWrap.writeFile = async () => {
 ipfsWrap.getFile = async (hash) => {
 
     return Buffer.from(await ipfsWrap.node.cat(hash));
-
 
 };
 
