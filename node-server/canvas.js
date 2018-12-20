@@ -6,8 +6,8 @@ const canvas = {};
 const shouldRender = false;
 const PATH = './rendered.png';
 
-canvas.height = 2000;
-canvas.width = 2000;
+canvas.height = 3000;
+canvas.width = 3000;
 canvas.buffer = null;
 
 canvas.shouldRender = (req, res, next) => {
@@ -71,8 +71,8 @@ canvas.render = async () => {
     for (let i = 0; i < 100; i++) {
         imageBuffer.push({
             src: './molumen_audio_cassette.svg',
-            x: Math.round(Math.random() * 2000),
-            y: Math.round(Math.random() * 2000)
+            x: Math.round(Math.random() * canvas.width),
+            y: Math.round(Math.random() * canvas.height)
         });
     }
 
