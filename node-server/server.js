@@ -58,4 +58,8 @@ app.post('/upload', async (req, res) => {
     }
 });
 
+app.use((req, res) => {
+    res.sendStatus(404);
+});
+
 app.listen(3000);
