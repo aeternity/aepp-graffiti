@@ -3,7 +3,8 @@ const path = require('path');
 const { createCanvas, Image } = require('canvas');
 const blockchain = require('./blockchain.js');
 const canvas = {};
-const shouldRender = true;
+
+const shouldAlwaysRender = false;
 
 canvas.current_heigth = 0;
 canvas.buffer = null;
@@ -11,18 +12,25 @@ canvas.buffer = null;
 canvas.height = 3000;
 canvas.width = 3000;
 
-canvas.updateHeight = async () => canvas.current_heigth = await blockchain.height();
+updateHeight = async () => canvas.current_heigth = await blockchain.height();
 
-blockchain.init().then(canvas.updateHeight());
+const init = async () => {
+    await blockchain.init();
+    await updateHeight();
+
+    setInterval(updateHeight, 10000);
+};
+
+init();
 
 canvas.pathByHeight = () => {
-    return `./rendered_height_${canvas.current_heigth}.png`;
+    return `./rendered/rendered_height_${canvas.current_heigth}.png`;
 };
 
 canvas.shouldRender = (req, res, next) => {
 
     // FORCE FOR DEVELOP
-    if (shouldRender) {
+    if (shouldAlwaysRender) {
         return canvas.render().then(next);
     }
 
@@ -35,9 +43,6 @@ canvas.shouldRender = (req, res, next) => {
         canvas.loadImage();
         return next();
     }
-
-    // RERENDER IF A NEW BLOCK OCCURRED
-    // TODO implement
 
     next();
 };

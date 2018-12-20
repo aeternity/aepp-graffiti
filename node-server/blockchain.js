@@ -21,7 +21,7 @@ function bidListToObject(bidList) {
 }
 
 blockchain.init = async () => {
-  const temp = await Universal({
+  client = await Universal({
     url: 'https://sdk-testnet.aepps.com',
     internalUrl: 'https://sdk-testnet.aepps.com',
     keypair: {
@@ -33,18 +33,16 @@ blockchain.init = async () => {
     nativeMode: true
   });
 
-  client = temp;
-
   return client;
 };
 
 blockchain.height = async () => {
-  if (!client) throw Error("blockchain client not initialized");
+  if (!client) await blockchain.init();
   return await client.height();
 };
 
 blockchain.allBids = async () => {
-  if (!client) throw Error("blockchain client not initialized");
+  if (!client) await blockchain.init();
 
   const calledAllBids = await client.contractCallStatic(contractAddress, 'sophia-address', 'all_bids', {args: '()'}).catch(e => console.error(e));
   const decodedAllBids = await client.contractDecodeData('list((address, string, (int, int), int, int))', calledAllBids.result).catch(e => console.error(e));
