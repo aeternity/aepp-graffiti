@@ -16,11 +16,11 @@
       </form>
       <div v-if="isSuccess">
         <div class="w-full flex justify-center p-4">
-          <img ref="image" class="w-full h-full" :src="uploadedImage.src" :alt="uploadedImage.name">
+          <img ref="image" class="w-full h-full" @load="imageLoad" :src="originalImage.src" :alt="originalImage.name">
         </div>
         <div class="w-full flex justify-center p-4">
-          <ae-button class="mr-4" type="normal" @click="reset">Reset</ae-button>
-          <ae-button type="dramatic" @click="$router.push(`render`)">Preview Artwork</ae-button>
+          <ae-button face="round" fill="alternative" class="mr-4" @click="reset">Reset</ae-button>
+          <ae-button face="round" fill="primary" @click="next">Preview Artwork</ae-button>
         </div>
       </div>
       <div v-if="isError" class="w-full p-4">
@@ -28,7 +28,7 @@
           <span class="text-xl text-red">{{error}}</span>
         </div>
         <div class="w-full flex justify-center p-4">
-          <ae-button  type="normal" @click="reset">Ok</ae-button>
+          <ae-button type="normal" @click="reset">Ok</ae-button>
         </div>
       </div>
     </div>
@@ -62,8 +62,8 @@
       isError () {
         return this.currentStatus === STATUS_ERROR
       },
-      uploadedImage () {
-        return this.$store.state.uploadedImage
+      originalImage () {
+        return this.$store.state.originalImage
       }
     },
     methods: {
@@ -88,6 +88,17 @@
 
         this.$store.dispatch(`uploadImage`, file)
         this.currentStatus = STATUS_SUCCESS
+      },
+      imageLoad () {
+        this.$store.dispatch(`updateOriginalImage`, {
+          width: this.$refs.image.naturalWidth,
+          height: this.$refs.image.naturalHeight
+
+        })
+      },
+      next() {
+        this.$store.dispatch(`transformImage`)
+        this.$router.push(`render`)
       }
     }
   }

@@ -25,11 +25,6 @@
         }
       }
     },
-    computed: {
-      images () {
-        return this.$store.state.images
-      }
-    },
     methods: {
       addOverlayImage (imageObject) {
 
@@ -49,7 +44,7 @@
 
       },
 
-      moveOverlayImage ({ xDiff, yDiff }) {
+      moveOverlayImage (xDiff, yDiff ) {
 
         // GET CURRENT POS
         const oI = this.stage.find(`#${this.overlayImageId}`)[0]
@@ -81,8 +76,8 @@
           x: imageObject.position.x,
           y: imageObject.position.y,
           image: windowImage,
-          height: imageObject.size.height,
-          width: imageObject.size.width,
+          height: imageObject.height,
+          width: imageObject.width,
           id: imageObject.ref ? imageObject.ref : ''
         })
         if (imageObject.layer) {
@@ -271,9 +266,6 @@
         }
       },
     },
-    created () {
-      this.$store.dispatch(`loadImages`)
-    },
     mounted () {
       // SET STAGE WIDTH
       const width = this.$refs.stageWrapper.clientWidth
@@ -287,9 +279,12 @@
       this.layer = new Konva.Layer()
       this.stage.add(this.layer)
 
-      // SHOW IMAGES
-      this.images.forEach(i => {
-        this.createImage(i)
+      // ADD BACKGROUND
+      this.createImage({
+        src: 'http://localhost:3000/canvas',
+        position: { x: 0, y: 0 },
+        width: 3000,
+        height: 3000
       })
 
       if (this.draggable) {

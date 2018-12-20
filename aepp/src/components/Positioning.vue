@@ -10,8 +10,8 @@
       </div>
     </div>
     <div class="w-full p-4 flex justify-center">
-      <ae-button class="mr-4" size="medium" type="normal" @click="back">Back</ae-button>
-      <ae-button size="medium" type="dramatic" @click="next">Continue</ae-button>
+      <ae-button face="round" fill="alternative" class="mr-4" @click="back">Back</ae-button>
+      <ae-button face="round" fill="primary" @click="next">Continue</ae-button>
     </div>
   </div>
 </template>
@@ -29,7 +29,7 @@
       next () {
         const { x, y } = this.$refs.canvas.getCurrentCoords()
         console.log(x,y);
-        this.$store.dispatch(`updateTransformedImage`, { position: { x, y } })
+        this.$store.dispatch(`updatePosition`, { x, y })
         this.$router.push('confirm')
       }
     }

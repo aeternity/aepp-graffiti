@@ -5,9 +5,9 @@
     </div>
     <div class="w-full p-4 flex">
       <div class="w-full flex justify-center items-center">
-        <div v-if="transformedImage">
+        <div v-if="transformedImage.src">
           <div class="w-full">
-            <img @load="updateMetaData" ref="previewImage" :src="transformedImage.src" :alt="transformedImage.name"/>
+            <img @load="updateMetaData" ref="previewImage" :style="scaleCSSProperty" :src="transformedImage.src" />
           </div>
           <div class="w-full mb-8">
             <form>
@@ -25,7 +25,7 @@
             </form>
           </div>
           <div class="mt-4 w-full flex justify-center">
-            <ae-button type="dramatic" @click="submit">Continue</ae-button>
+            <ae-button face="round" fill="primary" @click="submit">Continue</ae-button>
           </div>
         </div>
         <div v-else class="border">
@@ -43,7 +43,7 @@
     name: 'Render',
     data () {
       return {
-        scale: 50
+        scale: 50,
       }
     },
     computed: {
@@ -53,41 +53,48 @@
       isSuccess () {
         return this.currentStatus === STATUS_SUCCESS
       },
-      uploadedImage () {
-        return this.$store.state.uploadedImage
+      originalImage () {
+        return this.$store.state.originalImage
       },
       transformedImage () {
         return this.$store.state.transformedImage
+      },
+      settings () {
+        return this.$store.state.settings
+      },
+      scaleCSSProperty() {
+        return `scale(${this.scale / 100})`
       }
     },
     methods: {
       setScale () {
         this.$store.dispatch('updateSettings', {
-          scale: this.scale
+          scaleFactor: this.scale / 100
         })
       },
       submit () {
         this.setScale()
-        //this.$store.dispatch(`transformImage`);
-        this.$router.push('positioning');
+        this.$router.push('positioning')
       },
-      updateMetaData() {
+      updateMetaData () {
+        console.log('Updating Meta Data');
         this.$store.dispatch(`updateTransformedImage`, {
-          originalSize: {
-            width: this.$refs.previewImage.width,
-            height: this.$refs.previewImage.height
-          }
+          width: this.$refs.previewImage.naturalWidth,
+          height: this.$refs.previewImage.naturalHeight
         })
       }
     },
     watch: {
       scale: function () {
-        this.$refs.previewImage.style.transform = `scale(${this.scale / 100})`
+        if (this.transformedImage.src)
+          this.$refs.previewImage.style.transform = `scale(${this.scale / 100})`
       }
     },
     mounted () {
-      this.scale = this.$store.state.transformationSettings.scale
-      this.$store.dispatch(`transformImage`)
+      console.log(this.transformedImage.src)
+      if (this.settings.scaleFactor !== null) {
+        this.scale = this.settings.scaleFactor * 100
+      }
     }
   }
 </script>

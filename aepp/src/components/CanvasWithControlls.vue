@@ -26,6 +26,7 @@
 
 <script>
   import CanvasJS from './CanvasJS.vue'
+  import { getGoodImageDimensions } from '../helper'
 
   export default {
     name: 'CanvasWithControlls',
@@ -34,14 +35,20 @@
     data () {
       return {
         currentCoords: {
-          x: Math.round(this.$store.state.transformedImage.position.x),
-          y: Math.round(this.$store.state.transformedImage.position.y)
+          x: Math.round(this.$store.state.position.x),
+          y: Math.round(this.$store.state.position.y)
         }
       }
     },
     computed: {
       transformedImage () {
         return this.$store.state.transformedImage
+      },
+      position () {
+        return this.$store.state.position
+      },
+      settings () {
+        return this.$store.state.settings
       }
     },
     methods: {
@@ -55,7 +62,7 @@
         console.log('moving', xDiff, yDiff)
         this.$refs.canvas.moveCanvas({ xDiff, yDiff })
         if (moveOverlay) {
-          this.$refs.canvas.moveOverlayImage({ xDiff, yDiff })
+          this.$refs.canvas.moveOverlayImage(xDiff, yDiff)
           this.currentCoords.x -= xDiff
           this.currentCoords.y -= yDiff
         }
@@ -63,11 +70,24 @@
     },
     mounted () {
       this.getPositionFromCanvas()
-      this.$refs.canvas.addOverlayImage(this.transformedImage)
+      const { width, height } = getGoodImageDimensions(
+        this.transformedImage.width,
+        this.transformedImage.height,
+        200 * this.settings.scaleFactor,
+        200 * this.settings.scaleFactor
+      )
+
+      this.$refs.canvas.addOverlayImage({
+        src: this.transformedImage.src,
+        position: this.position,
+        width,
+        height
+      });
+
       const canvasSize = this.$refs.canvas.getCanvasDimensions()
       this.moveCanvas(
-        -1 * this.transformedImage.position.x + canvasSize.width / 2 - this.transformedImage.size.width / 2,
-        -1 * this.transformedImage.position.y + canvasSize.height / 2 - this.transformedImage.size.height / 2,
+        -1 * this.position.x + canvasSize.width / 2 - width / 2,
+        -1 * this.position.y + canvasSize.height / 2 - height / 2,
         false
       )
     }
@@ -77,12 +97,11 @@
 <style scoped>
 
   .ae-button-wrapper {
-    @apply absolute
-    flex items-center justify-center pointer-events-none;
+    @apply absolute flex items-center justify-center pointer-events-none;
   }
 
   .ae-navigation-button {
-    @apply p-4  block cursor-pointer pointer-events-auto  bg-white;
+    @apply p-4 block cursor-pointer pointer-events-auto bg-white;
   }
 
 </style>
