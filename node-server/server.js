@@ -13,7 +13,7 @@ app.use(fileUpload({
     files: 1
 }));
 
-app.get('/canvas', canvas.shouldRender, canvas.send);
+app.get('/canvas.png', canvas.shouldRender, canvas.send);
 
 app.get('/ipfs', (req, res) => {
     ipfsWrapper.getFile('QmQjqVu5qsd4PPqJnTcLXmvznMw7X2UEjtLP9NKCtwWMx3').then((buffer) => {
