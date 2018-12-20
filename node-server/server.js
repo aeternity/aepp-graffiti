@@ -4,12 +4,12 @@ const ipfsWrapper = require('./ipfs.js');
 const fileUpload = require('express-fileupload');
 const app = express();
 
-// TODO GET rendered canvas
-// TODO POST svg --> IPFS
 // TODO POST image --> svg
-// TODO Rerender canvas
 
-app.use(fileUpload());
+app.use(fileUpload({
+    limits: {fileSize: 5 * 1024 * 1024},
+    files: 1
+}));
 
 app.get('/canvas', canvas.shouldRender, canvas.send);
 
@@ -27,24 +27,13 @@ app.get('/ipfs', (req, res) => {
         res.send(e.message);
 
     });
-
 });
-
-
-const MAX_SIZE = 5000000; // 5 MB
-
 
 /*  upload POST endpoint */
 app.post('/upload', async (req, res) => {
     if (Object.keys(req.files).length === 0) {
         return res.status(422).json({
             error: 'File needs to be provided.',
-        });
-    }
-
-    if (Object.keys(req.files).length > 1) {
-        return res.status(422).json({
-            error: 'Only a single file is accepted.',
         });
     }
 
@@ -56,14 +45,7 @@ app.post('/upload', async (req, res) => {
             error: 'File needs to be an image.',
         });
     }
-
-    const fileSize = file.size;
-    if (fileSize > MAX_SIZE) {
-        return res.status(422).json({
-            error: `Image needs to be smaller than ${MAX_SIZE} bytes.`,
-        });
-    }
-
+    
     try {
         const result = await ipfsWrapper.writeFile(file.data);
         return res.json({
