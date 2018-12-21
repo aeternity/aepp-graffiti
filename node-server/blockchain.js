@@ -30,6 +30,7 @@ blockchain.init = async () => {
         internalUrl: 'https://sdk-testnet.aepps.com',
     });
 
+    console.log('initialized aeternity sdk');
     return client;
 };
 
