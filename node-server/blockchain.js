@@ -1,4 +1,4 @@
-const {Universal} = require('@aeternity/aepp-sdk');
+const {EpochChain, EpochContract} = require('@aeternity/aepp-sdk');
 
 const blockchain = {};
 
@@ -25,16 +25,9 @@ function bidListToObject(bidList) {
 
 // Key-Pair should not be necessary in the future
 blockchain.init = async () => {
-    client = await Universal({
+    client = await EpochChain.compose(EpochContract)({
         url: 'https://sdk-testnet.aepps.com',
         internalUrl: 'https://sdk-testnet.aepps.com',
-        keypair: {
-            secretKey: '79816bbf860b95600ddfabf9d81fee81bdb30be823b17d80b9e48be0a7015adf75ee9825ad630963482bb1939a212a0e535883c6b4d7804e40287e1f556da272',
-            publicKey: 'ak_twR4h7dEcUtc2iSEDv8kB7UFJJDGiEDQCXr85C3fYF8FdVdyo'
-        },
-
-        networkId: 'ae_uat',
-        nativeMode: true
     });
 
     return client;
@@ -48,8 +41,8 @@ blockchain.height = async () => {
 blockchain.allBids = async () => {
     if (!client) await blockchain.init();
 
-    const calledAllBids = await client.contractCallStatic(contractAddress, 'sophia-address', 'all_bids', {args: '()'}).catch(e => console.error(e));
-    const decodedAllBids = await client.contractDecodeData('list((address, string, (int, int), int, int))', calledAllBids.result).catch(e => console.error(e));
+    const calledAllBids = await client.contractEpochCall(contractAddress, 'sophia-address', 'all_bids', '()').catch(e => console.error(e));
+    const decodedAllBids = await client.contractEpochDecodeData('list((address, string, (int, int), int, int))', calledAllBids.out).catch(e => console.error(e));
 
     return bidListToObject(decodedAllBids);
 };
