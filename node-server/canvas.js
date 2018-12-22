@@ -1,24 +1,42 @@
 const fs = require('fs');
 const path = require('path');
-const { createCanvas, Image } = require('canvas');
-
+const {createCanvas, Image} = require('canvas');
+const blockchain = require('./blockchain.js');
 const canvas = {};
-const shouldRender = false;
-const PATH = './rendered.png';
+
+const shouldAlwaysRender = false;
+
+canvas.current_heigth = 0;
+canvas.buffer = null;
 
 canvas.height = 3000;
 canvas.width = 3000;
-canvas.buffer = null;
+
+updateHeight = async () => canvas.current_heigth = await blockchain.height();
+
+const init = async () => {
+    await blockchain.init();
+    await updateHeight();
+
+    // use timeout until we have a listener function for new blocks from the sdk
+    setInterval(updateHeight, 10000);
+};
+
+init();
+
+canvas.pathByHeight = () => {
+    return `./rendered/rendered_height_${canvas.current_heigth}.png`;
+};
 
 canvas.shouldRender = (req, res, next) => {
 
     // FORCE FOR DEVELOP
-    if (shouldRender) {
+    if (shouldAlwaysRender) {
         return canvas.render().then(next);
     }
 
     // RERENDER IF THE FILE DOES NOT EXIST
-    if (!fs.existsSync(PATH)) {
+    if (!fs.existsSync(canvas.pathByHeight())) {
         return canvas.render().then(next);
     }
 
@@ -26,9 +44,6 @@ canvas.shouldRender = (req, res, next) => {
         canvas.loadImage();
         return next();
     }
-
-    // RERENDER IF A NEW BLOCK OCCURRED
-    // TODO implement
 
     next();
 };
@@ -40,7 +55,7 @@ canvas.mergeImages = async (sources) => {
         // Resolve source and img when loaded
         const img = new Image();
         img.onerror = () => reject(new Error('Couldn\'t load image'));
-        img.onload = () => resolve(Object.assign({}, source, { img }));
+        img.onload = () => resolve(Object.assign({}, source, {img}));
         img.src = source.src;
     }));
 
@@ -61,7 +76,7 @@ canvas.mergeImages = async (sources) => {
 };
 
 canvas.loadImage = () => {
-    canvas.buffer = fs.readFileSync(path.join(__dirname, PATH));
+    canvas.buffer = fs.readFileSync(path.join(__dirname, canvas.pathByHeight()));
 };
 
 canvas.render = async () => {
@@ -78,7 +93,7 @@ canvas.render = async () => {
 
 
     canvas.buffer = await canvas.mergeImages(imageBuffer);
-    fs.writeFileSync(path.join(__dirname, PATH), canvas.buffer);
+    fs.writeFileSync(path.join(__dirname, canvas.pathByHeight()), canvas.buffer);
 
 };
 

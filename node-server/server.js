@@ -3,8 +3,8 @@ const canvas = require('./canvas.js');
 const ipfsWrapper = require('./ipfs.js');
 const fileUpload = require('express-fileupload');
 const app = express();
-const ImageTracer = require( './imagetracer.js' );
-const { createCanvas, Image } = require('canvas');
+const ImageTracer = require('./imagetracer.js');
+const {createCanvas, Image} = require('canvas');
 
 // TODO POST image --> svg
 
@@ -13,7 +13,7 @@ app.use(fileUpload({
     files: 1
 }));
 
-app.get('/canvas', canvas.shouldRender, canvas.send);
+app.get('/canvas.png', canvas.shouldRender, canvas.send);
 
 app.get('/ipfs', (req, res) => {
     ipfsWrapper.getFile('QmQjqVu5qsd4PPqJnTcLXmvznMw7X2UEjtLP9NKCtwWMx3').then((buffer) => {
@@ -92,16 +92,16 @@ app.post('/transform', async (req, res) => {
         const fakeCanvas = createCanvas(canvas.width, canvas.height);
         const ctx = fakeCanvas.getContext('2d');
         ctx.drawImage(loadedImage, 0, 0);
-        const imageData = ctx.getImageData(0,0, loadedImage.width, loadedImage.height);
+        const imageData = ctx.getImageData(0, 0, loadedImage.width, loadedImage.height);
 
         console.log(loadedImage.width, loadedImage.height);
 
-        const myImageData = { width:loadedImage.width, height:loadedImage.height, data:imageData };
+        const myImageData = {width: loadedImage.width, height: loadedImage.height, data: imageData};
 
         // tracing to SVG string
-        const options = { scale: 1 }; // options object; option preset string can be used also
+        const options = {scale: 1}; // options object; option preset string can be used also
 
-        const svgstring = ImageTracer.imagedataToSVG( imageData, options );
+        const svgstring = ImageTracer.imagedataToSVG(imageData, options);
 
         res.send(svgstring);
     } catch (e) {
