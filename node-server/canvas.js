@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const {createCanvas, Image} = require('canvas');
 const blockchain = require('./blockchain.js');
+const ipfsWrapper = require('./ipfs.js');
+
 const canvas = {};
 
 const shouldAlwaysRender = false;
@@ -81,18 +83,25 @@ canvas.loadImage = () => {
 
 canvas.render = async () => {
 
-    const imageBuffer = [];
-
-    for (let i = 0; i < 100; i++) {
-        imageBuffer.push({
-            src: './molumen_audio_cassette.svg',
-            x: Math.round(Math.random() * canvas.width),
-            y: Math.round(Math.random() * canvas.height)
+    const bids = await blockchain.allBids();
+    const ipfsSources = await Promise.all(bids.map(bid => {
+        return ipfsWrapper.getFile(bid.hash).then(filebuffer => {
+            return {filebuffer: filebuffer, bid: bid};
         });
-    }
+    }));
 
+    const transformedSources = ipfsSources
+        .filter(data => !!data.filebuffer)
+        .map(data => {
+            const base64buffer = data.filebuffer.toString('base64');
+            return {
+                src: 'data:image/svg+xml;base64,' + base64buffer,
+                x: data.bid.coordinates.x,
+                y: data.bid.coordinates.y
+            };
+        });
 
-    canvas.buffer = await canvas.mergeImages(imageBuffer);
+    canvas.buffer = await canvas.mergeImages(transformedSources);
     fs.writeFileSync(path.join(__dirname, canvas.pathByHeight()), canvas.buffer);
 
 };
