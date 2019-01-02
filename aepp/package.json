@@ -1,67 +1,57 @@
 {
-  "name": "base-and-contracts-aepp-examples",
+  "name": "aepp",
   "version": "0.1.0",
-  "description": "Base + Wallet App Example",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "NODE_ENV='prod' webpack -p",
-    "start:dev": "NODE_ENV='dev' webpack-dev-server --config ./webpack.config.js"
+    "tailwind:css": "./node_modules/.bin/tailwind build ./src/assets/css/main.css -c ./tailwind.js -o ./public/css/styles.css",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
   },
-  "main": "src/index.js",
-  "repository": "https://github.com/aeternity/aepp-sdk-js",
-  "author": "Enrico Icardi <enrico.icardi@gmail.com>",
-  "license": "ISC",
   "dependencies": {
     "@aeternity/aepp-components": "^2.0.15",
     "@aeternity/aepp-components-3": "^3.0.0-alpha.8",
     "@aeternity/aepp-sdk": "^1.1.2",
     "axios": "^0.18.0",
     "dronetracer": "git+ssh://git@github.com/THE-WYE/DroneTracer",
-    "ipfs": "^0.33.1",
     "konva": "^2.5.1",
-    "purgecss-webpack-plugin": "^1.2.0",
-    "vue": "^2.5.16",
+    "vue": "^2.5.21",
     "vue-konva": "^2.0.0",
-    "vue-router": "^3.0.1",
-    "vue-template-compiler": "^2.5.16",
+    "vue-router": "^3.0.2",
     "vuex": "^3.0.1",
     "vuex-persist": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.0.0-beta.52",
-    "@babel/core": "7.0.0-beta.52",
-    "@babel/node": "7.0.0-beta.52",
-    "@babel/plugin-proposal-export-default-from": "7.0.0-beta.52",
-    "@babel/plugin-proposal-object-rest-spread": "7.0.0-beta.52",
-    "@babel/plugin-transform-runtime": "7.0.0-beta.52",
-    "@babel/preset-env": "7.0.0-beta.52",
-    "@babel/register": "7.0.0-beta.52",
-    "@babel/runtime": "7.0.0-beta.52",
-    "autoprefixer": "^9.0.2",
-    "babel-core": "^7.0.0-beta.3",
-    "babel-loader": "^8.0.0-beta.3",
-    "browserslist": "^4.0.1",
-    "clean-webpack-plugin": "^0.1.19",
-    "css-loader": "^0.28.11",
-    "cssnano": "^4.0.5",
-    "extract-text-webpack-plugin": "^4.0.0-beta.0",
-    "file-loader": "^2.0.0",
-    "glob-all": "^3.1.0",
-    "html-webpack-harddisk-plugin": "^0.2.0",
-    "html-webpack-plugin": "^3.2.0",
-    "postcss-import": "^11.1.0",
-    "postcss-loader": "^2.1.5",
-    "precss": "^3.1.2",
-    "standard": "^11.0.1",
-    "standard-loader": "^6.0.1",
+    "@vue/cli-plugin-babel": "^3.2.0",
+    "@vue/cli-plugin-eslint": "^3.2.0",
+    "@vue/cli-service": "^3.2.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.8.0",
+    "eslint-plugin-vue": "^5.0.0-0",
+    "postcss-import": "^12.0.1",
+    "postcss-loader": "^3.0.0",
     "tailwindcss": "^0.7.2",
-    "vue-loader": "15.2.4",
-    "vue-style-loader": "^4.1.0",
-    "webpack": "^4.2.0",
-    "webpack-bundle-analyzer": "^2.11.1",
-    "webpack-cli": "3.0.8",
-    "webpack-dev-server": "^3.1.4",
-    "webpack-serve": "^0.2.0"
-  }
+    "vue-template-compiler": "^2.5.21"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "no-console": "off"
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
 }
