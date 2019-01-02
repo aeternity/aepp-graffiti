@@ -26,8 +26,8 @@ function bidListToObject(bidList) {
 // Key-Pair should not be necessary in the future
 blockchain.init = async () => {
     client = await EpochChain.compose(EpochContract)({
-        url: 'https://sdk-testnet.aepps.com',
-        internalUrl: 'https://sdk-testnet.aepps.com',
+        url: 'http://localhost:3013',
+        internalUrl: 'http://localhost:3113',
     });
 
     console.log('initialized aeternity sdk');
