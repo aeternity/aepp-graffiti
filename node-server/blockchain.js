@@ -23,7 +23,6 @@ function bidListToObject(bidList) {
     })
 }
 
-// Key-Pair should not be necessary in the future
 blockchain.init = async () => {
     client = await EpochChain.compose(EpochContract)({
         url: 'http://localhost:3013',
@@ -47,6 +46,5 @@ blockchain.allBids = async () => {
 
     return bidListToObject(decodedAllBids);
 };
-
 
 module.exports = blockchain;

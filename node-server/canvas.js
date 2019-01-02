@@ -5,76 +5,59 @@ const blockchain = require('./blockchain.js');
 const ipfsWrapper = require('./ipfs.js');
 
 const canvas = {};
+const renderInterval = 20000;
 
-const shouldAlwaysRender = false;
+let current_height = 0;
 
-canvas.current_heigth = 0;
 canvas.buffer = null;
 
 canvas.height = 3000;
 canvas.width = 3000;
 
-updateHeight = async () => canvas.current_heigth = await blockchain.height();
+intervalJob = async () => {
+    current_height = await blockchain.height();
+    console.log('intervalJob', current_height);
+    await canvas.render();
+};
 
 const init = async () => {
     await blockchain.init();
-    await updateHeight();
+    await intervalJob();
 
     // use timeout until we have a listener function for new blocks from the sdk
-    setInterval(updateHeight, 10000);
+    setInterval(intervalJob, renderInterval);
 };
 
 init();
 
 canvas.pathByHeight = () => {
-    return `./rendered/rendered_height_${canvas.current_heigth}.png`;
-};
-
-canvas.shouldRender = (req, res, next) => {
-
-    // FORCE FOR DEVELOP
-    if (shouldAlwaysRender) {
-        return canvas.render().then(next);
-    }
-
-    // RERENDER IF THE FILE DOES NOT EXIST
-    if (!fs.existsSync(canvas.pathByHeight())) {
-        return canvas.render().then(next);
-    }
-
-    if (!canvas.buffer) {
-        canvas.loadImage();
-        return next();
-    }
-
-    next();
+    return `./rendered/rendered_height_${current_height}.png`;
 };
 
 canvas.mergeImages = async (sources) => {
 
     // Load sources
     const images = sources.map(source => new Promise((resolve, reject) => {
-        // Resolve source and img when loaded
-        const img = new Image();
-        img.onerror = () => reject(new Error('Couldn\'t load image'));
-        img.onload = () => resolve(Object.assign({}, source, {img}));
-        img.src = source.src;
+        // Resolve source and image when loaded
+        const image = new Image();
+        image.onerror = () => reject(new Error('Couldn\'t load image'));
+        image.onload = () => resolve(Object.assign({}, source, {img: image}));
+        image.src = source.src;
     }));
 
-    // Get canvas context
-    const fakeCanvas = createCanvas(canvas.width, canvas.height);
-    const ctx = fakeCanvas.getContext('2d');
+    // create canvas context
+    const tempCanvas = createCanvas(canvas.width, canvas.height);
+    const canvasContext = tempCanvas.getContext('2d');
 
     const loadedImages = await Promise.all(images);
 
-    // Draw images to canvas
+    // draw images to canvas
     loadedImages.forEach(image => {
-        ctx.globalAlpha = image.opacity ? image.opacity : 1;
-        ctx.drawImage(image.img, image.x || 0, image.y || 0);
+        canvasContext.globalAlpha = image.opacity ? image.opacity : 1;
+        canvasContext.drawImage(image.img, image.x || 0, image.y || 0);
     });
 
-    return fakeCanvas.toBuffer('image/png');
-
+    return tempCanvas.toBuffer('image/png');
 };
 
 canvas.loadImage = () => {
@@ -83,6 +66,7 @@ canvas.loadImage = () => {
 
 canvas.render = async () => {
 
+    // get all files from ipfs that were included in bids
     const bids = await blockchain.allBids();
     const ipfsSources = await Promise.all(bids.map(bid => {
         return ipfsWrapper.getFile(bid.hash).then(filebuffer => {
@@ -90,6 +74,7 @@ canvas.render = async () => {
         });
     }));
 
+    // filter files unable to be fetched, map to base64 encoding with coordinates included
     const transformedSources = ipfsSources
         .filter(data => !!data.filebuffer)
         .map(data => {
@@ -103,10 +88,13 @@ canvas.render = async () => {
 
     canvas.buffer = await canvas.mergeImages(transformedSources);
     fs.writeFileSync(path.join(__dirname, canvas.pathByHeight()), canvas.buffer);
-
+    console.log('did write');
 };
 
 canvas.send = (req, res) => {
+    if (canvas.buffer === null) {
+        canvas.loadImage();
+    }
 
     res.writeHead(200, {
         'Content-Type': 'image/png',

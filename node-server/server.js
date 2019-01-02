@@ -10,7 +10,7 @@ app.use(fileUpload({
     files: 1
 }));
 
-app.get('/canvas.png', canvas.shouldRender, canvas.send);
+app.get('/canvas.png', canvas.send);
 
 app.get('/ipfs', logic.ipfs);
 
