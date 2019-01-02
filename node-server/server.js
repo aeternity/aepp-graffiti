@@ -17,9 +17,6 @@ app.get('/ipfs', logic.ipfs);
 /* upload form-data image key */
 app.post('/upload', logic.upload);
 
-/* upload POST endpoint */
-app.post('/transform', logic.transform);
-
 app.use((req, res) => {
     res.sendStatus(404);
 });
