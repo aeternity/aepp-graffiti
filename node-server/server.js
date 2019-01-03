@@ -3,14 +3,13 @@ const canvas = require('./canvas.js');
 const fileUpload = require('express-fileupload');
 const app = express();
 const logic = require('./logic');
-// TODO POST image --> svg
 
 app.use(fileUpload({
     limits: {fileSize: 5 * 1024 * 1024},
     files: 1
 }));
 
-app.get('/canvas.png', canvas.send);
+app.use('/rendered', express.static(__dirname + '/rendered'));
 
 app.get('/ipfs', logic.ipfs);
 
@@ -21,4 +20,5 @@ app.use((req, res) => {
     res.sendStatus(404);
 });
 
+canvas.init();
 app.listen(3000);

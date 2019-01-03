@@ -5,14 +5,18 @@ const blockchain = require('./blockchain.js');
 const ipfsWrapper = require('./ipfs.js');
 
 const canvas = {};
+
+const pathLatest = "./rendered/latest.png";
+
 const renderInterval = 20000;
 
+const canvasCentimeterWidth = 33 * 100;
+const canvasCentimeterHeight = 50 * 100;
+const pixelsPerCentimeter = 1;
+const width = canvasCentimeterWidth * pixelsPerCentimeter;
+const height = canvasCentimeterHeight * pixelsPerCentimeter;
+
 let current_height = 0;
-
-canvas.buffer = null;
-
-canvas.height = 3000;
-canvas.width = 3000;
 
 intervalJob = async () => {
     current_height = await blockchain.height();
@@ -20,7 +24,7 @@ intervalJob = async () => {
     await canvas.render();
 };
 
-const init = async () => {
+canvas.init = async () => {
     await blockchain.init();
     await intervalJob();
 
@@ -28,10 +32,10 @@ const init = async () => {
     setInterval(intervalJob, renderInterval);
 };
 
-init();
+canvas.init();
 
 canvas.pathByHeight = () => {
-    return `./rendered/rendered_height_${current_height}.png`;
+    return `./rendered/height/${current_height}.png`;
 };
 
 canvas.mergeImages = async (sources) => {
@@ -46,8 +50,12 @@ canvas.mergeImages = async (sources) => {
     }));
 
     // create canvas context
-    const tempCanvas = createCanvas(canvas.width, canvas.height);
+    const tempCanvas = createCanvas(width, height);
     const canvasContext = tempCanvas.getContext('2d');
+
+    // set background color similar to wall
+    canvasContext.fillStyle = "#FFFABA";
+    canvasContext.fillRect(0, 0, width, height);
 
     const loadedImages = await Promise.all(images);
 
@@ -58,10 +66,6 @@ canvas.mergeImages = async (sources) => {
     });
 
     return tempCanvas.toBuffer('image/png');
-};
-
-canvas.loadImage = () => {
-    canvas.buffer = fs.readFileSync(path.join(__dirname, canvas.pathByHeight()));
 };
 
 canvas.render = async () => {
@@ -81,26 +85,15 @@ canvas.render = async () => {
             const base64buffer = data.filebuffer.toString('base64');
             return {
                 src: 'data:image/svg+xml;base64,' + base64buffer,
-                x: data.bid.coordinates.x,
-                y: data.bid.coordinates.y
+                x: data.bid.coordinates.x * pixelsPerCentimeter,
+                y: data.bid.coordinates.y * pixelsPerCentimeter
             };
         });
 
-    canvas.buffer = await canvas.mergeImages(transformedSources);
-    fs.writeFileSync(path.join(__dirname, canvas.pathByHeight()), canvas.buffer);
-    console.log('did write');
-};
-
-canvas.send = (req, res) => {
-    if (canvas.buffer === null) {
-        canvas.loadImage();
-    }
-
-    res.writeHead(200, {
-        'Content-Type': 'image/png',
-        'Content-Length': canvas.buffer.length
-    });
-    res.end(canvas.buffer);
+    const buffer = await canvas.mergeImages(transformedSources);
+    fs.writeFileSync(path.join(__dirname, canvas.pathByHeight()), buffer);
+    fs.writeFileSync(path.join(__dirname, pathLatest), buffer);
+    console.log('did merge and write', transformedSources.length);
 };
 
 module.exports = canvas;
