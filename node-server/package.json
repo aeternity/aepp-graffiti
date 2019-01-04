@@ -11,7 +11,6 @@
   "dependencies": {
     "@aeternity/aepp-sdk": "^1.2.1",
     "canvas": "^2.2.0",
-    "dronetracer": "git+ssh://git@github.com/THE-WYE/DroneTracer.git",
     "express": "^4.16.4",
     "express-fileupload": "^1.0.0",
     "ipfs-http-client": "^28.1.0"
