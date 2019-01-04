@@ -25,6 +25,11 @@
         }
       }
     },
+    computed: {
+      canvasSettings() {
+        return this.$store.state.canvas;
+      }
+    },
     methods: {
       addOverlayImage (imageObject) {
 
@@ -281,10 +286,10 @@
 
       // ADD BACKGROUND
       this.createImage({
-        src: 'http://localhost:3000/canvas',
+        src: this.canvasSettings.url,
         position: { x: 0, y: 0 },
-        width: 3000,
-        height: 3000
+        width: this.canvasSettings.width,
+        height: this.canvasSettings.height
       })
 
       if (this.draggable) {

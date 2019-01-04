@@ -4,16 +4,22 @@
       <h1 class="w-full text-center">Contribute</h1>
     </div>
     <div class="w-full p-4 flex justify-center">
-      <form enctype="multipart/form-data" novalidate v-if="isInitial" class="w-full">
-        <div class="dropbox border relative flex justify-center items-center h-64">
-          <input type="file" name="image" ref="uploadInput"
-                 @change="filesChange($event.target.files)"
-                 accept="image/*" class="absolute pin opacity-0 w-full h-full">
-          <p v-if="isInitial" class="p-4 text-center">
-            Upload Image. <br> Click to browse.
-          </p>
+      <div class="w-full" v-if="isInitial">
+        <form enctype="multipart/form-data" novalidate class="w-full">
+          <div class="dropbox border relative flex justify-center items-center h-64">
+            <input type="file" name="image" ref="uploadInput"
+                   @change="filesChange($event.target.files)"
+                   accept="image/*" class="absolute pin opacity-0 w-full h-full">
+            <p v-if="isInitial" class="p-4 text-center">
+              Upload Image. <br> Click to browse.
+            </p>
+          </div>
+        </form>
+        <div class="w-full flex justify-center p-4">
+          <ae-button face="round" fill="alternative" @click="back">Back</ae-button>
         </div>
-      </form>
+      </div>
+
       <div v-if="isSuccess">
         <div class="w-full flex justify-center p-4">
           <img ref="image" class="w-full h-full" @load="imageLoad" :src="originalImage.src" :alt="originalImage.name">
@@ -28,7 +34,7 @@
           <span class="text-xl text-red">{{error}}</span>
         </div>
         <div class="w-full flex justify-center p-4">
-          <ae-button type="normal" @click="reset">Ok</ae-button>
+          <ae-button face="round" fill="primary" @click="reset">Ok</ae-button>
         </div>
       </div>
     </div>
@@ -69,6 +75,9 @@
     methods: {
       reset () {
         this.currentStatus = STATUS_INITIAL
+      },
+      back() {
+        this.$router.push('/');
       },
       filesChange (fileList) {
         // handle file changes

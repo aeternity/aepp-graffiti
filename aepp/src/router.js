@@ -6,7 +6,7 @@ import Positioning from './components/Positioning.vue'
 import Confirm from './components/Confirm.vue'
 import Test from './components/Test.vue'
 
-export default (store) => {
+export default () => {
   const routes = [
     {
       path: '/',
@@ -45,6 +45,5 @@ export default (store) => {
       props: route => ({ query: route.query })
     }
   ]
-  const router = new Router({mode: 'history', routes: routes})
-  return router
+  return new Router({mode: 'history', routes: routes})
 }

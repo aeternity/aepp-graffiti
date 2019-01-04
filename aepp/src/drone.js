@@ -1,4 +1,4 @@
-import DroneTracer from '../node_modules/dronetracer/dist/DroneTracer.min'
+import DroneTracer from '../node_modules/dronetracer/src/DroneTracer/main.js'
 
 const paintingConfig = {
   wallId: 1,

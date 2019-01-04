@@ -7,7 +7,7 @@
       <div class="w-full flex justify-center items-center">
         <div v-if="transformedImage.src">
           <div class="w-full">
-            <img @load="updateMetaData" ref="previewImage" :style="scaleCSSProperty" :src="transformedImage.src" />
+            <img @load="updateMetaData" ref="previewImage" :style="scaleCSSProperty" :src="transformedImage.src"/>
           </div>
           <div class="w-full mb-8">
             <form>
@@ -28,8 +28,9 @@
             <ae-button face="round" fill="primary" @click="submit">Continue</ae-button>
           </div>
         </div>
-        <div v-else class="border">
+        <div v-else class="mt-8 relative">
           <ae-loader class="ae-loader-scaling"></ae-loader>
+          <div class="absolute ae-loader-progress w-full">{{transformedImage.progress}}%</div>
         </div>
       </div>
     </div>
@@ -62,7 +63,7 @@
       settings () {
         return this.$store.state.settings
       },
-      scaleCSSProperty() {
+      scaleCSSProperty () {
         return `scale(${this.scale / 100})`
       }
     },
@@ -77,7 +78,7 @@
         this.$router.push('positioning')
       },
       updateMetaData () {
-        console.log('Updating Meta Data');
+        console.log('Updating Meta Data')
         this.$store.dispatch(`updateTransformedImage`, {
           width: this.$refs.previewImage.naturalWidth,
           height: this.$refs.previewImage.naturalHeight
@@ -102,5 +103,19 @@
 <style scoped>
   .no-margin {
     margin: 0 !important;
+  }
+
+  .ae-loader-progress {
+    font-size: 1em;
+    top: 2em;
+    left: 0;
+    text-align: center;
+  }
+
+  .ae-loader-scaling {
+    width: 5em;
+    height: 5em;
+    border-radius: 5em;
+    border-width: 0.4em;
   }
 </style>

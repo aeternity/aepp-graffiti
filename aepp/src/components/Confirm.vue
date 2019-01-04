@@ -50,17 +50,7 @@
       },
       next () {
         // TODO do smart contract stuff
-        const node = new IPFS()
 
-        node.on('ready', async () => {
-          let content = node.types.Buffer.from(this.$store.state.transformedImage.src)
-          const writeResults = await node.files.add(content)
-          let hash = writeResults[0].hash // "Qm...WW"
-
-          let readResults = await node.files.get(hash)
-          console.log('results match: ', readResults[0].content.toString('utf8') === this.$store.state.transformedImage.src)
-
-        })
       }
     },
     created () {
