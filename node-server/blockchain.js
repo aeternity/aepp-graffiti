@@ -3,7 +3,7 @@ const {EpochChain, EpochContract} = require('@aeternity/aepp-sdk');
 const blockchain = {};
 
 // can eventually be called by name in the future
-const contractAddress = 'ct_UPBs1P3YZfmhjcvHbKeanPLEgVpQrXVty6RCGN8MvaaU8KwSb';
+const contractAddress = 'ct_xZX75A1E5JWbuLi4cnn6eKqd3ZGnKF3vM9c656bFVS8ZaPYVp';
 
 let client = null;
 
@@ -24,10 +24,14 @@ function bidListToObject(bidList) {
 }
 
 blockchain.init = async () => {
-    client = await EpochChain.compose(EpochContract)({
-        url: 'http://localhost:3013',
-        internalUrl: 'http://localhost:3113',
-    });
+    try {
+        client = await EpochChain.compose(EpochContract)({
+            url: 'http://localhost:3013',
+            internalUrl: 'http://localhost:3113',
+        });
+    } catch (e) {
+        console.log(e);
+    }
 
     console.log('initialized aeternity sdk');
     return client;
