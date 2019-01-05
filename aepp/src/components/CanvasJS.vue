@@ -5,12 +5,12 @@
 
 <script>
 
-  import Konva from 'konva'
+  import Konva from 'konva';
 
   export default {
     name: 'CanvasJS',
     components: {},
-    props: ['draggable'],
+    props: ['draggable', 'moveCallback'],
     data () {
       return {
         stage: null,
@@ -22,7 +22,8 @@
         lastPos: {
           x: -1,
           y: -1
-        }
+        },
+        moveTarget: null
       }
     },
     computed: {
@@ -39,7 +40,6 @@
 
         // ADD OBJECT ID & LAYER
         imageObject.ref = 'overlayImage'
-        imageObject.layer = this.overlayLayer
 
         // RENDER IMAGE TO CANVAS
         this.createImage(imageObject)
@@ -49,18 +49,35 @@
 
       },
 
-      moveOverlayImage (xDiff, yDiff ) {
-
+      moveOverlayImage ({ xDiff, yDiff } ) {
         // GET CURRENT POS
         const oI = this.stage.find(`#${this.overlayImageId}`)[0]
         const { x, y } = oI.position()
 
+        let currDimensions = { x: oI.width(), y: oI.height() }
+
+        // LIMIT TOP & LEFT
+        if (x + xDiff < 0 && xDiff < 0) xDiff = -1 * x
+        if (y + yDiff < 0 && yDiff < 0) yDiff = -1 * y
+
+        // LIMIT BOTTOM & RIGHT
+        if (x + currDimensions.x + xDiff > this.canvasSettings.width && xDiff > 0) xDiff = -1 * x - currDimensions.x + this.canvasSettings.width
+        if (y + currDimensions.y + yDiff > this.canvasSettings.height && yDiff > 0) yDiff = -1 * y - currDimensions.y + this.canvasSettings.height
+
         // UPDATE POS
-        oI.position({ x: x - xDiff, y: y - yDiff })
+        const newPos = { x: x + xDiff, y: y + yDiff }
+        oI.position(newPos)
+        this.$emit('positionUpdate', newPos)
 
         // RERENDER THE OVERLAY LAYER
-        this.overlayLayer.draw()
+        this.stage.batchDraw()
+      },
 
+      setOverlayImageSize(width, height) {
+        const oI = this.stage.find(`#${this.overlayImageId}`)[0]
+        oI.width(width)
+        oI.height(height)
+        this.stage.draw();
       },
 
       getOverlayPosition () {
@@ -106,15 +123,43 @@
         }
       },
 
+      setStageScale(newScale) {
+
+
+        const oldScale = this.stage.scaleX()
+
+        let mousePointTo = {
+          x: this.stage.x() / oldScale - this.stage.width() / oldScale / 2,
+          y: this.stage.y() / oldScale - this.stage.height() / oldScale / 2,
+        }
+
+        console.log(mousePointTo);
+
+        //this.stage.scale({ x: newScale, y: newScale })
+        this.stage.scaleX(newScale)
+        this.stage.scaleY(newScale)
+
+        let newPos = {
+          x: (mousePointTo.x + this.stage.width() / 2 / newScale) * newScale,
+          y: (mousePointTo.y + this.stage.height() / 2 / newScale) * newScale
+        }
+
+        console.log(newPos)
+
+        this.stage.position(newPos)
+        this.stage.batchDraw()
+      },
+
       // DRAG, ZOOM AND NAVIGATIONAL STUFF
 
       getDistance (p1, p2) {
         return Math.sqrt(Math.pow((p2.x - p1.x), 2) + Math.pow((p2.y - p1.y), 2))
       },
-      onTouchMoveEvent (evt) {
+      onTouchMoveEvent (konvaEvent) {
+        const event = konvaEvent.evt;
         let stage = this.stage;
-        let touch1 = evt.touches[0]
-        let touch2 = evt.touches[1]
+        let touch1 = event.touches[0]
+        let touch2 = event.touches[1]
 
         if (touch1 && touch2) {
           let dist = this.getDistance({
@@ -148,14 +193,14 @@
           stage.scaleX(scale)
           stage.scaleY(scale)
 
-          let newPos = {
+          const newPos = {
             x: -(mousePointTo.x - center.x / scale) * scale,
             y: -(mousePointTo.y - center.y / scale) * scale
           }
 
           stage.position(newPos)
-
-          stage.draw()
+          console.log(newPos, scale, oldScale, offsetTop, offsetLeft)
+          stage.batchDraw()
           this.lastDist = dist
 
         } else if (touch1) {
@@ -181,7 +226,14 @@
                 yDiff: touch1.clientY - offsetTop - this.lastPos.y,
               }
 
-              this.moveCanvas(diff)
+              if(this.moveTarget === 'stage') this.moveCanvas(diff);
+              else if(this.moveTarget === 'overlay') {
+                const newDiff = {
+                  xDiff: diff.xDiff / this.stage.scaleX(),
+                  yDiff: diff.yDiff / this.stage.scaleX()
+                };
+                this.moveOverlayImage(newDiff);
+              }
 
               this.lastPos = {
                 x: touch1.clientX - offsetLeft,
@@ -197,8 +249,10 @@
           x: -1,
           y: -1
         }
+        this.moveTarget = null;
       },
-      onTouchStartEvent(event) {
+      onTouchStartEvent(konvaEvent) {
+        const event = konvaEvent.evt;
         let touch1 = event.touches[0]
 
         if (event.touches.length === 1) {
@@ -207,10 +261,21 @@
             y: touch1.clientY - this.$refs.stageWrapper.offsetTop
           }
         }
+
+        if(konvaEvent.target === this.stage || konvaEvent.target.attrs.id === "") {
+          this.moveTarget = 'stage'
+        } else {
+          this.moveTarget = 'overlay'
+        }
+        return
       },
-      onWheelEvent(event) {
+      onWheelEvent(konvaEvent) {
+        const event = konvaEvent.evt
+
         let scaleBy = 1.2
+
         event.preventDefault()
+
         let oldScale = this.stage.scaleX()
 
         let mousePointTo = {
@@ -219,7 +284,7 @@
         }
 
         let newScale = event.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy
-        console.log(newScale)
+
         //this.stage.scale({ x: newScale, y: newScale })
         this.stage.scaleX(newScale)
         this.stage.scaleY(newScale)
@@ -228,13 +293,20 @@
           x: -(mousePointTo.x - this.stage.getPointerPosition().x / newScale) * newScale,
           y: -(mousePointTo.y - this.stage.getPointerPosition().y / newScale) * newScale
         }
+
         this.stage.position(newPos)
-        this.stage.draw()
+        this.stage.batchDraw()
       },
-      onMouseDownEvent(event) {
+      onMouseDownEvent(konvaEvent) {
+        const event = konvaEvent.evt;
         this.lastPos = {
           x: event.clientX - this.$refs.stageWrapper.offsetLeft,
           y: event.clientY - this.$refs.stageWrapper.offsetTop
+        }
+        if(konvaEvent.target === this.stage || konvaEvent.target.attrs.id === "") {
+          this.moveTarget = 'stage'
+        } else {
+          this.moveTarget = 'overlay'
         }
       },
       onMouseUpEvent() {
@@ -242,18 +314,17 @@
           x: -1,
           y: -1
         }
+        this.moveTarget = null
       },
-      onMouseMoveEvent(event) {
+      onMouseMoveEvent(konvaEvent) {
+        const event = konvaEvent.evt;
         let offsetTop = this.$refs.stageWrapper.offsetTop
         let offsetLeft = this.$refs.stageWrapper.offsetLeft
 
         // GET OLD POS
         let { x, y } = this.lastPos
-
         // CHECK IF OLD POS IS NOT DEFAULT
         if (x !== -1 && y !== -1) {
-          // CHECK IF FINGER MOVED
-
 
           // MOVE CANVAS
           let diff = {
@@ -261,7 +332,14 @@
             yDiff: event.clientY - offsetTop - this.lastPos.y,
           }
 
-          this.moveCanvas(diff)
+          if(this.moveTarget === 'stage') this.moveCanvas(diff);
+          else if(this.moveTarget === 'overlay') {
+            const newDiff = {
+              xDiff: diff.xDiff / this.stage.scaleX(),
+              yDiff: diff.yDiff / this.stage.scaleX()
+            };
+            this.moveOverlayImage(newDiff);
+          }
 
           this.lastPos = {
             x: event.clientX - offsetLeft,
@@ -297,31 +375,31 @@
         MOBILE DRAG AND ZOOM HANDLER
          */
 
-        this.stage.getContent().addEventListener('touchstart', this.onTouchStartEvent, false);
-        this.stage.getContent().addEventListener('touchmove', this.onTouchMoveEvent, false)
-        this.stage.getContent().addEventListener('touchend', this.onTouchEndEvent, false)
+        this.stage.on('touchstart', this.onTouchStartEvent);
+        this.stage.on('touchmove', this.onTouchMoveEvent)
+        this.stage.on('touchend', this.onTouchEndEvent)
 
         /*
         DESKTOP DRAG AND ZOOM HANDLER
          */
 
-        this.stage.getContent().addEventListener('wheel', this.onWheelEvent);
-        this.stage.getContent().addEventListener('mousedown', this.onMouseDownEvent);
-        this.stage.getContent().addEventListener('mousemove', this.onMouseMoveEvent);
-        this.stage.getContent().addEventListener('mouseup', this.onMouseUpEvent);
+        this.stage.on('wheel', this.onWheelEvent);
+        this.stage.on('mousedown', this.onMouseDownEvent);
+        this.stage.on('mousemove', this.onMouseMoveEvent);
+        this.stage.on('mouseup', this.onMouseUpEvent);
         this.stage.getContent().addEventListener('mouseleave', this.onMouseUpEvent);
       }
 
       console.log('canvas mounted')
     },
     beforeDestroy: function () {
-      this.stage.getContent().removeEventListener('touchstart', this.onTouchStartEvent, false);
-      this.stage.getContent().removeEventListener('touchmove', this.onTouchMoveEvent, false)
-      this.stage.getContent().removeEventListener('touchend', this.onTouchEndEvent, false)
-      this.stage.getContent().removeEventListener('wheel', this.onWheelEvent)
-      this.stage.getContent().removeEventListener('mousedown', this.onMouseDownEvent);
-      this.stage.getContent().removeEventListener('mousemove', this.onMouseMoveEvent);
-      this.stage.getContent().removeEventListener('mouseup', this.onMouseUpEvent);
+      this.stage.off('touchstart', this.onTouchStartEvent, false);
+      this.stage.off('touchmove', this.onTouchMoveEvent, false)
+      this.stage.off('touchend', this.onTouchEndEvent, false)
+      this.stage.off('wheel', this.onWheelEvent)
+      this.stage.off('mousedown', this.onMouseDownEvent);
+      this.stage.off('mousemove', this.onMouseMoveEvent);
+      this.stage.off('mouseup', this.onMouseUpEvent);
       this.stage.getContent().removeEventListener('mouseleave', this.onMouseUpEvent);
     },
   }

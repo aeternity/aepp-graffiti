@@ -5,24 +5,27 @@
     </div>
     <div class="w-full p-4">
       <div class="border border-grey-darker border-1">
-        <CanvasWithControlls :show-navigation=true ref="canvas"></CanvasWithControlls>
+        <CanvasWithControlls :show-navigation=false :scale="scale" ref="canvas"></CanvasWithControlls>
       </div>
     </div>
-    <div class="w-full mb-8">
-      <form>
-        <div>
-          <ae-label class="no-margin">Scale</ae-label>
-          <div class="flex flex-row justify-space items-center">
-            <div class="w-1/2">
-              <input type="range" step="0.1" min="1" :max="this.settings.MAX_SCALING" v-model="scale"/>
-            </div>
-            <div class="w-1/2">
-              <ae-input class="no-margin" type="number" v-model="scale"></ae-input>
+    <div class="p-4 w-full">
+      <div class="w-full mb-8">
+        <form>
+          <div>
+            <ae-label class="no-margin">Scale</ae-label>
+            <div class="flex flex-row justify-space items-center">
+              <div class="w-1/2">
+                <input type="range" step="0.1" min="1" :max="this.settings.MAX_SCALING" v-model="scale"/>
+              </div>
+              <div class="w-1/2">
+                <ae-input class="no-margin" type="number" v-model="scale"></ae-input>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
+
     <div class="w-full p-4 flex justify-center">
       <ae-button face="round" fill="alternative" class="mr-4" @click="back">Back</ae-button>
       <ae-button face="round" fill="primary" @click="next">Continue</ae-button>
@@ -38,7 +41,7 @@
     components: { CanvasWithControlls },
     data () {
       return {
-        scale: 50
+        scale: 1
       }
     },
     computed: {
@@ -51,9 +54,10 @@
         this.$router.push('render')
       },
       next () {
-        const { x, y } = this.$refs.canvas.getCurrentCoords()
+        const { x, y } = this.$refs.canvas.getOverlayPosition()
         console.log(x, y)
         this.$store.dispatch(`updatePosition`, { x, y })
+        this.$store.dispatch(`updateSettings`, { scaleFactor: Number(this.scale)})
         this.$router.push('confirm')
       }
     },

@@ -101,8 +101,8 @@ const store = new Vuex.Store({
             file: file
           })
           commit(`modifyPosition`, {
-            x: Math.random() * 1000,
-            y: Math.random() * 1000
+            x: Math.round(Math.random() * 1000),
+            y: Math.round(Math.random() * 1000)
           })
         } catch (e) {
           console.error(e)
@@ -146,7 +146,7 @@ const store = new Vuex.Store({
       image.width = state.originalImage.width * state.settings.scaleFactor
 
       commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, image))
-      commit(`modifyDroneObject`, state.dronePaint)
+      commit(`modifyDroneObject`, state.droneObject)
     },
     updateOriginalImage ({ commit, state }, update) {
       commit(`modifyOriginalImage`, Object.assign({}, state.originalImage, update))

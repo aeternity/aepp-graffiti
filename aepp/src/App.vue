@@ -14,10 +14,17 @@
 <script>
   export default {
     name: 'app',
+
+    //TODO there has to be a better solution than this
+    metaInfo: {
+      meta: [
+        { name: 'viewport', content: 'initial-scale=1.0,width=device-width,user-scalable=0' }
+      ]
+    },
+
     data () {
       return {
-        goToRoute: '',
-        amount: 0
+        goToRoute: ''
       }
     }
   }

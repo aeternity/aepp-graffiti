@@ -33,6 +33,7 @@ import App from './App.vue'
 import getRouter from './router'
 import store from './store'
 import VueKonva from 'vue-konva'
+import VueMeta from 'vue-meta'
 
 /**
  * Documentation of the new components are here.
@@ -44,6 +45,7 @@ import Components from '@aeternity/aepp-components-3'
 Vue.use(VueRouter)
 Vue.use(Components)
 Vue.use(VueKonva)
+Vue.use(VueMeta);
 
 Vue.config.productionTip = false
 
