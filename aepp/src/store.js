@@ -2,9 +2,8 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
 import VuexPersist from 'vuex-persist'
-import transform from './drone.js'
-import { getGoodImageDimensions } from './helper.js'
 import Jimp from 'jimp/es'
+import DroneTracer from '../node_modules/dronetracer/src/DroneTracer/main.js'
 
 Vue.use(Vuex)
 
@@ -31,23 +30,35 @@ const store = new Vuex.Store({
     settings: {
       scaleFactor: 1,
       scaledHeight: 0,
-      scaledWidth: 0
+      scaledWidth: 0,
+      MAX_SCALING: 2.5,
+      threshold: 0.1,
+      color: 0
     },
     position: {
       x: 0,
       y: 0
     },
 
+    // HARDCODED SETTINGS
     imageSettings: {
-      max: { width: 10, height: 10 },
-      min: { width: 4, height: 3 }
+      max: { width: 1000, height: 1000 },
+      min: { width: 400, height: 300 }
     },
     canvas: {
       url: 'https://ae-art-server.piwo.app/rendered/latest.png',
       width: 3300,
       height: 5000,
-      meterToPixel: 100, // Meter * meterToPixel = Pixel,
-    }
+      meterToPixel: 100, // Meter * meterToPixel = Pixel
+    },
+    droneSettings: {
+      wallId: 1,
+      gpsLocation: [-99.134982, 19.413494],
+      dimensions: [33, 50],
+      colors: ['#000000', '#eb340f', '#0f71eb'], // default [#000]
+      droneResolution: 0.1 // default 0.2
+    },
+    droneObject: null
   },
   //plugins: [vuexPersist.plugin],
   getters: {},
@@ -66,20 +77,24 @@ const store = new Vuex.Store({
     },
     modifyProgress (state, progress) {
       state.transformedImage.progress = progress
+    },
+    modifyDroneObject (state, newDroneObject) {
+      state.droneObject = newDroneObject
     }
+
   },
   actions: {
-    uploadImage ({ commit }, file) {
+    uploadImage ({ state, commit }, file) {
 
       const fReader = new FileReader()
 
       fReader.onload = async () => {
         try {
           const image = await Jimp.read(fReader.result)
-          if (image.bitmap.height > 1000 || image.bitmap.width > 1000) image.scaleToFit(1000, 1000)
-          //TODO UPSCALE IF TOO SMALL
+
+          image.scaleToFit(state.imageSettings.min.width, state.imageSettings.min.height)
+
           const imageSource = await image.getBase64Async(file.type)
-          console.log(file)
 
           commit(`modifyOriginalImage`, {
             src: imageSource,
@@ -96,41 +111,42 @@ const store = new Vuex.Store({
 
       fReader.readAsDataURL(file)
     },
-    async transformImage ({ commit, state }) {
+    async transformImage ({ commit, state, dispatch }) {
 
-      let image = {}
-      // const cleanDataString = state.originalImage.src.split(',')[1]
-      // const fakeFile = new File([window.atob(cleanDataString)], 'image.png', { type: 'image/png' })
-      //
-      // console.log(fakeFile)
-      //
-      // const reader = new FileReader()
-      //
-      // reader.onload = function (e) {
-      //   console.log(e.target.result)
-      // }
-      // // Read in the image file as a data URL.
-      // reader.readAsDataURL(fakeFile)
+      commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, {
+        src: null,
+        width: 0,
+        height: 0,
+        progress: -1
+      }))
 
-      const dronePaint = await transform(state.originalImage.file, (p) => {
-        console.log(`${p}%`)
+      const tracer = new DroneTracer(state.droneSettings)
+      const dronePaint = await tracer.transform(state.originalImage.file, (p) => {
         commit(`modifyProgress`, p)
+      }, {
+        size: [5, 8], // graffiti size in meters | default 4mx3m
+        color: state.settings.color, // default 0. Color id from the paintingConfig color list
+        threshold: state.settings.threshold
       })
 
-      image.src = `data:image/svg+xml;base64,${btoa(dronePaint.svg)}`
+      commit(`modifyDroneObject`, dronePaint)
+      dispatch(`applyPostRenderingChanges`)
 
-      console.log('image dimensions')
-      const { width, height } = getGoodImageDimensions(
-        state.originalImage.width,
-        state.originalImage.height,
-        200 * state.settings.scaleFactor,
-        200 * state.settings.scaleFactor
-      )
+    },
+    applyPostRenderingChanges ({ commit, state }) {
 
-      image.height = height
-      image.width = width
+      state.droneObject.setPaintingScale(state.scaleFactor)
+      state.droneObject.setPaintingPosition(state.position.x / state.canvas.meterToPixel, state.position.y / state.canvas.meterToPixel)
+
+      let image = {}
+
+      image.src = `data:image/svg+xml;base64,${btoa(state.droneObject.svg)}`
+
+      image.height = state.originalImage.height * state.settings.scaleFactor
+      image.width = state.originalImage.width * state.settings.scaleFactor
 
       commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, image))
+      commit(`modifyDroneObject`, state.dronePaint)
     },
     updateOriginalImage ({ commit, state }, update) {
       commit(`modifyOriginalImage`, Object.assign({}, state.originalImage, update))
@@ -138,12 +154,33 @@ const store = new Vuex.Store({
     updateTransformedImage ({ commit, state }, update) {
       commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, update))
     },
-    updateSettings ({ commit, state }, update) {
+    updateSettings ({ commit, state, dispatch }, update) {
+
+      // CHECK IF ADDITIONAL ACTIONS ARE REQUIRED
+      console.log("applying changes");
+      const updatedKeys = Object.keys(update)
+      const changedKeys = updatedKeys.filter(key => {
+        return state.settings[key] !== update[key]
+      })
+
+      // UPDATE SETTINGS ANYWAYS
       commit(`modifySettings`, Object.assign({}, state.settings, update))
+
+      console.log(changedKeys)
+
+      if (changedKeys.includes('color') ||
+        changedKeys.includes('threshold')) {
+        dispatch(`transformImage`)
+      }
+
+      if (changedKeys.includes('scaleFactor')) {
+        dispatch(`applyPostRenderingChanges`)
+      }
+
     },
     updatePosition ({ commit, state }, update) {
       commit(`modifyPosition`, Object.assign({}, state.position, update))
-    },
+    }
   }
 })
 

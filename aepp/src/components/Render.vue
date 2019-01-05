@@ -7,25 +7,40 @@
       <div class="w-full flex justify-center items-center">
         <div v-if="transformedImage.src">
           <div class="w-full">
-            <img @load="updateMetaData" ref="previewImage" :style="scaleCSSProperty" :src="transformedImage.src"/>
+            <img @load="updateMetaData" ref="previewImage" :src="transformedImage.src"/>
           </div>
           <div class="w-full mb-8">
             <form>
               <div>
-                <ae-label class="no-margin">Scale</ae-label>
+                <ae-label class="no-margin">Color</ae-label>
+                <div class="flex flex-row justify-around items-center mb-6 mt-2">
+                  <template v-for="(color, index) in droneSettings.colors">
+                    <ae-button  v-if="currentColor === index" :key="color" fill="primary" face="round">
+                      <div :style="{backgroundColor: color}" class="h-8 w-8 rounded-full"></div>
+                    </ae-button>
+                    <ae-button v-else :key="color" shadow="false" fill="neutral" @click="changeColor(index)" face="round">
+                      <div :style="{backgroundColor: color}" class="h-8 w-8 rounded-full"></div>
+                    </ae-button>
+                  </template>
+                </div>
+              </div>
+              <div>
+                <ae-label class="no-margin">Threshold</ae-label>
                 <div class="flex flex-row justify-space items-center">
                   <div class="w-1/2">
-                    <input type="range" v-model="scale"/>
+                    <input type="range" step="0.1" min="0.1" max="1" v-model="threshold"/>
                   </div>
                   <div class="w-1/2">
-                    <ae-input class="no-margin" type="number" v-model="scale"></ae-input>
+                    <ae-input class="no-margin" type="number" v-model="threshold"></ae-input>
                   </div>
                 </div>
               </div>
             </form>
           </div>
           <div class="mt-4 w-full flex justify-center">
-            <ae-button face="round" fill="primary" @click="submit">Continue</ae-button>
+            <ae-button face="round" fill="alternative" class="mr-4" @click="back">Back</ae-button>
+            <ae-button v-if="isChanged" face="round" fill="primary" @click="updatePreview">Update Preview</ae-button>
+            <ae-button v-else face="round" fill="primary" @click="submit">Continue</ae-button>
           </div>
         </div>
         <div v-else class="mt-8 relative">
@@ -38,24 +53,18 @@
 </template>
 
 <script>
-  const STATUS_INITIAL = 0, STATUS_SUCCESS = 1
 
   export default {
     name: 'Render',
     data () {
       return {
-        scale: 50,
+        threshold: 0.1,
+        currentColor: 0,
       }
     },
     computed: {
-      isInitial () {
-        return this.currentStatus === STATUS_INITIAL
-      },
-      isSuccess () {
-        return this.currentStatus === STATUS_SUCCESS
-      },
-      originalImage () {
-        return this.$store.state.originalImage
+      isChanged () {
+        return Number(this.threshold) !== this.settings.threshold || this.currentColor !== this.settings.color
       },
       transformedImage () {
         return this.$store.state.transformedImage
@@ -63,18 +72,15 @@
       settings () {
         return this.$store.state.settings
       },
-      scaleCSSProperty () {
-        return `scale(${this.scale / 100})`
-      }
+      droneSettings () {
+        return this.$store.state.droneSettings
+      },
     },
     methods: {
-      setScale () {
-        this.$store.dispatch('updateSettings', {
-          scaleFactor: this.scale / 100
-        })
+      back () {
+        this.$router.push('contribute')
       },
       submit () {
-        this.setScale()
         this.$router.push('positioning')
       },
       updateMetaData () {
@@ -83,18 +89,21 @@
           width: this.$refs.previewImage.naturalWidth,
           height: this.$refs.previewImage.naturalHeight
         })
-      }
-    },
-    watch: {
-      scale: function () {
-        if (this.transformedImage.src)
-          this.$refs.previewImage.style.transform = `scale(${this.scale / 100})`
-      }
+      },
+      updatePreview() {
+        this.$store.dispatch(`updateSettings`, {
+          color: this.currentColor,
+          threshold: Number(this.threshold)
+        });
+      },
+      changeColor(index) {
+        this.currentColor = index;
+      },
     },
     mounted () {
-      console.log(this.transformedImage.src)
       if (this.settings.scaleFactor !== null) {
-        this.scale = this.settings.scaleFactor * 100
+        this.threshold = this.settings.threshold
+        this.currentColor = this.settings.color
       }
     }
   }

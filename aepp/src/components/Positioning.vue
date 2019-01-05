@@ -6,8 +6,22 @@
     <div class="w-full p-4">
       <div class="border border-grey-darker border-1">
         <CanvasWithControlls :show-navigation=true ref="canvas"></CanvasWithControlls>
-
       </div>
+    </div>
+    <div class="w-full mb-8">
+      <form>
+        <div>
+          <ae-label class="no-margin">Scale</ae-label>
+          <div class="flex flex-row justify-space items-center">
+            <div class="w-1/2">
+              <input type="range" step="0.1" min="1" :max="this.settings.MAX_SCALING" v-model="scale"/>
+            </div>
+            <div class="w-1/2">
+              <ae-input class="no-margin" type="number" v-model="scale"></ae-input>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
     <div class="w-full p-4 flex justify-center">
       <ae-button face="round" fill="alternative" class="mr-4" @click="back">Back</ae-button>
@@ -22,16 +36,29 @@
   export default {
     name: 'Positioning',
     components: { CanvasWithControlls },
+    data () {
+      return {
+        scale: 50
+      }
+    },
+    computed: {
+      settings () {
+        return this.$store.state.settings
+      },
+    },
     methods: {
       back () {
         this.$router.push('render')
       },
       next () {
         const { x, y } = this.$refs.canvas.getCurrentCoords()
-        console.log(x,y);
+        console.log(x, y)
         this.$store.dispatch(`updatePosition`, { x, y })
         this.$router.push('confirm')
       }
+    },
+    mounted () {
+      this.scale = this.settings.scaleFactor
     }
   }
 </script>

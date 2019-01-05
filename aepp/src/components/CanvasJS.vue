@@ -99,7 +99,7 @@
         this.stage.batchDraw()
         return this.stage.getPosition()
       },
-      getCanvasDimensions () {
+      getStageDimensions () {
         return {
           width: this.stage.width(),
           height: this.stage.height()

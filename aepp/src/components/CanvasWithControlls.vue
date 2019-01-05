@@ -3,16 +3,16 @@
     <div class="w-full h-full relative">
       <CanvasJS ref="canvas" :draggable=false></CanvasJS>
       <div v-if="showNavigation" class="ae-button-wrapper pin-t pin-l w-full">
-        <span class="ae-navigation-button" @click="moveCanvas(0,10)">Up</span>
+        <span class="ae-navigation-button" @click="moveCanvas(0,100)">Up</span>
       </div>
       <div v-if="showNavigation" class="ae-button-wrapper pin-t pin-l h-full">
-        <span class="ae-navigation-button" @click="moveCanvas(10,0)">Left</span>
+        <span class="ae-navigation-button" @click="moveCanvas(100,0)">Left</span>
       </div>
       <div v-if="showNavigation" class="ae-button-wrapper pin-b pin-l w-full ">
-        <span class="ae-navigation-button" @click="moveCanvas(0,-10)">Down</span>
+        <span class="ae-navigation-button" @click="moveCanvas(0,-100)">Down</span>
       </div>
       <div v-if="showNavigation" class="ae-button-wrapper pin-t pin-r h-full ">
-        <span class="ae-navigation-button" @click="moveCanvas(-10,0)">Right</span>
+        <span class="ae-navigation-button" @click="moveCanvas(-100,0)">Right</span>
       </div>
     </div>
 
@@ -37,7 +37,7 @@
         currentCoords: {
           x: Math.round(this.$store.state.position.x),
           y: Math.round(this.$store.state.position.y)
-        }
+        },
       }
     },
     computed: {
@@ -49,6 +49,9 @@
       },
       settings () {
         return this.$store.state.settings
+      },
+      canvasSettings() {
+        return this.$store.state.canvas
       }
     },
     methods: {
@@ -59,12 +62,35 @@
         console.log(this.$refs.canvas.moveCanvas({ xDiff: 0, yDiff: 0 }))
       },
       moveCanvas (xDiff, yDiff, moveOverlay = true) {
-        console.log('moving', xDiff, yDiff)
-        this.$refs.canvas.moveCanvas({ xDiff, yDiff })
+        console.log('trying', xDiff, yDiff)
+
         if (moveOverlay) {
+
+          let currPos = this.$refs.canvas.getOverlayPosition()
+
+          // LIMIT TOP & LEFT
+          if(currPos.x - xDiff < 0 && xDiff > 0) xDiff = currPos.x
+          if(currPos.y - yDiff < 0 && yDiff > 0) yDiff = currPos.y
+
+          let currDimensions = {x: this.transformedImage.width, y: this.transformedImage.height }
+
+          // LIMIT BOTTOM & RIGHT
+          if(currPos.x + currDimensions.x - xDiff > this.canvasSettings.width && xDiff < 0) xDiff = currPos.x + currDimensions.x - this.canvasSettings.width
+          if(currPos.y + currDimensions.y - yDiff > this.canvasSettings.height && yDiff < 0) yDiff = currPos.y + currDimensions.y - this.canvasSettings.height
+
+          // MOVE CANVAS AND OVERLAY
+          this.$refs.canvas.moveCanvas({ xDiff, yDiff })
           this.$refs.canvas.moveOverlayImage(xDiff, yDiff)
-          this.currentCoords.x -= xDiff
-          this.currentCoords.y -= yDiff
+
+          // UPDATE POSITION
+          currPos = this.$refs.canvas.getOverlayPosition()
+          this.currentCoords.x = currPos.x
+          this.currentCoords.y = currPos.y
+
+        } else {
+
+          this.$refs.canvas.moveCanvas({ xDiff, yDiff })
+
         }
       }
     },
@@ -84,7 +110,7 @@
         height
       });
 
-      const canvasSize = this.$refs.canvas.getCanvasDimensions()
+      const canvasSize = this.$refs.canvas.getStageDimensions()
       this.moveCanvas(
         -1 * this.position.x + canvasSize.width / 2 - width / 2,
         -1 * this.position.y + canvasSize.height / 2 - height / 2,
