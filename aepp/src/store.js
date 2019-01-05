@@ -25,7 +25,8 @@ const store = new Vuex.Store({
       src: null,
       width: 0,
       height: 0,
-      progress: -1
+      progress: -1,
+      dronetime: -1
     },
     settings: {
       scaleFactor: 1,
@@ -144,6 +145,7 @@ const store = new Vuex.Store({
 
       image.height = state.originalImage.height * state.settings.scaleFactor
       image.width = state.originalImage.width * state.settings.scaleFactor
+      image.dronetime = state.droneObject.estimatedTime;
 
       commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, image))
       commit(`modifyDroneObject`, state.droneObject)

@@ -1,17 +1,21 @@
 <template>
   <div class="w-full h-full">
-    <CanvasJS @positionUpdate="updateVisualPosition" ref="canvas" :draggable=true></CanvasJS>
-    <div class="text-center p-4">
-      <span class="mr-3">X: {{this.x}}</span>
-      <span>Y: {{this.y}}</span>
+    <CanvasJS @positionUpdate="updateVisualPosition" ref="canvas" :draggable=draggable></CanvasJS>
+    <div class="p-4 flex flex-row" v-if="draggable">
+      <ae-input label="X" type="number" :value=x class="mr-3 text-center"></ae-input>
+      <ae-input label="Y" type="number" :value=y class="text-center"></ae-input>
+    </div>
+    <div class="p-4 flex flex-row" v-else>
+      <ae-input label="X" :value=x disabled class="mr-3 text-center"></ae-input>
+      <ae-input label="Y" :value=y disabled class="text-center"></ae-input>
     </div>
   </div>
 
 </template>
 
 <script>
+  //TODO disable ae-inputs (not yet possible)
   import CanvasJS from './CanvasJS.vue'
-  import { getGoodImageDimensions } from '../helper'
 
   export default {
     name: 'CanvasWithControlls',
@@ -22,7 +26,7 @@
         y: this.$store.state.position.y
       }
     },
-    props: ['scale'],
+    props: ['scale', 'draggable'],
     computed: {
       transformedImage () {
         return this.$store.state.transformedImage
@@ -81,15 +85,5 @@
 </script>
 
 <style scoped>
-
-  .ae-button-wrapper {
-    @apply absolute
-    flex items-center justify-center pointer-events-none;
-  }
-
-  .ae-navigation-button {
-    @apply p-4
-    block cursor-pointer pointer-events-auto bg-white;
-  }
 
 </style>

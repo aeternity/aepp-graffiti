@@ -5,7 +5,7 @@
     </div>
     <div class="w-full p-4">
       <div class="border border-grey-darker border-1">
-        <CanvasWithControlls :show-navigation=false :scale="scale" ref="canvas"></CanvasWithControlls>
+        <CanvasWithControlls :draggable=true :scale="scale" ref="canvas"></CanvasWithControlls>
       </div>
     </div>
     <div class="p-4 w-full">
@@ -56,7 +56,7 @@
       next () {
         const { x, y } = this.$refs.canvas.getOverlayPosition()
         console.log(x, y)
-        this.$store.dispatch(`updatePosition`, { x, y })
+        this.$store.dispatch(`updatePosition`, { x: Math.round(x), y: Math.round(y) })
         this.$store.dispatch(`updateSettings`, { scaleFactor: Number(this.scale)})
         this.$router.push('confirm')
       }

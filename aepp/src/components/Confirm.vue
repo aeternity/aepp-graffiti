@@ -4,25 +4,38 @@
       <h1 class="w-full text-center">Your Bid</h1>
     </div>
     <div class="w-full pl-4 pr-4 flex">
-      <CanvasWithControlls></CanvasWithControlls>
+      <CanvasWithControlls :draggable="false"></CanvasWithControlls>
+    </div>
+    <div class="w-full p-4">
+      <h2 class="w-full text-center mb-4">Required Time</h2>
+      <ae-text face="mono-xl" class="text-center">{{transformedImage.dronetime / 1000}} Seconds</ae-text>
     </div>
     <div class="w-full p-4">
       <h2 class="w-full text-center mb-4">Your Account</h2>
-      <ae-identity :address="pub" :balance="balance"></ae-identity>
+      <ae-card fill="primary">
+        <template slot="avatar">
+          <ae-identicon :address=pub />
+        </template>
+        <ae-address :value=pub length="medium" gap=0 />
+      </ae-card>
     </div>
     <div class="w-full p-4">
-      <h2 class="w-full text-center mb-4">Your Bid</h2>
-      <p class="text-center text-5xl" style="font-size: 3rem">{{ bid }} AE</p>
-      <ae-input type="number" v-model="bidPerDronetime"></ae-input>
+      <h2 class="w-full text-center mb-4">AE per Second</h2>
+      <ae-input type="number" aemount v-model="bidPerDronetime" label="AE"></ae-input>
+    </div>
+    <div class="w-full p-4">
+      <h2 class="w-full text-center mb-4">Your Total</h2>
+      <ae-text face="mono-xl" class="text-center">{{bid}} AE</ae-text>
     </div>
     <div class="w-full p-4 flex justify-center">
-      <ae-button class="mr-4" size="medium" type="normal" @click="back">Back</ae-button>
-      <ae-button size="medium" type="dramatic" @click="next">Continue</ae-button>
+      <ae-button class="mr-4" face="round" fill="neutral" @click="back">Back</ae-button>
+      <ae-button face="round" fill="primary" @click="next">Continue</ae-button>
     </div>
   </div>
 </template>
 
 <script>
+  // TODO switch to mono-l typeface if available
   import CanvasWithControlls from './CanvasWithControlls.vue'
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
   //import IPFS from 'ipfs'
@@ -32,16 +45,18 @@
     components: { CanvasWithControlls },
     data () {
       return {
-        dronetime: 10,
         bidPerDronetime: 0,
-        pub: '',
+        pub: "ak_QY8VNEkhj7omMUjAvfVBq2NjTDy895LBYbk7qVxQo1qT8VqfE",
         balance: 0,
         client: null
       }
     },
     computed: {
       bid () {
-        return this.bidPerDronetime * this.dronetime
+        return this.bidPerDronetime * this.transformedImage.dronetime / 1000
+      },
+      transformedImage() {
+        return this.$store.state.transformedImage
       }
     },
     methods: {
