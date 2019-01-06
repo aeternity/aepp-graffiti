@@ -5,6 +5,7 @@ import Render from './components/Render.vue'
 import Positioning from './components/Positioning.vue'
 import Confirm from './components/Confirm.vue'
 import Test from './components/Test.vue'
+import Desktop from './components/Desktop'
 
 export default () => {
   const routes = [
@@ -36,6 +37,12 @@ export default () => {
       path: '/confirm',
       name: 'confirm',
       component: Confirm,
+      props: route => ({ query: route.query })
+    },
+    {
+      path: '/desktop',
+      name: 'desktop',
+      component: Desktop,
       props: route => ({ query: route.query })
     },
     {

@@ -10,7 +10,7 @@
   export default {
     name: 'CanvasJS',
     components: {},
-    props: ['draggable', 'moveCallback'],
+    props: ['draggable', 'moveCallback', 'height'],
     data () {
       return {
         stage: null,
@@ -352,10 +352,11 @@
     mounted () {
       // SET STAGE WIDTH
       const width = this.$refs.stageWrapper.clientWidth
+      const height = Number(this.height) ? Number(this.height) : 300
       this.stage = new Konva.Stage({
         container: 'stageWrapper',
         width: width,
-        height: 300,
+        height: height,
         draggable: false
       })
 
