@@ -61,6 +61,9 @@
       },
       position () {
         return this.$store.state.position
+      },
+      blockchainSettings () {
+        return this.$store.state.blockchainSettings
       }
     },
     methods: {
@@ -103,11 +106,10 @@
         return bb;
       },
       async runBid() {
-        const contractAddress = 'ct_xZX75A1E5JWbuLi4cnn6eKqd3ZGnKF3vM9c656bFVS8ZaPYVp'
         // args: hash, x, y, time
         // amount: ae to contract amount
-        const calledBid = await this.client.contractCall(contractAddress, 'sophia-address', contractAddress, 'bid', {
-          args: `("${this.ipfsAddr}", ${this.position.x}, ${this.position.y}, ${this.transformedImage.dronetime})`,
+        const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'bid', {
+          args: `("${this.ipfsAddr}", ${this.position.x}, ${this.position.y}, ${Math.round(this.transformedImage.dronetime / 1000)})`,
           options: { amount: this.bid }
         }).catch(async e => {
           console.error(e)

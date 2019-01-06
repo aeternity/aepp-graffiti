@@ -12,6 +12,9 @@
       <ae-button face="round" fill="primary" @click="$router.push(`contribute`)" >Contribute Art</ae-button>
     </div>
     <div class="w-full p-4 flex justify-center">
+      <ae-button face="round" fill="primary" @click="$router.push(`overview`)" >My Bids Overview</ae-button>
+    </div>
+    <div class="w-full p-4 flex justify-center">
       <ae-button face="round" fill="secondary">Learn More</ae-button>
     </div>
     <div class="w-full p-4 flex justify-center">

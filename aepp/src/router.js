@@ -6,6 +6,8 @@ import Positioning from './components/Positioning.vue'
 import Confirm from './components/Confirm.vue'
 import Test from './components/Test.vue'
 import Desktop from './components/Desktop'
+import Success from './components/Success'
+import Overview from '@/components/Overview'
 
 export default () => {
   const routes = [
@@ -43,6 +45,18 @@ export default () => {
       path: '/desktop',
       name: 'desktop',
       component: Desktop,
+      props: route => ({ query: route.query })
+    },
+    {
+      path: '/success',
+      name: 'success',
+      component: Success,
+      props: route => ({ query: route.query })
+    },
+    {
+      path: '/overview',
+      name: 'overview',
+      component: Overview,
       props: route => ({ query: route.query })
     },
     {
