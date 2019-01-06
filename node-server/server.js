@@ -3,12 +3,13 @@ const canvas = require('./canvas.js');
 const fileUpload = require('express-fileupload');
 const app = express();
 const logic = require('./logic');
+const cors = require('cors');
 
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+app.use(cors({
+    origin: '*',
+    optionsSuccessStatus: 200,
+    methods: ['POST', 'GET', 'OPTIONS']
+}));
 
 app.use(fileUpload({
     limits: {fileSize: 5 * 1024 * 1024},
