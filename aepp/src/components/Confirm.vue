@@ -54,7 +54,8 @@
     },
     computed: {
       bid () {
-        return this.bidPerDronetime * this.transformedImage.dronetime / 1000
+        // Last part is the fee, estimate is stolen from aepp-sdk-js
+        return this.bidPerDronetime * this.transformedImage.dronetime / 1000 + 0.45
       },
       transformedImage () {
         return this.$store.state.transformedImage
@@ -73,39 +74,38 @@
       async next () {
         // TODO do smart contract stuff
         try {
-          const data = new FormData();
+          const data = new FormData()
           const file = this.dataURItoBlob(this.transformedImage.src)
-          console.log(file);
+          console.log(file)
           data.append('image', file)
           const response = await axios.post('https://ae-art-server.piwo.app/upload', data, { headers: { 'Content-Type': 'multipart/form-data' } })
-          this.ipfsAddr = response.data.hash;
-          console.log(this.ipfsAddr);
+          this.ipfsAddr = response.data.hash
+          console.log(this.ipfsAddr)
 
           await this.runBid()
 
         } catch (e) {
-          console.log(e);
+          console.log(e)
         }
 
-
       },
-      dataURItoBlob(dataURI) {
+      dataURItoBlob (dataURI) {
         // convert base64 to raw binary data held in a string
         // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-        const byteString = atob(dataURI.split(',')[1]);
+        const byteString = atob(dataURI.split(',')[1])
 
         // write the bytes of the string to an ArrayBuffer
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
+        const ab = new ArrayBuffer(byteString.length)
+        const ia = new Uint8Array(ab)
         for (let i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i);
+          ia[i] = byteString.charCodeAt(i)
         }
 
         // write the ArrayBuffer to a blob, and you're done
-        const bb = new Blob([ab], {type: 'image/svg'});
-        return bb;
+        const bb = new Blob([ab], { type: 'image/svg' })
+        return bb
       },
-      async runBid() {
+      async runBid () {
         // args: hash, x, y, time
         // amount: ae to contract amount
         const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'bid', {
@@ -123,6 +123,7 @@
     created () {
       Aepp().then(async ae => {
         console.log('client: ', ae)
+        console.log(ae.Ae, ae.Chain, ae.post, ae.Tx)
         this.client = ae
         ae.address()
           .then(address => {
