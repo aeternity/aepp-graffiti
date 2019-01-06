@@ -28,14 +28,17 @@ logic.upload = async (req, res) => {
 };
 
 logic.ipfs = (req, res) => {
-    ipfsWrapper.getFile('QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd').then((buffer) => {
+
+    if (!req.query.hash) return res.sendStatus(400);
+
+    ipfsWrapper.getFile(req.query.hash).then((buffer) => {
         res.writeHead(200, {
-            'Content-Type': 'image/png',
+            'Content-Type': 'image/svg',
             'Content-Length': buffer.length
         });
         res.end(buffer);
 
-    }).catch(e =>  res.send(e.message));
+    }).catch(e => res.send(e.message));
 };
 
 module.exports = logic;
