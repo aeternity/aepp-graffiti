@@ -48,13 +48,13 @@ export default {
   components: {},
   data () {
     return {
-      pub: 'ak_c3LfYDjLqdNdWHUCV8NDv1BELhXqfKxhmKfzh4cBMpwj64CD7',
-      priv: '',
+      pub: 'ak_2VnwoJPQgrXvreUx2L9BVvd9BidWwpu1ASKK1AMre21soEgpRT',
+      priv: '8fe6f2b3eaee2cc675de41cc8f5c22fad204b740611e8b8593524ce356eb2ab5c5127b909da4e7eddec87a2f22dea0cd56e9168fdb9f98cccd0adda77e741dd2',
       client: null,
       wallet: null,
       balance: null,
       height: null,
-      aeppUrl: '//0.0.0.0:9001'
+      aeppUrl: '//0.0.0.0:8080'
     }
   },
   computed: {
@@ -71,8 +71,8 @@ export default {
     window.addEventListener('message', console.log, false)
 
     Wallet({
-      url: ' https://ae.piwo.app',
-      internalUrl: 'http://51.15.237.173:3113',
+      url: 'https://ae-uat.piwo.app',
+      internalUrl: 'http://51.15.237.173:4113',
       accounts: [MemoryAccount({keypair: {secretKey: this.priv, publicKey: this.pub}})],
       address: this.pub,
       onTx: this.confirmDialog,

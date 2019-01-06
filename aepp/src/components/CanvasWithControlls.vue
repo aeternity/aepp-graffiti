@@ -15,6 +15,7 @@
 
 <script>
   //TODO disable ae-inputs (not yet possible)
+  //TODO add listener for blur / change to ae-inputs not possible yet
   import CanvasJS from './CanvasJS.vue'
 
   export default {

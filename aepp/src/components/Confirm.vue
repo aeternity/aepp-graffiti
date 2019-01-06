@@ -14,9 +14,9 @@
       <h2 class="w-full text-center mb-4">Your Account</h2>
       <ae-card fill="primary">
         <template slot="avatar">
-          <ae-identicon :address=pub />
+          <ae-identicon :address=pub></ae-identicon>
         </template>
-        <ae-address :value=pub length="medium" gap=0 />
+        <ae-address :value=pub length="medium" gap=0></ae-address>
       </ae-card>
     </div>
     <div class="w-full p-4">
@@ -38,7 +38,7 @@
   // TODO switch to mono-l typeface if available
   import CanvasWithControlls from './CanvasWithControlls.vue'
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
-  //import IPFS from 'ipfs'
+  import axios from 'axios'
 
   export default {
     name: 'Confirm',
@@ -46,26 +46,76 @@
     data () {
       return {
         bidPerDronetime: 0,
-        pub: "ak_QY8VNEkhj7omMUjAvfVBq2NjTDy895LBYbk7qVxQo1qT8VqfE",
+        pub: 'ak_QY8VNEkhj7omMUjAvfVBq2NjTDy895LBYbk7qVxQo1qT8VqfE',
         balance: 0,
-        client: null
+        client: null,
+        ipfsAddr: null
       }
     },
     computed: {
       bid () {
         return this.bidPerDronetime * this.transformedImage.dronetime / 1000
       },
-      transformedImage() {
+      transformedImage () {
         return this.$store.state.transformedImage
+      },
+      position () {
+        return this.$store.state.position
       }
     },
     methods: {
       back () {
         this.$router.push('positioning')
       },
-      next () {
+      async next () {
         // TODO do smart contract stuff
+        try {
+          const data = new FormData();
+          const file = this.dataURItoBlob(this.transformedImage.src)
+          console.log(file);
+          data.append('image', file)
+          const response = await axios.post('https://ae-art-server.piwo.app/upload', data, { headers: { 'Content-Type': 'multipart/form-data' } })
+          this.ipfsAddr = response.data.hash;
+          console.log(this.ipfsAddr);
 
+          await this.runBid()
+
+        } catch (e) {
+          console.log(e);
+        }
+
+
+      },
+      dataURItoBlob(dataURI) {
+        // convert base64 to raw binary data held in a string
+        // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+        const byteString = atob(dataURI.split(',')[1]);
+
+        // write the bytes of the string to an ArrayBuffer
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+
+        // write the ArrayBuffer to a blob, and you're done
+        const bb = new Blob([ab], {type: 'image/svg'});
+        return bb;
+      },
+      async runBid() {
+        const contractAddress = 'ct_xZX75A1E5JWbuLi4cnn6eKqd3ZGnKF3vM9c656bFVS8ZaPYVp'
+        // args: hash, x, y, time
+        // amount: ae to contract amount
+        const calledBid = await this.client.contractCall(contractAddress, 'sophia-address', contractAddress, 'bid', {
+          args: `("${this.ipfsAddr}", ${this.position.x}, ${this.position.y}, ${this.transformedImage.dronetime})`,
+          options: { amount: this.bid }
+        }).catch(async e => {
+          console.error(e)
+          const decodedError = await this.client.contractDecodeData('string', e.returnValue).catch(e => console.error(e))
+          console.log('decodedError', decodedError)
+        })
+
+        console.log('calledBid', calledBid)
       }
     },
     created () {
@@ -78,27 +128,14 @@
             ae.balance(address).then(balance => {
               // logs current balance of "A_PUB_ADDRESS"
               console.log('balance', balance)
-              this.balance = Number(balance);
+              this.balance = Number(balance)
             })
           })
-
-        const contractAddress = 'ct_XPuc7U9qiccPn33uvNSeDaRpjJZ7i6XMsyWyp5bXdLsngUAVs';
-        const calledMyBids = await this.client.contractCall(contractAddress, 'sophia-address', contractAddress, 'all_bids', {args: '()'}).catch(e => console.error(e));
-        console.log('calledMyBids', calledMyBids);
-
-        const decodedMyBids = await this.client.contractDecodeData('list((address, string, (int, int), int, int))', calledMyBids.result.returnValue).catch(e => console.error(e));
-        console.log('decodedMyBids', decodedMyBids);
-
       })
-    },
-    mounted () {
-
     }
   }
 </script>
 
 <style scoped>
-  .text-5xl {
-    font-size: 3em;
-  }
+
 </style>
