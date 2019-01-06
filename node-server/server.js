@@ -4,6 +4,12 @@ const fileUpload = require('express-fileupload');
 const app = express();
 const logic = require('./logic');
 
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 app.use(fileUpload({
     limits: {fileSize: 5 * 1024 * 1024},
     files: 1
