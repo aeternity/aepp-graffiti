@@ -1,16 +1,18 @@
 {
     "name": "art-smart-contract",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "description": "This is the default package.json generated for your project",
     "main": "index.js",
     "scripts": {
         "test": "forgae test",
-        "deploy": "forgae deploy"
+        "deploy": "forgae deploy",
+        "start-nodes": "forgae node",
+        "stop-nodes": "forgae node --stop"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@aeternity/aepp-sdk": "1.0.1",
+        "@aeternity/aepp-sdk": "^1.1.2",
         "forgae": "git+https://github.com/aeternity/aepp-forgae-js.git"
     }
 }
