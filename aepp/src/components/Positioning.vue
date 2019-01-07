@@ -3,10 +3,8 @@
     <div class="w-full pl-4 pb-4 pr-4 flex">
       <h1 class="w-full text-center">Put Your Artwork on the Map</h1>
     </div>
-    <div class="w-full p-4">
-      <div class="border border-grey-darker border-1">
+    <div class="w-full pt-4 pb-4">
         <CanvasWithControlls :draggable=true :scale="scale" ref="canvas"></CanvasWithControlls>
-      </div>
     </div>
     <div class="p-4 w-full">
       <div class="w-full mb-8">

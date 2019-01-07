@@ -1,6 +1,8 @@
 <template>
   <div class="w-full h-full">
-    <CanvasJS @positionUpdate="updateVisualPosition" ref="canvas" :draggable=draggable></CanvasJS>
+    <div class="border-b border-t border-grey-darker">
+      <CanvasJS @positionUpdate="updateVisualPosition" ref="canvas" :draggable=draggable></CanvasJS>
+    </div>
     <div class="p-4 flex flex-row" v-if="draggable">
       <ae-input label="X" type="number" :value=x class="mr-3 text-center"></ae-input>
       <ae-input label="Y" type="number" :value=y class="text-center"></ae-input>

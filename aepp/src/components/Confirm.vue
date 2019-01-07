@@ -3,7 +3,7 @@
     <div class="w-full pl-4 pr-4 flex">
       <h1 class="w-full text-center">Your Bid</h1>
     </div>
-    <div class="w-full pl-4 pr-4 flex">
+    <div class="w-full">
       <CanvasWithControlls :draggable="false"></CanvasWithControlls>
     </div>
     <div class="w-full p-4">
