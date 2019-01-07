@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <div class="content">
-      <ae-main>
+      <ae-main v-if="this.$route.path !== '/iframe'" >
         <ae-header name="Drone Project"></ae-header>
         <router-view></router-view>
       </ae-main>
-
+      <router-view v-else></router-view>
       <!-- Find the docs for the component here: http://aeternity.com/aepp-components/ -->
     </div>
   </div>
@@ -26,6 +26,9 @@
       return {
         goToRoute: ''
       }
+    },
+    created() {
+      console.log(this.$route.path)
     }
   }
 </script>

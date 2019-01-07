@@ -8,6 +8,7 @@ import Test from './components/Test.vue'
 import Desktop from './components/Desktop'
 import Success from './components/Success'
 import Overview from '@/components/Overview'
+import IFrame from '@/components/IFrame'
 
 export default () => {
   const routes = [
@@ -45,6 +46,12 @@ export default () => {
       path: '/desktop',
       name: 'desktop',
       component: Desktop,
+      props: route => ({ query: route.query })
+    },
+    {
+      path: '/iframe',
+      name: 'iframe',
+      component: IFrame,
       props: route => ({ query: route.query })
     },
     {
