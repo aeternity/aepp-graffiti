@@ -43,8 +43,12 @@ contract ArtAuction =
                                             block_duration : int,
                                             minimum_time_per_bid' : int,
                                             maximum_time_per_bid' : int) =
-    require(is_admin(Call.caller), "start_auction caller has to be admin")
-    require(in_future(start_block_height'), "start_auction start_block_height' has to be in future")
+    require(is_admin(Call.caller), "add_auction_slot caller has to be admin")
+    require(in_future(start_block_height'), "add_auction_slot start_block_height' has to be in future")
+    require(is_greater_zero(time_capacity'), "add_auction_slot time_capacity' has to be greater than 0")
+    require(is_greater_zero(block_duration), "add_auction_slot block_duration has to be greater than 0")
+    require(is_greater_zero(minimum_time_per_bid'), "add_auction_slot minimum_time_per_bid' has to be greater than 0")
+    require(is_greater_zero(maximum_time_per_bid'), "add_auction_slot maximum_time_per_bid' has to be greater than 0")
 
     let next_auction_slot_id = state.latest_auction_slot_id + 1
 
@@ -79,6 +83,8 @@ contract ArtAuction =
     switch(l)
      [] => []
      e :: l' => f(e) :: map(f, l')
+
+  private function is_greater_zero(x : int) : bool = x > 0
 
   private function in_future(height : int) : bool =
     height > Chain.block_height
