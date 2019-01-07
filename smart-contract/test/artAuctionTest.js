@@ -38,6 +38,7 @@ describe('ArtAuction', () => {
             initState: '()',
             options: {
                 ttl: config.ttl,
+                amount: 0
             }
         });
 
@@ -46,7 +47,10 @@ describe('ArtAuction', () => {
     });
 
     it('Call ArtAuction Contract; start auction', async () => {
-        const callBid = contract.call('add_auction_slot', {args: `(100, ${(await owner.height()) + 5}, 10, 1, 100)`});
+        const callBid = contract.call('add_auction_slot', {
+            args: `(100, ${(await owner.height()) + 5}, 10, 1, 100)`,
+            options: {amount: 0}
+        });
         assert.isFulfilled(callBid, 'Could not call the ArtAuction start');
         await callBid;
     });
@@ -79,5 +83,11 @@ describe('ArtAuction', () => {
         assert.isEmpty(auctionSlot.failedBids);
         assert.isNumber(auctionSlot.startBlockHeight);
         assert.isNumber(auctionSlot.endBlockHeight);
+    });
+
+    it('Call ArtAuction Contract; admin_withdraw', async () => {
+        const callWithdraw = await contract.call('admin_withdraw', {args: `()`, options: {amount: 0}});
+        const decodedWithdraw = await callWithdraw.decode('int');
+        assert.equal(decodedWithdraw.value, 0);
     });
 });

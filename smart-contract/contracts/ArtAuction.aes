@@ -73,6 +73,12 @@ contract ArtAuction =
       Some(auction_slot) => auction_slot
       None => abort("auction_slot does not exist")
 
+  public function admin_withdraw() =
+    require(is_admin(Call.caller), "admin_withdraw caller has to be admin")
+    let balance_to_withdraw = Contract.balance
+    Chain.spend(Call.caller, balance_to_withdraw)
+    balance_to_withdraw
+
   // helper functions //
 
   private function tuple_second(tuple) =
