@@ -45,13 +45,6 @@ describe('ArtAuction', () => {
         contract = await deployPromise;
     });
 
-    /*
-    it('Static Call and Decode ArtAuction Contract; initialized available_time correctly', async () => {
-        const staticCallAvailableTime = await contract.callStatic('available_time', {args: '()'});
-        const decodedAvailableTime = await staticCallAvailableTime.decode('int');
-        assert.equal(decodedAvailableTime.value, 10000)
-    });*/
-
     it('Call ArtAuction Contract; start auction', async () => {
         const callBid = contract.call('add_auction_slot', {args: `(100, ${(await owner.height()) + 5}, 10, 1, 100)`});
         assert.isFulfilled(callBid, 'Could not call the ArtAuction start');
@@ -63,6 +56,21 @@ describe('ArtAuction', () => {
         const decodedAuctionSlot = await staticCallAuctionSlot.decode(Utils.auctionSlotType);
 
         const auctionSlot = Utils.auctionSlotToObject(decodedAuctionSlot);
+        assert.equal(auctionSlot.id, 1);
+        assert.equal(auctionSlot.timeCapacity, 100);
+        assert.equal(auctionSlot.minimumTimePerBid, 1);
+        assert.equal(auctionSlot.maximumTimePerBid, 100);
+        assert.isEmpty(auctionSlot.successfulBids);
+        assert.isEmpty(auctionSlot.failedBids);
+        assert.isNumber(auctionSlot.startBlockHeight);
+        assert.isNumber(auctionSlot.endBlockHeight);
+    });
+
+    it('Static Call and Decode ArtAuction Contract; all_auction_slots', async () => {
+        const staticCallAuctionSlot = await contract.callStatic('all_auction_slots', {args: '()'});
+        const decodedAuctionSlot = await staticCallAuctionSlot.decode(Utils.auctionSlotListType);
+
+        const [auctionSlot] = Utils.auctionSlotListToObject(decodedAuctionSlot);
         assert.equal(auctionSlot.id, 1);
         assert.equal(auctionSlot.timeCapacity, 100);
         assert.equal(auctionSlot.minimumTimePerBid, 1);

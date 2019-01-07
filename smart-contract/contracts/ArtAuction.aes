@@ -60,12 +60,25 @@ contract ArtAuction =
     put(state{ latest_auction_slot_id = next_auction_slot_id, auction_slots[next_auction_slot_id] = auction_slot })
     next_auction_slot_id
 
+  public function all_auction_slots() : list(auction_slot) =
+    let auction_slot_list = Map.to_list(state.auction_slots)
+    map(tuple_second, auction_slot_list)
+
   public function get_auction_slot(id : int) : auction_slot =
     switch(Map.lookup(id, state.auction_slots))
       Some(auction_slot) => auction_slot
       None => abort("auction_slot does not exist")
 
   // helper functions //
+
+  private function tuple_second(tuple) =
+    switch(tuple)
+      (_, e) => e
+
+  private function map(f : 'a => 'b, l : list('a)) : list('b) =
+    switch(l)
+     [] => []
+     e :: l' => f(e) :: map(f, l')
 
   private function in_future(height : int) : bool =
     height > Chain.block_height
