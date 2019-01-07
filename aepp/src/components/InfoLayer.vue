@@ -4,12 +4,14 @@
       <ae-icon name="info" fill="alternative" class="text-3xl w-8 h-8"></ae-icon>
     </div>
     <ae-backdrop v-if="backDropVisible" @click.native.capture="showBackdrop">
-      <div class="absolute pin w-full h-full ae-backdrop-white flex justify-center items-center flex-col">
-        <slot></slot>
-        <ae-button fill="primary" class="mt-8" face="round">
-          Close
-        </ae-button>
-      </div>
+      <ae-card>
+        <div class="flex justify-center items-center flex-col">
+          <slot></slot>
+          <ae-button fill="primary" class="mt-8" face="round">
+            Close
+          </ae-button>
+        </div>
+      </ae-card>
     </ae-backdrop>
   </div>
 </template>
@@ -17,7 +19,7 @@
 <script>
   export default {
     name: 'InfoLayer',
-    components: { },
+    components: {},
     data () {
       return { backDropVisible: false }
     },
@@ -30,11 +32,8 @@
 </script>
 
 <style scoped>
-.ae-info-button {
-  top: 17px;
-  right: 10px;
-}
-  .ae-backdrop-white {
-    background: rgba(255,255,255,0.8)
+  .ae-info-button {
+    top: 17px;
+    right: 10px;
   }
 </style>
