@@ -1,0 +1,69 @@
+contract ArtAuction =
+
+  type is_admin = map(address, bool)
+
+  type auction_slots = map(int, auction_slot)
+
+  record state =
+    { is_admin : is_admin
+    , latest_auction_slot_id : int
+    , auction_slots : auction_slots }
+
+  record auction_slot =
+    { id : int
+    , time_capacity : int
+    , minimum_time_per_bid : int
+    , maximum_time_per_bid : int
+    , highest_bids : list(bid)
+    , start_block_height : int
+    , end_block_height : int }
+
+  record bid =
+    { user : address
+    , amount : int
+    , time : int
+    , data : artwork_data }
+
+  record artwork_data =
+    { artwork_reference : string
+    , coordinates : coordinates }
+
+  record coordinates =
+    { x : int
+    , y : int }
+
+  public function init() : state =
+    { is_admin = {[Call.caller] = true},
+      latest_auction_slot_id = 0,
+      auction_slots = {} }
+
+  public stateful function add_auction_slot(time_capacity' : int,
+                                            start_block_height' : int,
+                                            block_duration : int,
+                                            minimum_time_per_bid' : int,
+                                            maximum_time_per_bid' : int) =
+    require(is_admin(Call.caller), "start_auction caller has to be admin")
+    require(in_future(start_block_height'), "start_auction start_block_height' has to be in future")
+
+    let next_auction_slot_id = state.latest_auction_slot_id + 1
+
+    let auction_slot = { id = next_auction_slot_id,
+                         time_capacity = time_capacity',
+                         minimum_time_per_bid = minimum_time_per_bid',
+                         maximum_time_per_bid = maximum_time_per_bid',
+                         highest_bids = [],
+                         start_block_height = start_block_height',
+                         end_block_height = start_block_height' + block_duration }
+
+    put(state{ latest_auction_slot_id = next_auction_slot_id, auction_slots[next_auction_slot_id] = auction_slot })
+    next_auction_slot_id
+
+  // helper functions //
+  private function in_future(height : int) : bool =
+    height > Chain.block_height
+
+  private function is_admin(address : address) : bool =
+    Map.lookup_default(address, state.is_admin, false)
+
+  private function require(b : bool, err : string) =
+    if(!b) abort(err)

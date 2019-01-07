@@ -8,7 +8,7 @@ const config = {
     ttl: 55
 };
 
-describe('FirstComeAuction', () => {
+describe('ArtAuction', () => {
 
     let owner;
     let contract;
@@ -27,45 +27,39 @@ describe('FirstComeAuction', () => {
         publicKey = wallets[0].publicKey;
     });
 
-    it('Deploying FirstComeAuction Contract; initialize', async () => {
-        let contractSource = utils.readFileRelative('./contracts/FirstComeAuction.aes', "utf-8"); // Read the aes file
+    it('Deploying ArtAuction Contract; initialize', async () => {
+        let contractSource = utils.readFileRelative('./contracts/ArtAuction.aes', "utf-8"); // Read the aes file
 
         const compiledContract = await owner.contractCompile(contractSource, { // Compile it
             gas: config.gas
         });
 
         const deployPromise = compiledContract.deploy({ // Deploy it
-            initState: '(10000)',
+            initState: '()',
             options: {
                 ttl: config.ttl,
             }
         });
 
-        assert.isFulfilled(deployPromise, 'Could not deploy the FirstComeAuction Contract'); // Check it is deployed
+        assert.isFulfilled(deployPromise, 'Could not deploy the ArtAuction Contract'); // Check it is deployed
         contract = await deployPromise;
     });
 
-    it('Static Call and Decode FirstComeAuction Contract; initialized available_time correctly', async () => {
+    /*
+    it('Static Call and Decode ArtAuction Contract; initialized available_time correctly', async () => {
         const staticCallAvailableTime = await contract.callStatic('available_time', {args: '()'});
         const decodedAvailableTime = await staticCallAvailableTime.decode('int');
         assert.equal(decodedAvailableTime.value, 10000)
-    });
+    });*/
 
-    it('Call FirstComeAuction Contract; place bid, available time is reduced', async () => {
-        const callBid = contract.call('bid', {
-            args: '("QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, 100)',
-            options: {amount: 1337}
-        });
-        assert.isFulfilled(callBid, 'Could not call the FirstComeAuction bid');
+    it('Call ArtAuction Contract; start auction', async () => {
+        const callBid = contract.call('add_auction_slot', {args: `(100, ${(await owner.height()) + 1}, 10, 1, 100)`});
+        assert.isFulfilled(callBid, 'Could not call the ArtAuction start');
         await callBid;
-
-        const staticCallAvailableTime = await contract.callStatic('available_time', {args: '()'});
-        const decodedAvailableTime = await staticCallAvailableTime.decode('int');
-        assert.equal(decodedAvailableTime.value, 9900)
     });
 
-
-    it('Static Call and Decode FirstComeAuction Contract; all bids include placed bid, util converts correctly', async () => {
+    /*
+    it('Static Call and Decode ArtAuction Contract; all bids include placed bid, util converts correctly', async () => {
         const staticCallAllBids = await contract.callStatic('all_bids', {args: '()'});
         const decodedAllBids = await staticCallAllBids.decode('list((address, string, (int, int), int, int))');
 
@@ -76,5 +70,5 @@ describe('FirstComeAuction', () => {
         assert.equal(bids[0].droneTime, 100);
         assert.equal(bids[0].amount, 1337);
         assert.equal(bids[0].user, publicKey);
-    });
+    });*/
 });

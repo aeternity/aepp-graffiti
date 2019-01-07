@@ -5,7 +5,7 @@ const gasLimit = 1000000;
 const deploy = async (network, privateKey) => {
     let deployer = new Deployer(network, privateKey);
 
-    let result = await deployer.deploy("./contracts/FirstComeAuction.aes");
+    let result = await deployer.deploy("./contracts/ArtAuction.aes");
 };
 
 module.exports = {
