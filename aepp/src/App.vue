@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
-    <div class="content">
-      <ae-main v-if="this.$route.path !== '/iframe'" >
+  <div id="app" class="min-h-screen">
+    <div class="content min-h-screen">
+      <ae-main v-if="this.$route.path !== '/iframe'" class="min-h-screen" >
         <ae-header name="Drone Project"></ae-header>
         <router-view></router-view>
       </ae-main>
@@ -32,3 +32,9 @@
     }
   }
 </script>
+
+<style scoped>
+  .min-h-screen {
+    min-height: 100vh;
+  }
+</style>
