@@ -14,7 +14,8 @@ contract ArtAuction =
     , time_capacity : int
     , minimum_time_per_bid : int
     , maximum_time_per_bid : int
-    , highest_bids : list(bid)
+    , successful_bids : list(bid)
+    , failed_bids : list(bid)
     , start_block_height : int
     , end_block_height : int }
 
@@ -51,14 +52,21 @@ contract ArtAuction =
                          time_capacity = time_capacity',
                          minimum_time_per_bid = minimum_time_per_bid',
                          maximum_time_per_bid = maximum_time_per_bid',
-                         highest_bids = [],
+                         successful_bids = [],
+                         failed_bids = [],
                          start_block_height = start_block_height',
                          end_block_height = start_block_height' + block_duration }
 
     put(state{ latest_auction_slot_id = next_auction_slot_id, auction_slots[next_auction_slot_id] = auction_slot })
     next_auction_slot_id
 
+  public function get_auction_slot(id : int) : auction_slot =
+    switch(Map.lookup(id, state.auction_slots))
+      Some(auction_slot) => auction_slot
+      None => abort("auction_slot does not exist")
+
   // helper functions //
+
   private function in_future(height : int) : bool =
     height > Chain.block_height
 

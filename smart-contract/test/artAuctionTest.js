@@ -53,22 +53,23 @@ describe('ArtAuction', () => {
     });*/
 
     it('Call ArtAuction Contract; start auction', async () => {
-        const callBid = contract.call('add_auction_slot', {args: `(100, ${(await owner.height()) + 1}, 10, 1, 100)`});
+        const callBid = contract.call('add_auction_slot', {args: `(100, ${(await owner.height()) + 5}, 10, 1, 100)`});
         assert.isFulfilled(callBid, 'Could not call the ArtAuction start');
         await callBid;
     });
 
-    /*
-    it('Static Call and Decode ArtAuction Contract; all bids include placed bid, util converts correctly', async () => {
-        const staticCallAllBids = await contract.callStatic('all_bids', {args: '()'});
-        const decodedAllBids = await staticCallAllBids.decode('list((address, string, (int, int), int, int))');
+    it('Static Call and Decode ArtAuction Contract; get_auction_slot', async () => {
+        const staticCallAuctionSlot = await contract.callStatic('get_auction_slot', {args: '(1)'});
+        const decodedAuctionSlot = await staticCallAuctionSlot.decode(Utils.auctionSlotType);
 
-        const bids = Utils.bidListToObject(decodedAllBids);
-        assert.lengthOf(bids, 1);
-        assert.equal(bids[0].hash, 'QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd');
-        assert.deepEqual(bids[0].coordinates, {x: 30, y: 40});
-        assert.equal(bids[0].droneTime, 100);
-        assert.equal(bids[0].amount, 1337);
-        assert.equal(bids[0].user, publicKey);
-    });*/
+        const auctionSlot = Utils.auctionSlotToObject(decodedAuctionSlot);
+        assert.equal(auctionSlot.id, 1);
+        assert.equal(auctionSlot.timeCapacity, 100);
+        assert.equal(auctionSlot.minimumTimePerBid, 1);
+        assert.equal(auctionSlot.maximumTimePerBid, 100);
+        assert.isEmpty(auctionSlot.successfulBids);
+        assert.isEmpty(auctionSlot.failedBids);
+        assert.isNumber(auctionSlot.startBlockHeight);
+        assert.isNumber(auctionSlot.endBlockHeight);
+    });
 });
