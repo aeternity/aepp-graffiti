@@ -1,5 +1,22 @@
 <template>
   <div>
+
+    <InfoLayer>
+      <h2>Bidding</h2>
+      <p class="p-4 pb-0">
+        On the bottom you can enter the AE you wish to spend per second for this image. Once you tap continue the bid will be placed and you will be forwarded to your bidding overview.
+      </p>
+      <p class="p-4 pb-0">
+        First there is the final image and its position on the wall. Then we display the time in seconds it takes to paint the image and the account you are bidding from.
+      </p>
+      <p class="p-4 pb-0">
+        On the bottom you can enter the AE you wish to spend per second for this image. Once you tap continue the bid will be placed and you will be forwarded to your bidding overview.
+      </p>
+      <p class="p-4 pb-0">
+        The 0.45 AE are always added to your bid as this is an estimate of the fee you have to pay for the smart contract to execute.
+      </p>
+    </InfoLayer>
+
     <div class="w-full pl-4 pr-4 flex">
       <h1 class="w-full text-center">Your Bid</h1>
     </div>
@@ -13,10 +30,7 @@
     <div class="w-full p-4">
       <h2 class="w-full text-center mb-4">Your Account</h2>
       <ae-card fill="primary">
-        <template slot="avatar">
-          <ae-identicon :address=pub></ae-identicon>
-        </template>
-        <ae-address :value=pub length="medium" gap=0></ae-address>
+        <ae-address copyToClipboard="" :value=pub length="medium" gap=0></ae-address>
       </ae-card>
     </div>
     <div class="w-full p-4">
@@ -39,10 +53,11 @@
   import CanvasWithControlls from './CanvasWithControlls.vue'
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
   import axios from 'axios'
+  import InfoLayer from '@/components/InfoLayer'
 
   export default {
     name: 'Confirm',
-    components: { CanvasWithControlls },
+    components: { InfoLayer, CanvasWithControlls },
     data () {
       return {
         bidPerDronetime: 0,

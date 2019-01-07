@@ -115,6 +115,9 @@ const store = new Vuex.Store({
 
       fReader.readAsDataURL(file)
     },
+    resetImage({commit}) {
+      commit('modifyOriginalImage', {})
+    },
     async transformImage ({ commit, state, dispatch }) {
 
       commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, {

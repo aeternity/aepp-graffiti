@@ -1,5 +1,16 @@
 <template>
   <div>
+
+    <InfoLayer>
+      <h2>Rendering</h2>
+      <p class="p-4 pb-0">
+        The rendering step shows a SVG version of the image you uploaded in the previous step. Below the preview there are several options to adapt the SVG to your liking.
+      </p>
+      <p class="p-4 pb-0">
+        <!-- TODO Describe what the options do-->
+      </p>
+    </InfoLayer>
+
     <div class="w-full pl-4 pr-4 flex">
       <h1 class="w-full text-center">Artwork Preview</h1>
     </div>
@@ -54,8 +65,10 @@
 
 <script>
 
+  import InfoLayer from '@/components/InfoLayer'
   export default {
     name: 'Render',
+    components: { InfoLayer },
     data () {
       return {
         threshold: 0.1,

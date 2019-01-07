@@ -1,9 +1,19 @@
 <template>
   <div>
+    <InfoLayer>
+      <h2>Positioning</h2>
+      <p class="p-4 pb-0">
+        Drag and drop the artwork to your desired position on the wall. You can pinch to zoom and drag to move.
+      </p>
+      <p class="p-4 pb-0">
+        To adjust the size of your artwork use the scale slider down below. For more detailed positioning you can enter the X and Y coordinates in the in put fields below.
+      </p>
+    </InfoLayer>
+
     <div class="w-full pl-4 pb-4 pr-4 flex">
       <h1 class="w-full text-center">Put Your Artwork on the Map</h1>
     </div>
-    <div class="w-full pt-4 pb-4">
+    <div class="w-full pt-4">
         <CanvasWithControlls :draggable=true :scale="scale" ref="canvas"></CanvasWithControlls>
     </div>
     <div class="p-4 w-full">
@@ -33,10 +43,11 @@
 
 <script>
   import CanvasWithControlls from './CanvasWithControlls.vue'
+  import InfoLayer from '@/components/InfoLayer'
 
   export default {
     name: 'Positioning',
-    components: { CanvasWithControlls },
+    components: { InfoLayer, CanvasWithControlls },
     data () {
       return {
         scale: 1

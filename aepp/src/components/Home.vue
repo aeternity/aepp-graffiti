@@ -20,26 +20,16 @@
     <div class="w-full p-4 flex justify-center">
       <ae-button face="round" fill="alternative" @click="$router.push('test')" type="exciting" >TEST</ae-button>
     </div>
-    <ae-button @click="showBackdrop" face="round" extend>Show Backdrop</ae-button>
-    <ae-backdrop v-if="backDropVisible" @click.native.capture="showBackdrop">
-      <ae-text>This text lives inside the backdrop area</ae-text>
-    </ae-backdrop>
   </div>
 </template>
 
 <script>
   import CanvasJS from './CanvasJS.vue'
+  import InfoLayer from '@/components/InfoLayer'
   export default {
     name: 'Home',
-    components: { CanvasJS },
-    data() {
-      return { backDropVisible: false };
-    },
-    methods: {
-      showBackdrop() {
-        this.backDropVisible = !this.backDropVisible;
-      }
-    }
+    components: { InfoLayer, CanvasJS },
+
   }
 </script>
 

@@ -1,8 +1,20 @@
 <template>
   <div>
+
+    <InfoLayer>
+      <h2>Uploading an Image</h2>
+      <p class="p-4 pb-0">
+        On this page you are asked to upload an image. It will accept most common image formats including but not limited to: jpg, jpeg, png
+      </p>
+      <p class="p-4 pb-0">
+        Please do not upload SVG images, the SVG for the drone will be created later in this process and there will be options to adjust the final appearance.
+      </p>
+    </InfoLayer>
+
     <div class="w-full pl-4 pr-4 flex">
       <h1 class="w-full text-center">Contribute</h1>
     </div>
+
     <div class="w-full p-4 flex justify-center">
       <div class="w-full" v-if="isInitial">
         <form enctype="multipart/form-data" novalidate class="w-full">
@@ -20,7 +32,11 @@
         </div>
       </div>
 
-      <div v-if="isSuccess">
+      <div class="w-full p-4 text-center" v-if="isLoading">
+        <ae-loader class="p-4"></ae-loader>
+      </div>
+
+      <div v-if="originalImage.src">
         <div class="w-full flex justify-center p-4">
           <img ref="image" class="w-full h-full" @load="imageLoad" :src="originalImage.src" :alt="originalImage.name">
         </div>
@@ -45,11 +61,13 @@
 
 <script>
 
-  const STATUS_INITIAL = 0, STATUS_SUCCESS = 2, STATUS_ERROR = 3
+  import InfoLayer from './InfoLayer'
+
+  const STATUS_INITIAL = 0, STATUS_LOADING = 1, STATUS_SUCCESS = 2, STATUS_ERROR = 3
 
   export default {
     name: 'Upload',
-    components: {},
+    components: { InfoLayer },
     data () {
       return {
         fileCount: 0,
@@ -65,6 +83,9 @@
       isSuccess () {
         return this.currentStatus === STATUS_SUCCESS
       },
+      isLoading () {
+        return this.currentStatus === STATUS_LOADING
+      },
       isError () {
         return this.currentStatus === STATUS_ERROR
       },
@@ -75,11 +96,13 @@
     methods: {
       reset () {
         this.currentStatus = STATUS_INITIAL
+        this.$store.dispatch('resetImage')
       },
       back() {
         this.$router.push('/');
       },
       filesChange (fileList) {
+        this.currentStatus = STATUS_LOADING
         // handle file changes
         const file = fileList[0]
 
@@ -96,13 +119,13 @@
         }
 
         this.$store.dispatch(`uploadImage`, file)
-        this.currentStatus = STATUS_SUCCESS
+
       },
       imageLoad () {
+        this.currentStatus = STATUS_SUCCESS
         this.$store.dispatch(`updateOriginalImage`, {
           width: this.$refs.image.naturalWidth,
           height: this.$refs.image.naturalHeight
-
         })
       },
       next() {
