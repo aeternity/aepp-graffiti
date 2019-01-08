@@ -1,4 +1,8 @@
 const ipfsWrapper = require('./ipfs.js');
+const fs = require('fs');
+const path = require('path');
+
+let slots = fs.readFileSync(path.join(__dirname, './slots.json'));
 
 const logic = {};
 
@@ -39,6 +43,16 @@ logic.ipfs = (req, res) => {
         res.end(buffer);
 
     }).catch(e => res.send(e.message));
+};
+
+logic.getSlots = (req, res) => {
+    res.send(slots)
+};
+
+logic.setSlots = (req, res) => {
+    if(req.query.token !== 'supersecrettoken') return res.sendStatus(401);
+    slots = req.body;
+    res.sendStatus(200);
 };
 
 module.exports = logic;

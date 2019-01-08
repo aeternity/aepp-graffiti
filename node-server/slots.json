@@ -1,0 +1,21 @@
+{
+  "amount": 4,
+  "slots": [
+    {
+      "firstBlock": 19951,
+      "lastBlock": 20050
+    },
+    {
+      "firstBlock": 20051,
+      "lastBlock": 20150
+    },
+    {
+      "firstBlock": 20151,
+      "lastBlock": 20250
+    },
+    {
+      "firstBlock": 20251,
+      "lastBlock": 20350
+    }
+  ]
+}

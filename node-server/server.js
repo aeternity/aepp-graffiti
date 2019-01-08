@@ -1,10 +1,12 @@
 const express = require('express');
-const canvas = require('./canvas.js');
+//const canvas = require('./canvas.js');
 const fileUpload = require('express-fileupload');
 const app = express();
 const logic = require('./logic');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
+app.use(bodyParser.json());
 app.use(cors({
     origin: '*',
     optionsSuccessStatus: 200,
@@ -23,9 +25,12 @@ app.get('/ipfs', logic.ipfs);
 /* upload form-data image key */
 app.post('/upload', logic.upload);
 
+app.get('/slots', logic.getSlots);
+app.post('/slots', logic.setSlots);
+
 app.use((req, res) => {
     res.sendStatus(404);
 });
 
-canvas.init();
+//canvas.init();
 app.listen(3000);
