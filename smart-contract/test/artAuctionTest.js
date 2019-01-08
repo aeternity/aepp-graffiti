@@ -52,13 +52,12 @@ describe('ArtAuction', () => {
         contract = await deployPromise;
     });
 
-    it('Call ArtAuction Contract; add auction slot', async () => {
-        const callAddAuction = contract.call('add_auction_slot', {
-            args: `(100, ${(await owner.height()) + 1}, 10, 1, 100)`,
+    /*it('Call ArtAuction Contract; add auction slot', async () => {
+        const callAddAuction = await contract.call('add_auction_slot', {
+            args: `(100, ${(await owner.height()) + 2}, 10, 1, 100)`,
             options: {amount: 0}
-        });
-        assert.isFulfilled(callAddAuction, 'Could not call the ArtAuction add auction slot');
-        await callAddAuction;
+        }).catch(decodeError);
+        assert.isTrue(!!callAddAuction, 'Could not call the ArtAuction add auction slot');
     });
 
     it('Static Call and Decode ArtAuction Contract; get_auction_slot', async () => {
@@ -98,11 +97,31 @@ describe('ArtAuction', () => {
     });
 
     it('Call ArtAuction Contract; place bid', async () => {
-        await owner.awaitHeight(await owner.height() + 2);
+        await owner.awaitHeight(await owner.height() + 3);
         const callPlaceBid = await contract.call('place_bid', {
             args: `(1, 10,"QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
             options: {amount: 1337}
         }).catch(decodeError);
         assert.isTrue(!!callPlaceBid, 'Could not call the ArtAuction place bid');
+    });*/
+
+    it('Call ArtAuction Contract; test_foldr', async () => {
+        const called = await contract.callStatic('test_foldr', {
+            args: `()`,
+            options: {amount: 0}
+        }).catch(decodeError);
+        const decoded = await called.decode('(list((int, int)), list((int, int)), (int, int))');
+        console.log('sufficient', JSON.stringify(decoded.value[0].value.map(x => x.value)));
+        console.log('to_low', JSON.stringify(decoded.value[1].value.map(x => x.value)));
     });
+
+    it('Call ArtAuction Contract; test_sum', async () => {
+        const called = await contract.callStatic('test_sum', {
+            args: `()`,
+            options: {amount: 0}
+        }).catch(decodeError);
+        const decoded = await called.decode('int');
+        console.log(decoded.value);
+    });
+
 });

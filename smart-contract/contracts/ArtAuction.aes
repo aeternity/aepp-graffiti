@@ -75,22 +75,45 @@ contract ArtAuction =
 
   // TODO: check canvas size
   public stateful function place_bid(auction_slot_id : int,
-                                     time : int,
-                                     artwork_reference : string,
-                                     x : int,
-                                     y : int) =
+                                     time' : int,
+                                     artwork_reference' : string,
+                                     x' : int,
+                                     y' : int) =
     require(is_greater_zero(Call.value), "place_bid call value has to be greater than 0")
     let auction_slot = get_auction_slot(auction_slot_id)
-    require(auction_slot.time_capacity >= time, "place_bid time_capacity of auction_slot has to be greater or equals time bid for")
+    require(auction_slot.time_capacity >= time', "place_bid time_capacity of auction_slot has to be greater or equals time bid for")
     require(auction_slot.start_block_height < Chain.block_height, "place_bid auction_slot is not yet opened at height")
     require(auction_slot.end_block_height > Chain.block_height, "place_bid auction_slot is already closed at height")
-    require(auction_slot.minimum_time_per_bid =< time, "place_bid time has to be greater or equals auction_slot minimum_time_per_bid")
-    require(auction_slot.maximum_time_per_bid >= time, "place_bid time has to be smaller or equals auction_slot maximum_time_per_bid")
+    require(auction_slot.minimum_time_per_bid =< time', "place_bid time has to be greater or equals auction_slot minimum_time_per_bid")
+    require(auction_slot.maximum_time_per_bid >= time', "place_bid time has to be smaller or equals auction_slot maximum_time_per_bid")
+
+    //let sorted_successful_bids = auction_slot.successful_bids
 
 
 
 
+  record test_bid =
+    { amnt : int
+    , tme : int }
 
+  public function test_foldr() =
+    let successful_and_new_bid_sorted_by_amount_asc =
+      [{ amnt = 1, tme = 4 }, { amnt = 4, tme = 5 }, {amnt = 8, tme = 2}]
+    foldr(f', ([], []), successful_and_new_bid_sorted_by_amount_asc)
+
+  public function f'(bid : test_bid, acc_bids) =
+    let time_capacity = 10
+    switch(acc_bids)
+      (sufficient, to_low) =>
+        if(time_capacity >= sum(sufficient, (x) => x.tme) + bid.tme)
+          (bid :: sufficient, to_low)
+        else
+          (sufficient, bid :: to_low)
+
+
+  public function test_sum() =
+    let successful_bids = [{ amnt = 5, tme = 5 }, { amnt = 4, tme = 4 }]
+    sum(successful_bids, (x) => x.tme)
 
   public stateful function admin_withdraw() =
     require(is_admin(Call.caller), "admin_withdraw caller has to be admin")
@@ -104,10 +127,26 @@ contract ArtAuction =
     switch(tuple)
       (_, e) => e
 
+  private function size(l : list('a)) : int =
+    size'(l, 0)
+
+  private function sum(l : list('a), f : 'a => int) : int =
+    foldr((x, y) => x + y, 0, map(f, l))
+
+  private function size'(l : list('a), x : int) : int =
+    switch(l)
+      [] => x
+      _ :: l' => size'(l', x + 1)
+
   private function map(f : 'a => 'b, l : list('a)) : list('b) =
     switch(l)
      [] => []
      e :: l' => f(e) :: map(f, l')
+
+  private function foldr(f : (('a, 'b) => 'b), z: 'b, l : list('a)) : 'b =
+    switch(l)
+      [] => z
+      e :: l' => f(e, foldr(f, z, l'))
 
   private function is_greater_zero(x : int) : bool = x > 0
 
