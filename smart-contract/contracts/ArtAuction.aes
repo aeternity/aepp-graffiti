@@ -42,7 +42,7 @@ contract ArtAuction =
                                             start_block_height' : int,
                                             block_duration : int,
                                             minimum_time_per_bid' : int,
-                                            maximum_time_per_bid' : int) =
+                                            maximum_time_per_bid' : int) : int =
     require(is_admin(Call.caller), "add_auction_slot caller has to be admin")
     require(in_future(start_block_height'), "add_auction_slot start_block_height' has to be in future")
     require(is_greater_zero(time_capacity'), "add_auction_slot time_capacity' has to be greater than 0")
@@ -73,7 +73,26 @@ contract ArtAuction =
       Some(auction_slot) => auction_slot
       None => abort("auction_slot does not exist")
 
-  public function admin_withdraw() =
+  // TODO: check canvas size
+  public stateful function place_bid(auction_slot_id : int,
+                                     time : int,
+                                     artwork_reference : string,
+                                     x : int,
+                                     y : int) =
+    require(is_greater_zero(Call.value), "place_bid call value has to be greater than 0")
+    let auction_slot = get_auction_slot(auction_slot_id)
+    require(auction_slot.time_capacity >= time, "place_bid time_capacity of auction_slot has to be greater or equals time bid for")
+    require(auction_slot.start_block_height < Chain.block_height, "place_bid auction_slot is not yet opened at height")
+    require(auction_slot.end_block_height > Chain.block_height, "place_bid auction_slot is already closed at height")
+    require(auction_slot.minimum_time_per_bid =< time, "place_bid time has to be greater or equals auction_slot minimum_time_per_bid")
+    require(auction_slot.maximum_time_per_bid >= time, "place_bid time has to be smaller or equals auction_slot maximum_time_per_bid")
+
+
+
+
+
+
+  public stateful function admin_withdraw() =
     require(is_admin(Call.caller), "admin_withdraw caller has to be admin")
     let balance_to_withdraw = Contract.balance
     Chain.spend(Call.caller, balance_to_withdraw)

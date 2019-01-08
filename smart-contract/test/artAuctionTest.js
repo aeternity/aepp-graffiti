@@ -8,11 +8,17 @@ const config = {
     ttl: 55
 };
 
+
 describe('ArtAuction', () => {
 
     let owner;
     let contract;
     let publicKey;
+
+    const decodeError = async (e) => {
+        const decodedError = await owner.contractDecodeData('string', e.returnValue).catch(e => console.error(e));
+        console.error('decodedError', decodedError);
+    };
 
     before(async () => {
         const ownerKeyPair = wallets[0];
@@ -46,13 +52,13 @@ describe('ArtAuction', () => {
         contract = await deployPromise;
     });
 
-    it('Call ArtAuction Contract; start auction', async () => {
-        const callBid = contract.call('add_auction_slot', {
-            args: `(100, ${(await owner.height()) + 5}, 10, 1, 100)`,
+    it('Call ArtAuction Contract; add auction slot', async () => {
+        const callAddAuction = contract.call('add_auction_slot', {
+            args: `(100, ${(await owner.height()) + 1}, 10, 1, 100)`,
             options: {amount: 0}
         });
-        assert.isFulfilled(callBid, 'Could not call the ArtAuction start');
-        await callBid;
+        assert.isFulfilled(callAddAuction, 'Could not call the ArtAuction add auction slot');
+        await callAddAuction;
     });
 
     it('Static Call and Decode ArtAuction Contract; get_auction_slot', async () => {
@@ -89,5 +95,14 @@ describe('ArtAuction', () => {
         const callWithdraw = await contract.call('admin_withdraw', {args: `()`, options: {amount: 0}});
         const decodedWithdraw = await callWithdraw.decode('int');
         assert.equal(decodedWithdraw.value, 0);
+    });
+
+    it('Call ArtAuction Contract; place bid', async () => {
+        await owner.awaitHeight(await owner.height() + 2);
+        const callPlaceBid = await contract.call('place_bid', {
+            args: `(1, 10,"QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 1337}
+        }).catch(decodeError);
+        assert.isTrue(!!callPlaceBid, 'Could not call the ArtAuction place bid');
     });
 });
