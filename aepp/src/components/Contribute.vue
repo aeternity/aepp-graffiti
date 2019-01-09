@@ -27,8 +27,12 @@
             </p>
           </div>
         </form>
-        <div class="w-full flex justify-center p-4">
-          <ae-button face="round" fill="alternative" @click="back">Back</ae-button>
+        <div class="w-full p-4">
+          <ae-list>
+            <ae-list-item @click="back" class="justify-center">
+              <ae-text face="uppercase-base" weight="bold">Back</ae-text>
+            </ae-list-item>
+          </ae-list>
         </div>
       </div>
 
@@ -40,9 +44,16 @@
         <div class="w-full flex justify-center p-4">
           <img ref="image" class="w-full h-full" @load="imageLoad" :src="originalImage.src" :alt="originalImage.name">
         </div>
-        <div class="w-full flex justify-center p-4">
-          <ae-button face="round" fill="alternative" class="mr-4" @click="reset">Reset</ae-button>
-          <ae-button face="round" fill="primary" @click="next">Preview Artwork</ae-button>
+        <div class="w-full p-4">
+          <ae-list>
+            <ae-list-item class="justify-center">
+              <ae-button face="round" fill="primary" @click="next" extend>Preview Artwork</ae-button>
+            </ae-list-item>
+            <ae-list-item @click="reset" class="justify-center">
+              <ae-text face="uppercase-base" weight="bold">Reset</ae-text>
+            </ae-list-item>
+          </ae-list>
+
         </div>
       </div>
       <div v-if="isError" class="w-full p-4">

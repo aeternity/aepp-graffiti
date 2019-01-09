@@ -14,18 +14,18 @@ import 'tailwindcss';
  * p {}
  * h1, h2, h3, h4, h5, h6 {}
  */
-// import '@aeternity/aepp-components-3/dist/aepp.global.css'
+// import '@aeternity/aepp-components/dist/aepp.global.css'
 
 /**
  * This will only include font files
  */
-import '@aeternity/aepp-components-3/dist/aepp.fonts.css'
+import '@aeternity/aepp-components/dist/aepp.fonts.css'
 
 /**
  * These are all components styles. They're scoped
  * so they won't collide with other styles.
  */
-import '@aeternity/aepp-components-3/dist/aepp.components.css'
+import '@aeternity/aepp-components/dist/aepp.components.css'
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -40,7 +40,7 @@ import VueMeta from 'vue-meta'
  *
  * http://aeternity.com/aepp-components/
  */
-import Components from '@aeternity/aepp-components-3'
+import Components from '@aeternity/aepp-components'
 
 Vue.use(VueRouter)
 Vue.use(Components)

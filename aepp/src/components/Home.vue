@@ -5,30 +5,34 @@
     </div>
     <div class="w-full pt-4 pb-4">
       <div class="border-grey-darker border-t border-b">
-        <CanvasJS :draggable=true ></CanvasJS>
+        <CanvasJS :draggable=true></CanvasJS>
       </div>
     </div>
-    <div class="w-full p-4 flex justify-center">
-      <ae-button face="round" fill="primary" @click="$router.push(`contribute`)" >Contribute Art</ae-button>
-    </div>
-    <div class="w-full p-4 flex justify-center">
-      <ae-button face="round" fill="primary" @click="$router.push(`overview`)" >My Bids Overview</ae-button>
-    </div>
-    <div class="w-full p-4 flex justify-center">
-      <ae-button face="round" fill="secondary">Learn More</ae-button>
-    </div>
-    <div class="w-full p-4 flex justify-center">
-      <ae-button face="round" fill="alternative" @click="$router.push('test')" type="exciting" >TEST</ae-button>
+    <div class="w-full pl-4 pr-4">
+      <ae-list>
+        <ae-list-item>
+          <ae-button extend="" face="round" fill="primary" @click="$router.push('contribute')">Contribute Art
+          </ae-button>
+        </ae-list-item>
+        <ae-list-item class="justify-center" @click="$router.push('overview')">
+          <ae-text align="center" weight="bold" class="color-primary" face="uppercase-base">
+            My Bids Overview
+          </ae-text>
+        </ae-list-item>
+        <ae-list-item class="justify-center" fill="secondary">
+          <ae-text align="center" weight="bold" face="uppercase-base">Learn More</ae-text>
+        </ae-list-item>
+      </ae-list>
     </div>
   </div>
 </template>
 
 <script>
   import CanvasJS from './CanvasJS.vue'
-  import InfoLayer from '@/components/InfoLayer'
+
   export default {
     name: 'Home',
-    components: { InfoLayer, CanvasJS },
+    components: { CanvasJS },
 
   }
 </script>

@@ -41,9 +41,15 @@
       <h2 class="w-full text-center mb-4">Your Total</h2>
       <ae-text face="mono-xl" class="text-center">{{bid}} AE</ae-text>
     </div>
-    <div class="w-full p-4 flex justify-center">
-      <ae-button class="mr-4" face="round" fill="neutral" @click="back">Back</ae-button>
-      <ae-button face="round" fill="primary" @click="next">Continue</ae-button>
+    <div class="w-full p-4">
+      <ae-list>
+        <ae-list-item>
+          <ae-button face="round" fill="primary" @click="next" extend>Place Bid</ae-button>
+        </ae-list-item>
+        <ae-list-item @click="back" class="justify-center">
+          <ae-text face="uppercase-base" weight="bold">Back</ae-text>
+        </ae-list-item>
+      </ae-list>
     </div>
   </div>
 </template>

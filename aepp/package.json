@@ -9,8 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@aeternity/aepp-components": "^2.0.15",
-    "@aeternity/aepp-components-3": "^3.0.0-alpha.8",
+    "@aeternity/aepp-components": "git+ssh://git@github.com/aeternity/aepp-components.git#develop",
     "@aeternity/aepp-sdk": "^1.1.2",
     "axios": "^0.18.0",
     "dronetracer": "git+ssh://git@github.com/THE-WYE/DroneTracer",
@@ -24,12 +23,15 @@
     "vuex-persist": "^2.0.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.2.0",
-    "@vue/cli-plugin-eslint": "^3.2.0",
-    "@vue/cli-service": "^3.2.0",
+    "@vue/babel-helper-vue-jsx-merge-props": "^1.0.0-beta.1",
+    "@vue/cli-plugin-babel": "^3.3.0",
+    "@vue/cli-plugin-eslint": "^3.3.0",
+    "@vue/cli-service": "^3.3.0",
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.8.0",
-    "eslint-plugin-vue": "^5.0.0-0",
+    "css-loader": "^2.1.0",
+    "eslint": "^5.12.0",
+    "eslint-plugin-vue": "^5.1.0",
+    "file-loader": "^3.0.1",
     "postcss-import": "^12.0.1",
     "postcss-loader": "^3.0.0",
     "tailwindcss": "^0.7.2",

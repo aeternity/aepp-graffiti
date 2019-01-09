@@ -40,13 +40,13 @@
 
         // ADD OBJECT ID & LAYER
         imageObject.ref = 'overlayImage'
+        imageObject.layer = this.overlayLayer
 
         // RENDER IMAGE TO CANVAS
         this.createImage(imageObject)
 
         // SAVE INFO
         this.overlayImageId = 'overlayImage'
-
       },
 
       moveOverlayImage ({ xDiff, yDiff } ) {
@@ -70,14 +70,16 @@
         this.$emit('positionUpdate', newPos)
 
         // RERENDER THE OVERLAY LAYER
-        this.stage.batchDraw()
+        this.overlayLayer.draw()
       },
 
       setOverlayImageSize(width, height) {
         const oI = this.stage.find(`#${this.overlayImageId}`)[0]
+        oI.clearCache()
         oI.width(width)
         oI.height(height)
-        this.stage.draw();
+        oI.cache()
+        this.overlayLayer.draw();
       },
 
       getOverlayPosition () {
@@ -105,6 +107,7 @@
         if (imageObject.layer) {
           imageObject.layer.add(i)
           imageObject.layer.draw()
+          i.cache()
         } else {
           this.layer.add(i)
           this.layer.draw()
@@ -114,7 +117,6 @@
         const { x, y } = this.stage.getPosition()
         this.stage.position({ x: x + xDiff, y: y + yDiff })
         this.stage.batchDraw()
-        return this.stage.getPosition()
       },
       getStageDimensions () {
         return {
@@ -133,8 +135,6 @@
           y: this.stage.y() / oldScale - this.stage.height() / oldScale / 2,
         }
 
-        console.log(mousePointTo);
-
         //this.stage.scale({ x: newScale, y: newScale })
         this.stage.scaleX(newScale)
         this.stage.scaleY(newScale)
@@ -143,8 +143,6 @@
           x: (mousePointTo.x + this.stage.width() / 2 / newScale) * newScale,
           y: (mousePointTo.y + this.stage.height() / 2 / newScale) * newScale
         }
-
-        console.log(newPos)
 
         this.stage.position(newPos)
         this.stage.batchDraw()
@@ -199,7 +197,6 @@
           }
 
           stage.position(newPos)
-          console.log(newPos, scale, oldScale, offsetTop, offsetLeft)
           stage.batchDraw()
           this.lastDist = dist
 
