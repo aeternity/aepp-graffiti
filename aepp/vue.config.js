@@ -9,6 +9,9 @@ module.exports = {
         // AE_SDK_MODULES: '../../../../../es/'
       }
     },
-    devtool: 'source-map'
+    devtool: 'source-map',
+    devServer: {
+      port: 8081
+    }
   }
 }

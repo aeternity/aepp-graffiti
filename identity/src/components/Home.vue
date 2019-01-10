@@ -54,7 +54,7 @@ export default {
       wallet: null,
       balance: null,
       height: null,
-      aeppUrl: '//0.0.0.0:8080'
+      aeppUrl: '//0.0.0.0:8081'
     }
   },
   computed: {
