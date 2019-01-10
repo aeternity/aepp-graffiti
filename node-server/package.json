@@ -10,11 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "@aeternity/aepp-sdk": "^1.2.1",
+    "body-parser": "latest",
     "canvas": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-fileupload": "^1.0.0",
     "ipfs-http-client": "^28.1.0",
-    "body-parser": "latest"
+    "xml-js": "^1.6.8"
   }
 }

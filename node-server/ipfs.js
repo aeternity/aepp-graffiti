@@ -3,27 +3,28 @@ const Buffer = require('buffer').Buffer;
 
 const ipfsWrap = {};
 
-ipfsWrap.node = null;
+let node = null;
 
 ipfsWrap.init = () => {
-    ipfsWrap.node = ipfsClient('localhost', '5001', {protocol: 'http'});
-    return ipfsWrap;
+    node = ipfsClient('localhost', '5001', {protocol: 'http'});
 };
 
 ipfsWrap.writeFile = (buffer) => {
-    return ipfsWrap.node.add({
+    if(!node) ipfsWrap.init();
+    return node.add({
         content: buffer
     });
 };
 
 // DEBUG WITH QmQjqVu5qsd4PPqJnTcLXmvznMw7X2UEjtLP9NKCtwWMx3
 ipfsWrap.getFile = async (hash) => {
+    if(!node) ipfsWrap.init();
     try {
-        const data = await ipfsWrap.node.cat(hash);
+        const data = await node.cat(hash);
         return Buffer.from(data);
     } catch (e) {
         console.error('ipfs cat', e.message, hash);
     }
 };
 
-module.exports = ipfsWrap.init();
+module.exports = ipfsWrap;

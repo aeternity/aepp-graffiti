@@ -3,6 +3,7 @@ const path = require('path');
 const {createCanvas, Image} = require('canvas');
 const blockchain = require('./blockchain.js');
 const ipfsWrapper = require('./ipfs.js');
+const convert = require('xml-js');
 
 const canvas = {};
 
@@ -32,8 +33,6 @@ canvas.init = async () => {
     setInterval(intervalJob, renderInterval);
 };
 
-canvas.init();
-
 canvas.pathByHeight = () => {
     return `./rendered/height/${current_height}.png`;
 };
@@ -62,10 +61,34 @@ canvas.mergeImages = async (sources) => {
     // draw images to canvas
     loadedImages.forEach(image => {
         canvasContext.globalAlpha = image.opacity ? image.opacity : 1;
-        canvasContext.drawImage(image.img, image.x || 0, image.y || 0);
+        if(image.width > 0 && image.height > 0) {
+            canvasContext.drawImage(image.img, image.x || 0, image.y || 0, image.width, image.height);
+        } else {
+            canvasContext.drawImage(image.img, image.x || 0, image.y || 0);
+        }
     });
 
     return tempCanvas.toBuffer('image/png');
+};
+
+canvas.getSVGDimensions = (svgString) => {
+    try {
+        const result = convert.xml2js(svgString, {compact: true});
+        let height = String(result.svg._attributes.height);
+        let width = String(result.svg._attributes.width);
+        const re = /([\d.]+)mm/;
+        if (height.includes('mm')) {
+            height = Number(height.match(re)[1]) / (pixelsPerCentimeter * 10)
+        }
+        if (width.includes('mm')) {
+            width = Number(width.match(re)[1]) / (pixelsPerCentimeter * 10)
+        }
+        return {width, height}
+
+    } catch (e) {
+        console.error('Could not get width / height from image ', svgString.substr(0, 20));
+        return {width: 0, height: 0}
+    }
 };
 
 canvas.render = async () => {
@@ -75,7 +98,7 @@ canvas.render = async () => {
     const ipfsSources = await Promise.all(bids.map(bid => {
         return ipfsWrapper.getFile(bid.hash).then(filebuffer => {
             return {filebuffer: filebuffer, bid: bid};
-        });
+        }).catch(e => console.error(e));
     }));
 
     // filter files unable to be fetched, map to base64 encoding with coordinates included
@@ -83,10 +106,14 @@ canvas.render = async () => {
         .filter(data => !!data.filebuffer)
         .map(data => {
             const base64buffer = data.filebuffer.toString('base64');
+            const {width, height} = canvas.getSVGDimensions(data.filebuffer.toString('utf8'));
+
             return {
                 src: 'data:image/svg+xml;base64,' + base64buffer,
                 x: data.bid.coordinates.x * pixelsPerCentimeter,
-                y: data.bid.coordinates.y * pixelsPerCentimeter
+                y: data.bid.coordinates.y * pixelsPerCentimeter,
+                width,
+                height
             };
         });
 

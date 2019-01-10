@@ -1,5 +1,5 @@
 const express = require('express');
-//const canvas = require('./canvas.js');
+const canvas = require('./canvas.js');
 const fileUpload = require('express-fileupload');
 const app = express();
 const logic = require('./logic');
@@ -32,5 +32,5 @@ app.use((req, res) => {
     res.sendStatus(404);
 });
 
-//canvas.init();
+canvas.init();
 app.listen(3000);
