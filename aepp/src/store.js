@@ -1,4 +1,3 @@
-// TODO: store is currently unused, but added for future convenience
 import Vuex from 'vuex'
 import Vue from 'vue'
 import VuexPersist from 'vuex-persist'
@@ -6,6 +5,9 @@ import Jimp from 'jimp/es'
 import DroneTracer from '../node_modules/dronetracer/src/DroneTracer/main.js'
 
 Vue.use(Vuex)
+
+//const API_URL = 'https://ae-art-server.piwo.app';
+const API_URL = 'http://localhost:3000';
 
 const vuexPersist = new VuexPersist({
   key: 'ae-drone',
@@ -40,6 +42,7 @@ const store = new Vuex.Store({
       x: 0,
       y: 0
     },
+    droneObject: null,
 
     // HARDCODED SETTINGS
     imageSettings: {
@@ -47,7 +50,7 @@ const store = new Vuex.Store({
       min: { width: 400, height: 300 }
     },
     canvas: {
-      url: 'https://ae-art-server.piwo.app/rendered/latest.png',
+      url: API_URL + '/rendered/latest.png',
       width: 3300,
       height: 5000,
       meterToPixel: 100, // Meter * meterToPixel = Pixel
@@ -62,7 +65,7 @@ const store = new Vuex.Store({
     blockchainSettings: {
       contractAddress: 'ct_xZX75A1E5JWbuLi4cnn6eKqd3ZGnKF3vM9c656bFVS8ZaPYVp'
     },
-    droneObject: null
+    apiUrl: API_URL
   },
   //plugins: [vuexPersist.plugin],
   getters: {},

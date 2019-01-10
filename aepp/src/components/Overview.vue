@@ -55,8 +55,7 @@
       return {
         bids: [],
         state: INITAL_STATE,
-        address: null,
-        baseURL: 'https://ae-art-server.piwo.app/ipfs'
+        address: null
       }
     },
     computed: {
@@ -97,7 +96,7 @@
         else return this.state = EMPTY_LIST
 
         this.bids = await Promise.all(this.bids.map( async bid => {
-          let response = await axios.get(this.baseURL + "?hash=" + bid.hash);
+          let response = await axios.get(this.$store.state.apiUrl + "/ipfs?hash=" + bid.hash);
           bid.image = 'data:image/svg+xml;base64,' + btoa(response.data);
           return bid;
         }))

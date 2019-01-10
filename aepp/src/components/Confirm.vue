@@ -99,7 +99,7 @@
           const file = this.dataURItoBlob(this.transformedImage.src)
           console.log(file)
           data.append('image', file)
-          const response = await axios.post('https://ae-art-server.piwo.app/upload', data, { headers: { 'Content-Type': 'multipart/form-data' } })
+          const response = await axios.post(`${this.$store.state.apiUrl}/upload`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
           this.ipfsAddr = response.data.hash
           console.log(this.ipfsAddr)
 
