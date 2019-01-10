@@ -93,7 +93,6 @@
         this.$router.push('positioning')
       },
       async next () {
-        // TODO do smart contract stuff
         try {
           const data = new FormData()
           const file = this.dataURItoBlob(this.transformedImage.src)
