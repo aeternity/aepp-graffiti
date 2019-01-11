@@ -88,7 +88,8 @@
         })
       },
       async updateMyBids()  {
-        const calledAllBids = await this.client.contractEpochCall(this.blockchainSettings.contractAddress, 'sophia-address', 'all_bids', '()').catch(e => console.error(e))
+        const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_bids', '()', '').catch(e => console.error(e))
+
         const decodedAllBids = await this.client.contractEpochDecodeData('list((address, string, (int, int), int, int))', calledAllBids.out).catch(e => console.error(e))
         this.bids =  this.bidListToObject(decodedAllBids).filter(bid => bid.user === this.address)
 
