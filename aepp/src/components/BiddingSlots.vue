@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="p-4" v-for="slot in slots">
+    <div class="p-4 pb-0" v-for="slot in slots">
       <ae-card>
         <div class="flex flex-row justify-between">
           <div class="flex flex-col pr-6">
