@@ -22,6 +22,9 @@
         <ae-list-item class="justify-center" fill="secondary">
           <ae-text align="center" weight="bold" face="uppercase-base">Learn More</ae-text>
         </ae-list-item>
+        <ae-list-item class="justify-center" fill="secondary" @click="$router.push('slots')">
+          <ae-text align="center" weight="bold" face="uppercase-base">Slots</ae-text>
+        </ae-list-item>
       </ae-list>
     </div>
   </div>

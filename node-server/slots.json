@@ -2,20 +2,24 @@
   "amount": 4,
   "slots": [
     {
-      "firstBlock": 19951,
-      "lastBlock": 20050
+      "firstBlock": 20000,
+      "lastBlock": 21000,
+      "timeAvailable": 10000
     },
     {
-      "firstBlock": 20051,
-      "lastBlock": 20150
+      "firstBlock": 21001,
+      "lastBlock": 22000,
+      "timeAvailable": 10000
     },
     {
-      "firstBlock": 20151,
-      "lastBlock": 20250
+      "firstBlock": 22001,
+      "lastBlock": 23000,
+      "timeAvailable": 10000
     },
     {
-      "firstBlock": 20251,
-      "lastBlock": 20350
+      "firstBlock": 23001,
+      "lastBlock": 24000,
+      "timeAvailable": 10000
     }
   ]
 }

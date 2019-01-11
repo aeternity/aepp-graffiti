@@ -9,6 +9,7 @@ import Desktop from './components/Desktop'
 import Overview from '@/components/Overview'
 import IFrame from '@/components/IFrame'
 import Onboarding from '@/components/Onboarding'
+import BiddingSlots from '@/components/BiddingSlots'
 
 export default () => {
   const routes = [
@@ -58,6 +59,12 @@ export default () => {
       path: '/overview',
       name: 'overview',
       component: Overview,
+      props: route => ({ query: route.query })
+    },
+    {
+      path: '/slots',
+      name: 'slots',
+      component: BiddingSlots,
       props: route => ({ query: route.query })
     },
     {
