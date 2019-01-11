@@ -6,7 +6,6 @@ import Positioning from './components/Positioning.vue'
 import Confirm from './components/Confirm.vue'
 import Test from './components/Test.vue'
 import Desktop from './components/Desktop'
-import Success from './components/Success'
 import Overview from '@/components/Overview'
 import IFrame from '@/components/IFrame'
 import Onboarding from '@/components/Onboarding'
@@ -53,12 +52,6 @@ export default () => {
       path: '/iframe',
       name: 'iframe',
       component: IFrame,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/success',
-      name: 'success',
-      component: Success,
       props: route => ({ query: route.query })
     },
     {
