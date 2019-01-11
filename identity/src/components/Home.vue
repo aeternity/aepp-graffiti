@@ -48,8 +48,8 @@ export default {
   components: {},
   data () {
     return {
-      pub: 'ak_2VnwoJPQgrXvreUx2L9BVvd9BidWwpu1ASKK1AMre21soEgpRT',
-      priv: '8fe6f2b3eaee2cc675de41cc8f5c22fad204b740611e8b8593524ce356eb2ab5c5127b909da4e7eddec87a2f22dea0cd56e9168fdb9f98cccd0adda77e741dd2',
+      pub: 'ak_twR4h7dEcUtc2iSEDv8kB7UFJJDGiEDQCXr85C3fYF8FdVdyo',
+      priv: '79816bbf860b95600ddfabf9d81fee81bdb30be823b17d80b9e48be0a7015adf75ee9825ad630963482bb1939a212a0e535883c6b4d7804e40287e1f556da272',
       client: null,
       wallet: null,
       balance: null,
