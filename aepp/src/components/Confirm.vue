@@ -167,7 +167,7 @@
         // amount: ae to contract amount
         const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'bid', {
           args: `("${this.ipfsAddr}", ${this.position.x}, ${this.position.y}, ${Math.round(this.transformedImage.dronetime / 1000)})`,
-          options: { amount: this.bid }
+          options: { amount: this.bid * 1000000000000000000 }
         }).catch(async e => {
           console.error(e)
           const decodedError = await this.client.contractDecodeData('string', e.returnValue).catch(e => console.error(e))
