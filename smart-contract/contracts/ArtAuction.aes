@@ -52,16 +52,16 @@ contract ArtAuction =
 
     let next_auction_slot_id = state.latest_auction_slot_id + 1
 
-    let auction_slot' = { id = next_auction_slot_id,
-                         time_capacity = time_capacity',
-                         minimum_time_per_bid = minimum_time_per_bid',
-                         maximum_time_per_bid = maximum_time_per_bid',
-                         successful_bids = [],
-                         failed_bids = [],
-                         start_block_height = start_block_height',
-                         end_block_height = start_block_height' + block_duration }
+    let new_auction_slot = { id = next_auction_slot_id,
+                             time_capacity = time_capacity',
+                             minimum_time_per_bid = minimum_time_per_bid',
+                             maximum_time_per_bid = maximum_time_per_bid',
+                             successful_bids = [],
+                             failed_bids = [],
+                             start_block_height = start_block_height',
+                             end_block_height = start_block_height' + block_duration }
 
-    put(state{ latest_auction_slot_id = next_auction_slot_id, auction_slots[next_auction_slot_id] = auction_slot' })
+    put(state{ latest_auction_slot_id = next_auction_slot_id, auction_slots[next_auction_slot_id] = new_auction_slot })
     next_auction_slot_id
 
   public function all_auction_slots() : list(auction_slot) =
@@ -94,21 +94,19 @@ contract ArtAuction =
                 time = time',
                 data = artwork_data' }
 
+    // only reprocesses previously successful bids plus the new one, returned bids are old successful, excluding old failed
     let bids_to_reprocess = insert_by(bid_amount_comperator, bid, auction_slot.successful_bids)
+
     // TODO: use actual amount per time here!
     let split_successful_bids_tuple = process_bids(auction_slot.time_capacity, bids_to_reprocess)
-    // TODO: lots of stuff; add to state; refund...
-    split_successful_bids_tuple
 
-  public function process_bids(time_capacity : int, bids_to_reprocess : list(bid)) =
-    let filter_by_capacity = (bid : bid, acc_bids) =>
-      switch(acc_bids)
-       (sufficient, to_low) =>
-         if(time_capacity >= sum(sufficient, (x) => x.time) + bid.time)
-           (bid :: sufficient, to_low)
-         else
-           (sufficient, bid :: to_low)
-    foldr(filter_by_capacity, ([], []), bids_to_reprocess)
+    //old failed bids have to be appended to newly failed bids from reprocessing, successful includes all old ones
+    let updated_auction_slot = update_auction_slot_with_bids(auction_slot, split_successful_bids_tuple)
+
+    put(state{ auction_slots[auction_slot_id] = updated_auction_slot })
+    // TODO:  refund...
+    updated_auction_slot
+
 
   public stateful function admin_withdraw() =
     require(is_admin(Call.caller), "admin_withdraw caller has to be admin")
@@ -116,13 +114,39 @@ contract ArtAuction =
     Chain.spend(Call.caller, balance_to_withdraw)
     balance_to_withdraw
 
-  // helper functions //
+
+  // internal functions //
+
+  private function update_auction_slot_with_bids(auction_slot : auction_slot, bids_tuple : (list(bid), list(bid))) : auction_slot =
+    switch(bids_tuple)
+      (all_successful_bids, new_failed_bids) =>
+        let appended_failed_bids = new_failed_bids ++ auction_slot.failed_bids
+        auction_slot{ successful_bids = all_successful_bids, failed_bids = appended_failed_bids }
+
+  private function process_bids(time_capacity : int, bids_to_reprocess : list(bid)) : (list(bid), list(bid)) =
+      let filter_by_capacity = (bid : bid, acc_bids) =>
+        switch(acc_bids)
+         (sufficient, to_low) =>
+           if(time_capacity >= sum(sufficient, (x) => x.time) + bid.time)
+             (bid :: sufficient, to_low)
+           else
+             (sufficient, bid :: to_low)
+      foldr(filter_by_capacity, ([], []), bids_to_reprocess)
 
   private function bid_amount_comperator(a : bid, b : bid) = a.amount > b.amount
 
   private function tuple_second(tuple) =
     switch(tuple)
       (_, e) => e
+
+  private function in_future(height : int) : bool =
+    height > Chain.block_height
+
+  private function is_admin(address : address) : bool =
+    Map.lookup_default(address, state.is_admin, false)
+
+
+  // general helper functions //
 
   private function sum(l : list('a), f : 'a => int) : int =
     foldr((x, y) => x + y, 0, map(f, l))
@@ -147,12 +171,6 @@ contract ArtAuction =
           x :: l
 
   private function is_greater_zero(x : int) : bool = x > 0
-
-  private function in_future(height : int) : bool =
-    height > Chain.block_height
-
-  private function is_admin(address : address) : bool =
-    Map.lookup_default(address, state.is_admin, false)
 
   private function require(b : bool, err : string) =
     if(!b) abort(err)

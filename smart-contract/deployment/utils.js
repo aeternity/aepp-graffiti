@@ -15,7 +15,7 @@ const coordinatesToObject = (object) => {
 
 const artworkDataToObject = (object) => {
     return {
-        artwork_reference: object.value[0].value,
+        artworkReference: object.value[0].value,
         coordinates: coordinatesToObject(object.value[1])
     }
 };
