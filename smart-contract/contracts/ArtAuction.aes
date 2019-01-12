@@ -23,6 +23,7 @@ contract ArtAuction =
     { user : address
     , amount : int
     , time : int
+    , amount_per_time : int
     , data : artwork_data }
 
   record artwork_data =
@@ -92,12 +93,13 @@ contract ArtAuction =
     let bid = { user = Call.caller,
                 amount = Call.value,
                 time = time',
+                amount_per_time = Call.value / time',
                 data = artwork_data' }
 
-    // only reprocesses previously successful bids plus the new one, returned bids are old successful, excluding old failed
+    // depends on sorted insertion as bids are split lateron only by time available, ignoring amount per time
     let bids_to_reprocess = insert_by(bid_amount_comperator, bid, auction_slot.successful_bids)
 
-    // TODO: use actual amount per time here!
+    // only reprocesses previously successful bids plus the new one, returned bids are old successful, excluding old failed
     let split_successful_bids_tuple = process_bids(auction_slot.time_capacity, bids_to_reprocess)
 
     //old failed bids have to be appended to newly failed bids from reprocessing, successful includes all old ones
@@ -139,7 +141,7 @@ contract ArtAuction =
              (sufficient, bid :: to_low)
       foldr(filter_by_capacity, ([], []), bids_to_reprocess)
 
-  private function bid_amount_comperator(a : bid, b : bid) = a.amount > b.amount
+  private function bid_amount_comperator(a : bid, b : bid) = a.amount_per_time > b.amount_per_time
 
   private function tuple_second(tuple) =
     switch(tuple)

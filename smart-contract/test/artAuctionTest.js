@@ -98,7 +98,7 @@ describe('ArtAuction', () => {
 
     it('Call ArtAuction Contract; place bid', async () => {
         await owner.awaitHeight(await owner.height() + 3);
-        const amount = 100;
+        const amount = 10000;
         const called = await contract.call('place_bid', {
             args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
             options: {amount: amount}
@@ -119,41 +119,41 @@ describe('ArtAuction', () => {
     it('Call ArtAuction Contract; place multiple bid', async () => {
         await contract.call('place_bid', {
             args: `(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 50}
+            options: {amount: 5000}
         }).catch(decodeError);
         await contract.call('place_bid', {
             args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 200}
+            options: {amount: 20000}
         }).catch(decodeError);
 
         const called = await contract.call('place_bid', {
             args: `(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 120}
+            options: {amount: 12000}
         }).catch(decodeError);
 
         const decoded = await called.decode(Utils.auctionSlotType);
         const auctionSlot = Utils.auctionSlotToObject(decoded);
         assert.equal(auctionSlot.successfulBids.length, 3);
         assert.equal(auctionSlot.failedBids.length, 1);
-        assert.equal(auctionSlot.failedBids[0].amount, 50);
+        assert.equal(auctionSlot.failedBids[0].amount, 5000);
         assert.equal(auctionSlot.failedBids[0].time, 30);
 
-
-         await contract.call('place_bid', {
+        await contract.call('place_bid', {
             args: `(1, 10, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 50}
+            options: {amount: 5000}
         }).catch(decodeError);
         const called2 = await contract.call('place_bid', {
             args: `(1, 10, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 40}
+            options: {amount: 4000}
         }).catch(decodeError);
 
         const decoded2 = await called2.decode(Utils.auctionSlotType);
         const auctionSlot2 = Utils.auctionSlotToObject(decoded2);
         assert.equal(auctionSlot2.successfulBids.length, 4);
         assert.equal(auctionSlot2.failedBids.length, 2);
-        const contractBalance =  await owner.balance(contract.address);
+        const contractBalance = await owner.balance(contract.address);
         const successfulAmount = auctionSlot2.successfulBids.map(bid => parseInt(bid.amount)).reduce((x, y) => x + y, 0);
+        console.log("auctionSlot2", JSON.stringify(auctionSlot2, null, 2));
         assert.equal(successfulAmount, contractBalance);
     });
 
