@@ -54,7 +54,7 @@ describe('ArtAuction', () => {
 
     it('Call ArtAuction Contract; add auction slot', async () => {
         const callAddAuction = await contract.call('add_auction_slot', {
-            args: `(100, ${(await owner.height()) + 2}, 10, 1, 100)`,
+            args: `(100, ${(await owner.height()) + 2}, 20, 1, 100)`,
             options: {amount: 0}
         }).catch(decodeError);
         assert.isTrue(!!callAddAuction, 'Could not call the ArtAuction add auction slot');

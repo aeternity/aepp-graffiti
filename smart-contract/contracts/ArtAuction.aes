@@ -104,7 +104,7 @@ contract ArtAuction =
     let updated_auction_slot = update_auction_slot_with_bids(auction_slot, split_successful_bids_tuple)
 
     put(state{ auction_slots[auction_slot_id] = updated_auction_slot })
-    // TODO:  refund...
+    refund_new_to_low_bids(split_successful_bids_tuple)
     updated_auction_slot
 
 
@@ -116,6 +116,12 @@ contract ArtAuction =
 
 
   // internal functions //
+
+  private stateful function refund_new_to_low_bids(bids_tuple : (list(bid), list(bid))) =
+    switch(bids_tuple)
+      (_, new_failed_bids) =>
+        let refund_function = (bid : bid) => Chain.spend(bid.user, bid.amount)
+        map(refund_function, new_failed_bids)
 
   private function update_auction_slot_with_bids(auction_slot : auction_slot, bids_tuple : (list(bid), list(bid))) : auction_slot =
     switch(bids_tuple)
