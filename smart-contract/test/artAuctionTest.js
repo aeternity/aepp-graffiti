@@ -152,6 +152,9 @@ describe('ArtAuction', () => {
         const auctionSlot2 = Utils.auctionSlotToObject(decoded2);
         assert.equal(auctionSlot2.successfulBids.length, 4);
         assert.equal(auctionSlot2.failedBids.length, 2);
+        const contractBalance =  await owner.balance(contract.address);
+        const successfulAmount = auctionSlot2.successfulBids.map(bid => parseInt(bid.amount)).reduce((x, y) => x + y, 0);
+        assert.equal(successfulAmount, contractBalance);
     });
 
 });
