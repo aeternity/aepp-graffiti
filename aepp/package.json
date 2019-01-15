@@ -9,10 +9,10 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@aeternity/aepp-components": "git+ssh://git@github.com/aeternity/aepp-components.git#develop",
-    "@aeternity/aepp-sdk": "github:aeternity/aepp-sdk-js#957cd6bafeaa947ecc169d0274081bd70d88342f",
+    "@aeternity/aepp-components": "https://github.com/aeternity/aepp-components.git#develop",
+    "@aeternity/aepp-sdk": "https://github.com/aeternity/aepp-sdk-js#for-base-app-sdk-integration",
     "axios": "^0.18.0",
-    "dronetracer": "git+ssh://git@github.com/THE-WYE/DroneTracer.git",
+    "dronetracer": "https://github.com/THE-WYE/DroneTracer",
     "jimp": "^0.6.0",
     "konva": "^2.5.1",
     "vue": "^2.5.21",
