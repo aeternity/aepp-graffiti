@@ -140,9 +140,9 @@ const store = new Vuex.Store({
 
       const tracer = new DroneTracer(state.droneSettings)
 
-      tracer.transform(state.originalImage.file, (p) => {
+      tracer.transform(state.originalImage.src, (p) => {
         if(state.transformedImage.progress !== Math.round(100 * p)) {
-          commit(`modifyProgress`, Math.round(p * 100));
+          //commit(`modifyProgress`, Math.round(p * 100));
           console.log("UPDATING", Math.round(p * 100))
         }
       }, {

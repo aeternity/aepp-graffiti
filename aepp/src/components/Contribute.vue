@@ -117,11 +117,13 @@
         // handle file changes
         const file = fileList[0]
 
+        /*
         if (file.size > 1000000) {
           this.currentStatus = STATUS_ERROR
           this.error = 'Maximum allowed file size is 1 MB'
           return
         }
+        */
 
         if (!file.type.includes('image')) {
           this.currentStatus = STATUS_ERROR

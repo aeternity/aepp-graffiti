@@ -148,6 +148,9 @@
       transformedImage() {
         return this.$store.state.transformedImage
       },
+      originalImage() {
+        return this.$store.state.originalImage
+      },
       settings() {
         return this.$store.state.settings
       },
