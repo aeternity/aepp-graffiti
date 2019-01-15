@@ -18,7 +18,7 @@
     <div class="w-full p-8 flex justify-center items-center">
       <div v-if="transformedImage.src">
         <div class="w-full">
-          <img @load="updateMetaData" ref="previewImage" :src="transformedImage.src"/>
+          <img ref="previewImage" :src="transformedImage.src"/>
         </div>
         <div class="w-full">
           <form>
@@ -35,13 +35,63 @@
               </div>
             </div>
             <div>
-              <ae-label class="no-margin">Threshold</ae-label>
-              <div class="flex flex-row justify-space items-center">
-                <div class="w-2/3">
-                  <input class="max-w-full" type="range" step="0.1" min="0.1" max="1" v-model="threshold"/>
+              <div class="flex flex-row mb-4">
+                <ae-button-group class="w-full">
+                  <ae-button @click="centerline = true" :fill="centerline ? 'primary' : 'neutral'" face="round" extend>
+                    Illustration
+                  </ae-button>
+                  <ae-button @click="centerline = false" :fill="centerline ? 'neutral' : 'primary'" face="round" extend>
+                    Photo
+                  </ae-button>
+                </ae-button-group>
+              </div>
+            </div>
+            <div v-if="centerline">
+              <div>
+                <ae-label class="no-margin">Blur Radius</ae-label>
+                <div class="flex flex-row justify-space items-center">
+                  <div class="w-2/3">
+                    <input class="max-w-full" type="range" step="1" min="1" max="10" v-model="blurKernel"/>
+                  </div>
+                  <div class="w-1/3">
+                    <ae-input class="no-margin" type="number" v-model="blurKernel"></ae-input>
+                  </div>
                 </div>
-                <div class="w-1/3">
-                  <ae-input class="no-margin" type="number" v-model="threshold"></ae-input>
+              </div>
+              <div>
+                <ae-label class="no-margin">Threshold</ae-label>
+                <div class="flex flex-row justify-space items-center">
+                  <div class="w-2/3">
+                    <input class="max-w-full" type="range" step="1" min="1" max="100"
+                           v-model="hysteresisHighThreshold"/>
+                  </div>
+                  <div class="w-1/3">
+                    <ae-input class="no-margin" type="number" v-model="hysteresisHighThreshold"></ae-input>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <div>
+                <ae-label class="no-margin">Color threshold</ae-label>
+                <div class="flex flex-row justify-space items-center">
+                  <div class="w-2/3">
+                    <input class="max-w-full" type="range" step="1" min="0" max="100" v-model="binaryThreshold"/>
+                  </div>
+                  <div class="w-1/3">
+                    <ae-input class="no-margin" type="number" v-model="binaryThreshold"></ae-input>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <ae-label class="no-margin">Stroke weight</ae-label>
+                <div class="flex flex-row justify-space items-center">
+                  <div class="w-2/3">
+                    <input class="max-w-full" type="range" step="1" min="1" max="20" v-model="dilationRadius"/>
+                  </div>
+                  <div class="w-1/3">
+                    <ae-input class="no-margin" type="number" v-model="dilationRadius"></ae-input>
+                  </div>
                 </div>
               </div>
             </div>
@@ -74,56 +124,67 @@
 
   export default {
     name: 'Render',
-    components: { InfoLayer },
-    data () {
+    components: {InfoLayer},
+    data() {
       return {
-        threshold: 0.1,
+        hysteresisHighThreshold: 50,
         currentColor: 0,
+        centerline: true,
+        blurKernel: 4,
+        binaryThreshold: 45,
+        dilationRadius: 4
       }
     },
     computed: {
-      isChanged () {
-        return Number(this.threshold) !== this.settings.threshold || this.currentColor !== this.settings.color
+      isChanged() {
+        return Number(this.threshold) !== this.settings.threshold ||
+          Number(this.currentColor) !== this.settings.color ||
+          Number(this.hysteresisHighThreshold) !== this.settings.hysteresisHighThreshold ||
+          Number(this.centerline) !== this.settings.centerline ||
+          Number(this.blurKernel) !== this.settings.blurKernel ||
+          Number(this.binaryThreshold) !== this.settings.binaryThreshold ||
+          Number(this.dilationRadius) !== this.settings.dilationRadius
       },
-      transformedImage () {
+      transformedImage() {
         return this.$store.state.transformedImage
       },
-      settings () {
+      settings() {
         return this.$store.state.settings
       },
-      droneSettings () {
+      droneSettings() {
         return this.$store.state.droneSettings
       },
     },
     methods: {
-      back () {
+      back() {
         this.$router.push('contribute')
       },
-      submit () {
+      submit() {
         this.$router.push('positioning')
       },
-      updateMetaData () {
-        console.log('Updating Meta Data')
-        this.$store.dispatch(`updateTransformedImage`, {
-          width: this.$refs.previewImage.naturalWidth,
-          height: this.$refs.previewImage.naturalHeight
-        })
-      },
-      updatePreview () {
+      updatePreview() {
         this.$store.dispatch(`updateSettings`, {
-          color: this.currentColor,
-          threshold: Number(this.threshold)
+          color: Number(this.currentColor),
+          threshold: Number(this.threshold),
+          hysteresisHighThreshold: Number(this.hysteresisHighThreshold),
+          centerline: Number(this.centerline),
+          blurKernel: Number(this.blurKernel),
+          binaryThreshold: Number(this.binaryThreshold),
+          dilationRadius: Number(this.dilationRadius)
         })
       },
-      changeColor (index) {
+      changeColor(index) {
         this.currentColor = index
       },
     },
-    mounted () {
-      if (this.settings.scaleFactor !== null) {
-        this.threshold = this.settings.threshold
-        this.currentColor = this.settings.color
-      }
+    mounted() {
+      this.threshold = this.settings.threshold
+      this.currentColor = this.settings.color
+      this.hysteresisHighThreshold = this.settings.hysteresisHighThreshold
+      this.centerline = this.settings.centerline
+      this.blurKernel = this.settings.blurKernel
+      this.binaryThreshold = this.settings.binaryThreshold
+      this.dilationRadius = this.settings.dilationRadius
     }
   }
 </script>

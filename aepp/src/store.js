@@ -6,8 +6,8 @@ import DroneTracer from '../node_modules/dronetracer/src/DroneTracer/main.js'
 
 Vue.use(Vuex)
 
-//const API_URL = 'https://ae-art-server.piwo.app';
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://ae-art-server.piwo.app';
+// const API_URL = 'http://localhost:3000';
 
 const vuexPersist = new VuexPersist({
   key: 'ae-drone',
@@ -32,11 +32,14 @@ const store = new Vuex.Store({
     },
     settings: {
       scaleFactor: 1,
-      scaledHeight: 0,
-      scaledWidth: 0,
       MAX_SCALING: 2.5,
-      threshold: 0.1,
-      color: 0
+      threshold: 50,
+      color: 0,
+      hysteresisHighThreshold: 50,
+      centerline: false,
+      blurKernel: 3,
+      binaryThreshold: 45,
+      dilationRadius: 6
     },
     position: {
       x: 0,
@@ -56,11 +59,16 @@ const store = new Vuex.Store({
       meterToPixel: 100, // Meter * meterToPixel = Pixel
     },
     droneSettings: {
-      wallId: 1,
-      gpsLocation: [-99.134982, 19.413494],
-      dimensions: [33, 50],
+      wallId: 'MX19-001',
+      gpsLocation: [0,0],
+      wallSize: [30000, 20000],   // in mm
+      canvasSize: [20000, 20000], // mm
+      canvasPosition: [10000, 0], // mm (origin = [bottom left])
       colors: ['#000000', '#eb340f', '#0f71eb'], // default [#000]
-      droneResolution: 0.1 // default 0.2
+      droneResolution: 200,       // min distance drone can move, in mm
+      dronePrecisionError: 150,   // error margin, mm
+      droneFlyingSpeed: 0.3,  // average drone flying speed [m/s],
+      minimumImageSize: [10,10]
     },
     blockchainSettings: {
       contractAddress: 'ct_2aLiBbVqAgdzVEhpmjqW33cCmJkkQAWDayEQsFkrkt6AyY2HPG'
@@ -131,30 +139,39 @@ const store = new Vuex.Store({
       }))
 
       const tracer = new DroneTracer(state.droneSettings)
-      const dronePaint = await tracer.transform(state.originalImage.file, (p) => {
-        commit(`modifyProgress`, p)
+
+      tracer.transform(state.originalImage.file, (p) => {
+        if(state.transformedImage.progress !== Math.round(100 * p)) {
+          commit(`modifyProgress`, Math.round(p * 100));
+          console.log("UPDATING", Math.round(p * 100))
+        }
       }, {
-        size: [5, 8], // graffiti size in meters | default 4mx3m
-        color: state.settings.color, // default 0. Color id from the paintingConfig color list
-        threshold: state.settings.threshold
+        hysteresisHighThreshold: state.settings.hysteresisHighThreshold,
+        centerline: state.settings.centerline,
+        blurKernel: state.settings.blurKernel,
+        binaryThreshold: state.settings.binaryThreshold,
+        dilationRadius: state.settings.dilationRadius
+      }).then(dronePaint => {
+        commit(`modifyDroneObject`, dronePaint);
+        dispatch(`applyPostRenderingChanges`)
       })
 
-      commit(`modifyDroneObject`, dronePaint)
-      dispatch(`applyPostRenderingChanges`)
+      console.log(tracer.uiParameters);
 
     },
     applyPostRenderingChanges ({ commit, state }) {
 
-      state.droneObject.setPaintingScale(state.scaleFactor)
+      state.droneObject.setPaintingScale(state.settings.scaleFactor)
       state.droneObject.setPaintingPosition(state.position.x / state.canvas.meterToPixel, state.position.y / state.canvas.meterToPixel)
+      state.droneObject.setPaintingColor(state.droneSettings.colors[state.settings.color])
 
       let image = {}
 
-      image.src = `data:image/svg+xml;base64,${btoa(state.droneObject.svg)}`
+      image.src = `data:image/svg+xml;base64,${btoa(state.droneObject.svgFile)}`
 
-      image.height = state.originalImage.height * state.settings.scaleFactor
-      image.width = state.originalImage.width * state.settings.scaleFactor
-      image.dronetime = state.droneObject.estimatedTime;
+      image.height = state.droneObject.paintingHeight / 10
+      image.width = state.droneObject.paintingWidth / 10
+      image.dronetime = Math.round(state.droneObject.estimatedTime);
 
       commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, image))
       commit(`modifyDroneObject`, state.droneObject)
@@ -177,14 +194,26 @@ const store = new Vuex.Store({
       // UPDATE SETTINGS ANYWAYS
       commit(`modifySettings`, Object.assign({}, state.settings, update))
 
-      console.log(changedKeys)
 
-      if (changedKeys.includes('color') ||
-        changedKeys.includes('threshold')) {
-        dispatch(`transformImage`)
-      }
 
-      if (changedKeys.includes('scaleFactor')) {
+
+      const keys = [
+        'hysteresisHighThreshold',
+        'centerline',
+        'blurKernel',
+        'binaryThreshold',
+        'dilationRadius'
+      ]
+
+      keys.forEach(key => {
+        if(changedKeys.indexOf(key) > -1) {
+          dispatch(`transformImage`)
+          return false
+        }
+      })
+
+      if (changedKeys.includes('scaleFactor') ||
+          changedKeys.includes('color') ) {
         dispatch(`applyPostRenderingChanges`)
       }
 
