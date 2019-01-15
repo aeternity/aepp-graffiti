@@ -163,10 +163,11 @@
         return bb
       },
       async runBid () {
+        const auctionSlotId = 1;
         // args: hash, x, y, time
         // amount: ae to contract amount
-        const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'bid', {
-          args: `("${this.ipfsAddr}", ${this.position.x}, ${this.position.y}, ${Math.round(this.transformedImage.dronetime / 1000)})`,
+        const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'place_bid', {
+          args: `(${auctionSlotId}, ${Math.round(this.transformedImage.dronetime / 1000)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
           options: { amount: this.bid * 1000000000000000000 }
         }).catch(async e => {
           console.error(e)

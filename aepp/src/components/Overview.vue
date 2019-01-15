@@ -19,13 +19,13 @@
           </template>
           <div class="w-full">
             <div class="w-full">
-              Position: X {{bid.coordinates.x}}  Y {{bid.coordinates.y}}
+              Position: X {{bid.data.coordinates.x}}  Y {{bid.data.coordinates.y}}
             </div>
             <div class="w-full">
-              Dronetime: {{bid.droneTime}} Seconds
+              Dronetime: {{bid.time}} Seconds
             </div>
             <div class="w-full">
-              Amount: {{bid.amount}} AE
+              Amount: {{bid.amount/1000000000000000000}} AE
             </div>
             <div class="w-full">
               State: Successful
@@ -44,8 +44,8 @@
 
 <script>
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
-  import * as Crypto from '@aeternity/aepp-sdk/es/utils/crypto'
   import axios from 'axios'
+  import Util from '../utils/blockchain_util'
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2;
 
@@ -73,31 +73,17 @@
       }
     },
     methods: {
-      bidListToObject (bidList) {
-        return bidList.value.map(bid => {
-          return {
-            user: Crypto.addressFromDecimal(bid.value[0].value),
-            hash: bid.value[1].value,
-            coordinates: {
-              x: bid.value[2].value[0].value,
-              y: bid.value[2].value[1].value
-            },
-            droneTime: bid.value[3].value,
-            amount: bid.value[4].value
-          }
-        })
-      },
       async updateMyBids()  {
-        const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_bids', '()', '').catch(e => console.error(e))
+        const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
 
-        const decodedAllBids = await this.client.contractEpochDecodeData('list((address, string, (int, int), int, int))', calledAllBids.out).catch(e => console.error(e))
-        this.bids =  this.bidListToObject(decodedAllBids).filter(bid => bid.user === this.address)
+        const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
+        this.bids = Util.auctionSlotListToObject(decodedAllBids).map(slot => slot.successfulBids.filter(bid => bid.user === this.address)).flat()
 
         if(this.bids.length > 0) this.state = SHOW_LIST
         else return this.state = EMPTY_LIST
 
         this.bids = await Promise.all(this.bids.map( async bid => {
-          let response = await axios.get(this.$store.state.apiUrl + "/ipfs?hash=" + bid.hash);
+          let response = await axios.get(this.$store.state.apiUrl + "/ipfs?hash=" + bid.data.artworkReference);
           bid.image = 'data:image/svg+xml;base64,' + btoa(response.data);
           return bid;
         }))

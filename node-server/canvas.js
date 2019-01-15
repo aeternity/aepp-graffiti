@@ -61,7 +61,7 @@ canvas.mergeImages = async (sources) => {
     // draw images to canvas
     loadedImages.forEach(image => {
         canvasContext.globalAlpha = image.opacity ? image.opacity : 1;
-        if(image.width > 0 && image.height > 0) {
+        if (image.width > 0 && image.height > 0) {
             canvasContext.drawImage(image.img, image.x || 0, image.y || 0, image.width, image.height);
         } else {
             canvasContext.drawImage(image.img, image.x || 0, image.y || 0);
@@ -94,9 +94,9 @@ canvas.getSVGDimensions = (svgString) => {
 canvas.render = async () => {
 
     // get all files from ipfs that were included in bids
-    const bids = await blockchain.allBids();
-    const ipfsSources = await Promise.all(bids.map(bid => {
-        return ipfsWrapper.getFile(bid.hash).then(filebuffer => {
+    const auctionSlot = await blockchain.auctionSlot();
+    const ipfsSources = await Promise.all(auctionSlot.successfulBids.map(bid => {
+        return ipfsWrapper.getFile(bid.data.artworkReference).then(filebuffer => {
             return {filebuffer: filebuffer, bid: bid};
         }).catch(e => console.error(e));
     }));
@@ -110,8 +110,8 @@ canvas.render = async () => {
 
             return {
                 src: 'data:image/svg+xml;base64,' + base64buffer,
-                x: data.bid.coordinates.x * pixelsPerCentimeter,
-                y: data.bid.coordinates.y * pixelsPerCentimeter,
+                x: data.bid.data.coordinates.x * pixelsPerCentimeter,
+                y: data.bid.data.coordinates.y * pixelsPerCentimeter,
                 width,
                 height
             };

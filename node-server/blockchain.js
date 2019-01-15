@@ -1,27 +1,11 @@
 const {EpochChain, EpochContract} = require('@aeternity/aepp-sdk');
-
+const Util = require('./blockchain_util');
 const blockchain = {};
 
 // can eventually be called by name in the future
-const contractAddress = 'ct_xZX75A1E5JWbuLi4cnn6eKqd3ZGnKF3vM9c656bFVS8ZaPYVp';
+const contractAddress = 'ct_2aLiBbVqAgdzVEhpmjqW33cCmJkkQAWDayEQsFkrkt6AyY2HPG';
 
 let client = null;
-
-// serialized contract decoded data to readable js object
-function bidListToObject(bidList) {
-    return bidList.value.map(bid => {
-        return {
-            userHash: bid.value[0].value,
-            hash: bid.value[1].value,
-            coordinates: {
-                x: bid.value[2].value[0].value,
-                y: bid.value[2].value[1].value
-            },
-            droneTime: bid.value[3].value,
-            amount: bid.value[4].value
-        }
-    })
-}
 
 blockchain.init = async () => {
     try {
@@ -42,13 +26,13 @@ blockchain.height = async () => {
     return await client.height();
 };
 
-blockchain.allBids = async () => {
+blockchain.auctionSlot = async () => {
     if (!client) await blockchain.init();
 
-    const calledAllBids = await client.contractEpochCall(contractAddress, 'sophia-address', 'all_bids', '()').catch(e => console.error(e));
-    const decodedAllBids = await client.contractEpochDecodeData('list((address, string, (int, int), int, int))', calledAllBids.out).catch(e => console.error(e));
+    const calledAuctionSlot = await client.contractEpochCall(contractAddress, 'sophia-address', 'get_auction_slot', '(1)').catch(e => console.error(e));
+    const decodedAuctionSlot = await client.contractEpochDecodeData(Util.auctionSlotType, calledAuctionSlot.out).catch(e => console.error(e));
 
-    return bidListToObject(decodedAllBids);
+    return Util.auctionSlotToObject(decodedAuctionSlot);
 };
 
 module.exports = blockchain;

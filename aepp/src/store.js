@@ -63,7 +63,7 @@ const store = new Vuex.Store({
       droneResolution: 0.1 // default 0.2
     },
     blockchainSettings: {
-      contractAddress: 'ct_xZX75A1E5JWbuLi4cnn6eKqd3ZGnKF3vM9c656bFVS8ZaPYVp'
+      contractAddress: 'ct_2aLiBbVqAgdzVEhpmjqW33cCmJkkQAWDayEQsFkrkt6AyY2HPG'
     },
     apiUrl: API_URL
   },

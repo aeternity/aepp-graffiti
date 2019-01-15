@@ -1,21 +1,24 @@
 {
-  "name": "aepp-node-backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@aeternity/aepp-sdk": "^1.2.1",
-    "body-parser": "latest",
-    "canvas": "^2.2.0",
-    "cors": "^2.8.5",
-    "express": "^4.16.4",
-    "express-fileupload": "^1.0.0",
-    "ipfs-http-client": "^28.1.0",
-    "xml-js": "^1.6.8"
-  }
+    "name": "aepp-node-backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "docker-start": "docker-compose up -d",
+        "docker-stop": "docker-compose down -v",
+        "docker-logs": "docker-compose logs -f"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@aeternity/aepp-sdk": "^1.2.1",
+        "body-parser": "latest",
+        "canvas": "^2.2.0",
+        "cors": "^2.8.5",
+        "express": "^4.16.4",
+        "express-fileupload": "^1.0.0",
+        "ipfs-http-client": "^28.1.0",
+        "xml-js": "^1.6.8"
+    }
 }
