@@ -45,14 +45,22 @@
       </div>
     </OnboardingStep>
 
-    <footer class="w-full flex flex-row justify-between p-4">
-      <ae-button fill="normal" face="round" @click="back">
-        Back
-      </ae-button>
 
-      <ae-button fill="primary" face="round" @click="next">
-        Next
-      </ae-button>
+
+    <footer class="w-full">
+      <div class="w-full flex flex-row justify-center">
+        <div v-for="step in MAX_VIEW" :class="step !== view ? 'ae-step-indicator' : 'ae-step-indicator-active'" :key="step">
+        </div>
+      </div>
+      <div class="w-full flex flex-row justify-between p-4">
+        <ae-button v-if="backText" fill="normal" face="round" @click="back">
+          {{backText}}
+        </ae-button>
+
+        <ae-button v-if="nextText" fill="primary" class="ml-auto" face="round" @click="next">
+          {{nextText}}
+        </ae-button>
+      </div>
     </footer>
 
   </div>
@@ -73,6 +81,17 @@
     components: {
       OnboardingStep
     },
+    computed: {
+      nextText() {
+        if(this.view === 4) return 'Get Started'
+        else return 'Next'
+      },
+
+      backText() {
+        if(this.view === 1) return null
+        else return 'Back'
+      }
+    },
     methods: {
       next() {
         if(this.view === this.MAX_VIEW) return
@@ -86,6 +105,21 @@
   }
 </script>
 
-<style>
-
+<style type="scss">
+.ae-step-indicator {
+  background: #555;
+  border-radius: 10px;
+  height: 10px;
+  width: 10px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+.ae-step-indicator-active {
+  background: #FF0D6A;
+  border-radius: 10px;
+  height: 10px;
+  width: 10px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
 </style>
