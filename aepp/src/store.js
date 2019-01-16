@@ -6,9 +6,9 @@ import DroneTracer from '../node_modules/dronetracer/src/DroneTracer/main.js'
 
 Vue.use(Vuex)
 
-//const API_URL = 'https://ae-art-server.piwo.app';
+const API_URL = 'https://ae-art-server.piwo.app';
 // const API_URL = 'http://localhost:3000';
-const API_URL = 'http://192.168.43.131:3000';
+// const API_URL = 'http://192.168.43.131:3000';
 const vuexPersist = new VuexPersist({
   key: 'ae-drone',
   storage: window.localStorage
@@ -31,8 +31,8 @@ const store = new Vuex.Store({
       dronetime: -1
     },
     settings: {
-      scaleFactor: 1,
-      MAX_SCALING: 2.5,
+      scaleFactor: 4,
+      MAX_SCALING: 4,
       threshold: 50,
       color: 0,
       hysteresisHighThreshold: 50,
@@ -75,7 +75,7 @@ const store = new Vuex.Store({
     },
     apiUrl: API_URL
   },
-  plugins: [vuexPersist.plugin],
+  // plugins: [vuexPersist.plugin],
   getters: {},
   mutations: {
     modifyOriginalImage (state, originalImage) {

@@ -48,12 +48,6 @@
         <ae-text face="mono-xl" class="text-center">{{transformedImage.dronetime / 1000}} Seconds</ae-text>
       </div>
       <div class="w-full p-4">
-        <h2 class="w-full text-center mb-4">Your Account</h2>
-        <ae-card fill="primary">
-          <ae-address copyToClipboard="" :value=pub length="medium" gap=0></ae-address>
-        </ae-card>
-      </div>
-      <div class="w-full p-4">
         <h2 class="w-full text-center mb-4">AE per Second</h2>
         <ae-input type="number" aemount v-model="bidPerDronetime" label="AE"></ae-input>
       </div>

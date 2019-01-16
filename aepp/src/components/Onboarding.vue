@@ -94,11 +94,11 @@
     },
     methods: {
       next() {
-        if(this.view === this.MAX_VIEW) return
+        if(this.view === this.MAX_VIEW) return this.$router.push('contribute')
         this.view += 1
       },
       back() {
-        if(this.view === this.MIN_VIEW) return
+        if(this.view === this.MIN_VIEW) return this.$router.push('home')
         this.view -= 1
       }
     }
