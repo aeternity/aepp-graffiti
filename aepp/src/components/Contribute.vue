@@ -30,7 +30,7 @@
         <div class="w-full p-4">
           <ae-list>
             <ae-list-item @click="back" class="justify-center">
-              <ae-text face="uppercase-base" weight="bold">Back</ae-text>
+              <ae-text face="uppercase-base" weight="bold">Return to Homepage</ae-text>
             </ae-list-item>
           </ae-list>
         </div>

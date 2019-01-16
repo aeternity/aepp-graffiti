@@ -22,7 +22,7 @@
           <ae-button face="round" fill="primary" @click="next" extend>Continue</ae-button>
         </ae-list-item>
         <ae-list-item @click="back" class="justify-center">
-          <ae-text face="uppercase-base" weight="bold">Back</ae-text>
+          <ae-text face="uppercase-base" weight="bold">Adjust Image Style</ae-text>
         </ae-list-item>
       </ae-list>
     </div>

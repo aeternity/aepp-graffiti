@@ -33,7 +33,7 @@
           On the bottom you can enter the AE you wish to spend per second for this image. Once you tap continue the bid will be placed and you will be forwarded to your bidding overview.
         </p>
         <p class="p-4 pb-0">
-          The 0.45 AE are always added to your bid as this is an estimate of the fee you have to pay for the smart contract to execute.
+          You should add 0.45 AE to your bid total as this is an estimate of the fee you have to pay for the smart contract to execute.
         </p>
       </InfoLayer>
 
@@ -45,15 +45,11 @@
       </div>
       <div class="w-full p-4">
         <h2 class="w-full text-center mb-4">Required Time</h2>
-        <ae-text face="mono-xl" class="text-center">{{transformedImage.dronetime / 1000}} Seconds</ae-text>
-      </div>
-      <div class="w-full p-4">
-        <h2 class="w-full text-center mb-4">AE per Second</h2>
-        <ae-input type="number" aemount v-model="bidPerDronetime" label="AE"></ae-input>
+        <ae-text face="mono-xl" class="text-center">{{transformedImage.dronetime}} Seconds</ae-text>
       </div>
       <div class="w-full p-4">
         <h2 class="w-full text-center mb-4">Your Total</h2>
-        <ae-text face="mono-xl" class="text-center">{{bid}} AE</ae-text>
+        <ae-input type="number" aemount v-model="bid" label="AE"></ae-input>
       </div>
       <div class="w-full p-4">
         <ae-list>
@@ -86,7 +82,7 @@
     components: { LoadingStep, InfoLayer, CanvasWithControlls },
     data () {
       return {
-        bidPerDronetime: 0,
+        bid: 0.45,
         pub: 'ak_QY8VNEkhj7omMUjAvfVBq2NjTDy895LBYbk7qVxQo1qT8VqfE',
         balance: 0,
         client: null,
@@ -96,10 +92,6 @@
       }
     },
     computed: {
-      bid () {
-        // Last part is the fee, estimate is stolen from aepp-sdk-js
-        return this.bidPerDronetime * this.transformedImage.dronetime / 1000 + 0.45
-      },
       transformedImage () {
         return this.$store.state.transformedImage
       },

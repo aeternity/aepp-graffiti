@@ -105,7 +105,7 @@
               <ae-button v-else face="round" fill="primary" @click="submit" extend>Continue</ae-button>
             </ae-list-item>
             <ae-list-item @click="back" class="justify-center">
-              <ae-text face="uppercase-base" weight="bold">Back</ae-text>
+              <ae-text face="uppercase-base" weight="bold">Upload new Image</ae-text>
             </ae-list-item>
           </ae-list>
         </div>
