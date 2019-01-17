@@ -14,8 +14,8 @@ const vuexPersist = new VuexPersist({
   storage: window.localStorage
 });
 
-const store = new Vuex.Store({
-  state: {
+function initialState() {
+  return {
     originalImage: {
       src: null,
       width: 0,
@@ -49,8 +49,8 @@ const store = new Vuex.Store({
 
     // HARDCODED SETTINGS
     imageSettings: {
-      max: { width: 1000, height: 1000 },
-      min: { width: 400, height: 300 }
+      max: {width: 1000, height: 1000},
+      min: {width: 400, height: 300}
     },
     canvas: {
       url: API_URL + '/rendered/latest.png',
@@ -60,7 +60,7 @@ const store = new Vuex.Store({
     },
     droneSettings: {
       wallId: 'MX19-001',
-      gpsLocation: [0,0],
+      gpsLocation: [0, 0],
       wallSize: [30000, 20000],   // in mm
       canvasSize: [20000, 20000], // mm
       canvasPosition: [10000, 0], // mm (origin = [bottom left])
@@ -68,38 +68,48 @@ const store = new Vuex.Store({
       droneResolution: 200,       // min distance drone can move, in mm
       dronePrecisionError: 150,   // error margin, mm
       droneFlyingSpeed: 0.3,  // average drone flying speed [m/s],
-      minimumImageSize: [10,10]
+      minimumImageSize: [10, 10]
     },
     blockchainSettings: {
       contractAddress: 'ct_2aLiBbVqAgdzVEhpmjqW33cCmJkkQAWDayEQsFkrkt6AyY2HPG'
     },
     apiUrl: API_URL
-  },
+  }
+}
+
+const store = new Vuex.Store({
+  state: initialState,
   plugins: [vuexPersist.plugin],
   getters: {},
   mutations: {
-    modifyOriginalImage (state, originalImage) {
+    modifyOriginalImage(state, originalImage) {
       state.originalImage = originalImage
     },
-    modifyTransformedImage (state, transformedImage) {
+    modifyTransformedImage(state, transformedImage) {
       state.transformedImage = transformedImage
     },
-    modifySettings (state, settings) {
+    modifySettings(state, settings) {
       state.settings = settings
     },
-    modifyPosition (state, position) {
+    modifyPosition(state, position) {
       state.position = position
     },
-    modifyProgress (state, progress) {
+    modifyProgress(state, progress) {
       state.transformedImage.progress = progress
     },
-    modifyDroneObject (state, newDroneObject) {
+    modifyDroneObject(state, newDroneObject) {
       state.droneObject = newDroneObject
+    },
+    resetState(state) {
+      // acquire initial state
+      const s = initialState()
+      Object.keys(s).forEach(key => {
+        state[key] = s[key]
+      })
     }
-
   },
   actions: {
-    uploadImage ({ state, commit }, file) {
+    uploadImage({state, commit}, file) {
 
       const fReader = new FileReader()
 
@@ -129,19 +139,20 @@ const store = new Vuex.Store({
     resetImage({commit}) {
       commit('modifyOriginalImage', {})
     },
-    async transformImage ({ commit, state, dispatch }) {
+    async transformImage({commit, state, dispatch}) {
 
       commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, {
         src: null,
         width: 0,
         height: 0,
-        progress: -1
+        progress: -1,
+        dronetime: 0
       }))
 
       const tracer = new DroneTracer(state.droneSettings)
 
-      tracer.transform(state.originalImage.src, (p) => {
-        if(state.transformedImage.progress !== Math.round(100 * p)) {
+      const dronePaint = await tracer.transform(state.originalImage.src, (p) => {
+        if (state.transformedImage.progress !== Math.round(100 * p)) {
           //commit(`modifyProgress`, Math.round(p * 100));
           console.log("UPDATING", Math.round(p * 100))
         }
@@ -151,15 +162,12 @@ const store = new Vuex.Store({
         blurKernel: state.settings.blurKernel,
         binaryThreshold: state.settings.binaryThreshold,
         dilationRadius: state.settings.dilationRadius
-      }).then(dronePaint => {
-        commit(`modifyDroneObject`, dronePaint);
-        dispatch(`applyPostRenderingChanges`)
       })
-
-      console.log(tracer.uiParameters);
+      commit(`modifyDroneObject`, dronePaint);
+      dispatch(`applyPostRenderingChanges`)
 
     },
-    applyPostRenderingChanges ({ commit, state }) {
+    applyPostRenderingChanges({commit, state}) {
 
       state.droneObject.setPaintingScale(state.settings.scaleFactor)
       state.droneObject.setPaintingPosition(state.position.x / state.canvas.meterToPixel, state.position.y / state.canvas.meterToPixel)
@@ -176,13 +184,13 @@ const store = new Vuex.Store({
       commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, image))
       commit(`modifyDroneObject`, state.droneObject)
     },
-    updateOriginalImage ({ commit, state }, update) {
+    updateOriginalImage({commit, state}, update) {
       commit(`modifyOriginalImage`, Object.assign({}, state.originalImage, update))
     },
-    updateTransformedImage ({ commit, state }, update) {
+    updateTransformedImage({commit, state}, update) {
       commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, update))
     },
-    updateSettings ({ commit, state, dispatch }, update) {
+    async updateSettings({commit, state, dispatch}, update) {
 
       // CHECK IF ADDITIONAL ACTIONS ARE REQUIRED
       console.log("applying changes");
@@ -195,8 +203,6 @@ const store = new Vuex.Store({
       commit(`modifySettings`, Object.assign({}, state.settings, update))
 
 
-
-
       const keys = [
         'hysteresisHighThreshold',
         'centerline',
@@ -205,21 +211,20 @@ const store = new Vuex.Store({
         'dilationRadius'
       ]
 
-      keys.forEach(key => {
-        if(changedKeys.indexOf(key) > -1) {
-          dispatch(`transformImage`)
-          return false
-        }
-      })
+      if (keys.filter(key => changedKeys.indexOf(key)).length > 0)
+        await dispatch(`transformImage`)
 
       if (changedKeys.includes('scaleFactor') ||
-          changedKeys.includes('color') ) {
-        dispatch(`applyPostRenderingChanges`)
+        changedKeys.includes('color')) {
+        await dispatch(`applyPostRenderingChanges`)
       }
 
     },
-    updatePosition ({ commit, state }, update) {
+    updatePosition({commit, state}, update) {
       commit(`modifyPosition`, Object.assign({}, state.position, update))
+    },
+    resetState({commit}) {
+      commit('resetState')
     }
   }
 })

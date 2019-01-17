@@ -75,10 +75,12 @@
 
       setOverlayImageSize(width, height) {
         const oI = this.stage.find(`#${this.overlayImageId}`)[0]
-        oI.clearCache()
-        oI.width(width)
-        oI.height(height)
-        oI.cache()
+        if(oI) {
+          oI.clearCache()
+          oI.width(width)
+          oI.height(height)
+          oI.cache()
+        }
         this.overlayLayer.draw();
       },
 

@@ -23,7 +23,7 @@
                    @change="filesChange($event.target.files)"
                    accept="image/*" class="absolute pin opacity-0 w-full h-full">
             <p v-if="isInitial" class="p-4 text-center">
-              Upload Image. <br> Click to browse.
+              Upload an JPEG or PNG image. <br> Click to browse.
             </p>
           </div>
         </form>
@@ -113,6 +113,9 @@
         this.$router.push('/');
       },
       filesChange (fileList) {
+
+        this.$store.dispatch('resetState')
+
         this.currentStatus = STATUS_LOADING
         // handle file changes
         const file = fileList[0]
@@ -131,6 +134,12 @@
           return
         }
 
+        if(['image/png', 'image/jpg', 'image/jpeg'].indexOf(file.type) === -1) {
+          this.currentStatus = STATUS_ERROR
+          this.error = 'Please upload a JPEG or PNG image'
+          return
+        }
+
         this.$store.dispatch(`uploadImage`, file)
 
       },
@@ -142,7 +151,6 @@
         })
       },
       next() {
-        this.$store.dispatch(`transformImage`)
         this.$router.push(`render`)
       }
     }

@@ -16,7 +16,7 @@
       <h1 class="w-full text-center">Artwork Preview</h1>
     </div>
     <div class="w-full p-8 flex justify-center items-center">
-      <div v-if="transformedImage.src">
+      <div v-show="isReady">
         <div class="w-full">
           <img ref="previewImage" :src="transformedImage.src"/>
         </div>
@@ -44,11 +44,35 @@
                     { label: 'Photo', value: 'photo' },
                     { label: 'Illustration', value: 'illustration' },
                   ]"
-                  default="photo"
+                  :default="this.centerline ? 'illustration' : 'photo'"
                 />
               </div>
             </div>
             <div v-if="showIllustration">
+              <div>
+                <ae-label class="no-margin">Color threshold</ae-label>
+                <div class="flex flex-row justify-space items-center">
+                  <div class="w-2/3">
+                    <input class="max-w-full" type="range" step="1" min="0" max="100" v-model="binaryThreshold"/>
+                  </div>
+                  <div class="w-1/3">
+                    <ae-input class="no-margin" type="number" v-model="binaryThreshold"></ae-input>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <ae-label class="no-margin">Stroke weight</ae-label>
+                <div class="flex flex-row justify-space items-center">
+                  <div class="w-2/3">
+                    <input class="max-w-full" type="range" step="1" min="1" max="20" v-model="dilationRadius"/>
+                  </div>
+                  <div class="w-1/3">
+                    <ae-input class="no-margin" type="number" v-model="dilationRadius"></ae-input>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else>
               <div>
                 <ae-label class="no-margin">Blur Radius</ae-label>
                 <div class="flex flex-row justify-space items-center">
@@ -73,30 +97,6 @@
                 </div>
               </div>
             </div>
-            <div v-else>
-              <div>
-                <ae-label class="no-margin">Color threshold</ae-label>
-                <div class="flex flex-row justify-space items-center">
-                  <div class="w-2/3">
-                    <input class="max-w-full" type="range" step="1" min="0" max="100" v-model="binaryThreshold"/>
-                  </div>
-                  <div class="w-1/3">
-                    <ae-input class="no-margin" type="number" v-model="binaryThreshold"></ae-input>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <ae-label class="no-margin">Stroke weight</ae-label>
-                <div class="flex flex-row justify-space items-center">
-                  <div class="w-2/3">
-                    <input class="max-w-full" type="range" step="1" min="1" max="20" v-model="dilationRadius"/>
-                  </div>
-                  <div class="w-1/3">
-                    <ae-input class="no-margin" type="number" v-model="dilationRadius"></ae-input>
-                  </div>
-                </div>
-              </div>
-            </div>
           </form>
         </div>
         <div class="w-full">
@@ -112,7 +112,7 @@
           </ae-list>
         </div>
       </div>
-      <div v-else class="mt-8 relative">
+      <div v-show="isLoading" class="mt-8 relative">
         <ae-loader class="ae-loader-scaling"></ae-loader>
         <div class="absolute ae-loader-progress w-full">{{transformedImage.progress}}%</div>
       </div>
@@ -124,6 +124,8 @@
 
   import InfoLayer from '@/components/InfoLayer'
 
+  const STATUS_LOADING = 1, STATUS_READY = 2
+
   export default {
     name: 'Render',
     components: {InfoLayer},
@@ -134,7 +136,8 @@
         centerline: true,
         blurKernel: 4,
         binaryThreshold: 45,
-        dilationRadius: 4
+        dilationRadius: 4,
+        status: STATUS_LOADING
       }
     },
     computed: {
@@ -161,6 +164,12 @@
       },
       showIllustration() {
         return this.centerline
+      },
+      isLoading() {
+        return this.status === STATUS_LOADING
+      },
+      isReady() {
+        return this.status === STATUS_READY
       }
     },
     methods: {
@@ -173,22 +182,25 @@
       updateValue(val) {
         this.centerline = (val !== 'photo');
       },
-      updatePreview() {
-        this.$store.dispatch(`updateSettings`, {
-          color: Number(this.currentColor),
-          threshold: Number(this.threshold),
-          hysteresisHighThreshold: Number(this.hysteresisHighThreshold),
-          centerline: Number(this.centerline),
-          blurKernel: Number(this.blurKernel),
-          binaryThreshold: Number(this.binaryThreshold),
-          dilationRadius: Number(this.dilationRadius)
-        })
+      async updatePreview() {
+        this.status = STATUS_LOADING
+        console.log("loading");
+        await this.$store.dispatch(`updateSettings`, {
+            color: Number(this.currentColor),
+            threshold: Number(this.threshold),
+            hysteresisHighThreshold: Number(this.hysteresisHighThreshold),
+            centerline: Number(this.centerline),
+            blurKernel: Number(this.blurKernel),
+            binaryThreshold: Number(this.binaryThreshold),
+            dilationRadius: Number(this.dilationRadius)
+          })
+        this.status = STATUS_READY
       },
       changeColor(index) {
         this.currentColor = index
       },
     },
-    mounted() {
+    created() {
       this.threshold = this.settings.threshold
       this.currentColor = this.settings.color
       this.hysteresisHighThreshold = this.settings.hysteresisHighThreshold
@@ -196,6 +208,10 @@
       this.blurKernel = this.settings.blurKernel
       this.binaryThreshold = this.settings.binaryThreshold
       this.dilationRadius = this.settings.dilationRadius
+    },
+    async mounted() {
+      await this.$store.dispatch(`transformImage`)
+      this.status = STATUS_READY
     }
   }
 </script>
