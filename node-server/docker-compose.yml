@@ -20,3 +20,13 @@ services:
       - "8080:8080"
     volumes:
       - "./docker/ipfs:/data/ipfs"
+
+  server:
+    build: .
+    links:
+      - "aeternity"
+      - "ipfs"
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./docker/rendered:/app/rendered"

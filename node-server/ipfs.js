@@ -6,7 +6,7 @@ const ipfsWrap = {};
 let node = null;
 
 ipfsWrap.init = () => {
-    node = ipfsClient('localhost', '5001', {protocol: 'http'});
+    node = ipfsClient({ host: 'localhost', port: '5001', protocol: 'http' });
 };
 
 ipfsWrap.writeFile = (buffer) => {

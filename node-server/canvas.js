@@ -83,6 +83,8 @@ canvas.getSVGDimensions = (svgString) => {
         if (width.includes('mm')) {
             width = Number(width.match(re)[1]) / (pixelsPerCentimeter * 10)
         }
+
+        //TODO: change svg mm div 20 to fix pixels size arg
         return {width, height}
 
     } catch (e) {
