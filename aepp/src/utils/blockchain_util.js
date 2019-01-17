@@ -47,7 +47,7 @@ const auctionSlotToObject = (object) => {
 
 const auctionSlotListToObject = (object) => object.value.map(auctionSlotToObject);
 
-module.exports = {
+export default {
     coordinatesType, artworkDataType, bidType, auctionSlotType, auctionSlotListType,
     coordinatesToObject, artworkDataToObject, bidToObject, bidListToObject, auctionSlotToObject, auctionSlotListToObject
 };
