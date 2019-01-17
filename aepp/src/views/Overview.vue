@@ -46,7 +46,7 @@
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
   import axios from 'axios'
   import Util from '../utils/blockchain_util'
-  import BiggerLoader from "./BiggerLoader";
+  import BiggerLoader from "../components/BiggerLoader";
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2;
 

@@ -34,7 +34,7 @@
 </template>
 
 <script>
-  import CanvasJS from './CanvasJS.vue'
+  import CanvasJS from '../components/CanvasJS.vue'
 
   export default {
     name: 'Home',

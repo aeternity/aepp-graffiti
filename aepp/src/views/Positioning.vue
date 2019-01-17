@@ -30,7 +30,7 @@
 </template>
 
 <script>
-  import CanvasWithControlls from './CanvasWithControlls.vue'
+  import CanvasWithControlls from '../components/CanvasWithControlls.vue'
   import InfoLayer from '@/components/InfoLayer'
 
   export default {

@@ -123,8 +123,13 @@
         -1 * this.position.x + canvasSize.width / 2 - this.transformedImage.width / 2,
         -1 * this.position.y + canvasSize.height / 2 - this.transformedImage.height / 2,
       )
-      console.log(this.$refs.canvas.clientWidth)
-      this.$refs.canvas.setStageScale(this.$refs.canvas.clientWidth / this.transformedImage.width)
+
+      if(this.transformedImage.width > this.transformedImage.height) {
+        this.$refs.canvas.setStageScale(canvasSize.width / (this.transformedImage.width + 100))
+      } else {
+        this.$refs.canvas.setStageScale(canvasSize.height / (this.transformedImage.height + 100))
+      }
+
 
     }
   }

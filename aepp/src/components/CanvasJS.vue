@@ -127,8 +127,15 @@
         }
       },
 
-      setStageScale(newScale) {
+      checkAndSetScale(newScale) {
+        if(newScale > 20) newScale = 20
+        if(newScale < 0.08) newScale = 0.08
+        this.stage.scaleX(newScale)
+        this.stage.scaleY(newScale)
+        return newScale
+      },
 
+      setStageScale(newScale) {
 
         const oldScale = this.stage.scaleX()
 
@@ -137,9 +144,9 @@
           y: this.stage.y() / oldScale - this.stage.height() / oldScale / 2,
         }
 
+        newScale = this.checkAndSetScale(newScale)
+
         //this.stage.scale({ x: newScale, y: newScale })
-        this.stage.scaleX(newScale)
-        this.stage.scaleY(newScale)
 
         let newPos = {
           x: (mousePointTo.x + this.stage.width() / 2 / newScale) * newScale,
@@ -190,8 +197,7 @@
 
           let scale = stage.getScaleX() * dist / this.lastDist
 
-          stage.scaleX(scale)
-          stage.scaleY(scale)
+          scale = this.checkAndSetScale(scale)
 
           const newPos = {
             x: -(mousePointTo.x - center.x / scale) * scale,
@@ -285,8 +291,7 @@
         let newScale = event.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy
 
         //this.stage.scale({ x: newScale, y: newScale })
-        this.stage.scaleX(newScale)
-        this.stage.scaleY(newScale)
+        newScale = this.checkAndSetScale(newScale)
 
         let newPos = {
           x: -(mousePointTo.x - this.stage.getPointerPosition().x / newScale) * newScale,

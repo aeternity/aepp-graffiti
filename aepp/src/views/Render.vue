@@ -121,7 +121,7 @@
 <script>
 
   import InfoLayer from '@/components/InfoLayer'
-  import BiggerLoader from "./BiggerLoader";
+  import BiggerLoader from "../components/BiggerLoader";
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 

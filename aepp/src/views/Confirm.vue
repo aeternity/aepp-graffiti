@@ -68,7 +68,7 @@
 
 <script>
   // TODO switch to mono-l typeface if available
-  import CanvasWithControlls from './CanvasWithControlls.vue'
+  import CanvasWithControlls from '../components/CanvasWithControlls.vue'
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
   import axios from 'axios'
   import InfoLayer from '@/components/InfoLayer'

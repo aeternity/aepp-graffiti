@@ -1,15 +1,14 @@
 import Router from 'vue-router'
-import Home from './components/Home.vue'
-import Contribute from './components/Contribute.vue'
-import Render from './components/Render.vue'
-import Positioning from './components/Positioning.vue'
-import Confirm from './components/Confirm.vue'
-import Test from './components/Test.vue'
-import Desktop from './components/Desktop'
-import Overview from '@/components/Overview'
-import IFrame from '@/components/IFrame'
-import Onboarding from '@/components/Onboarding'
-import BiddingSlots from '@/components/BiddingSlots'
+import Home from './views/Home.vue'
+import Contribute from './views/Contribute.vue'
+import Render from './views/Render.vue'
+import Positioning from './views/Positioning.vue'
+import Confirm from './views/Confirm.vue'
+import Test from './views/Test.vue'
+import Desktop from './views/Desktop'
+import Overview from './views/Overview'
+import IFrame from './views/IFrame'
+import Onboarding from './views/Onboarding'
 
 export default () => {
   const routes = [
@@ -59,12 +58,6 @@ export default () => {
       path: '/overview',
       name: 'overview',
       component: Overview,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/slots',
-      name: 'slots',
-      component: BiddingSlots,
       props: route => ({ query: route.query })
     },
     {
