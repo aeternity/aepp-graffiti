@@ -36,17 +36,19 @@
             </div>
             <div>
               <div class="flex flex-row mb-4">
-                <ae-button-group class="w-full">
-                  <ae-button @click="centerline = true" :fill="centerline ? 'primary' : 'neutral'" face="round" extend>
-                    Illustration
-                  </ae-button>
-                  <ae-button @click="centerline = false" :fill="centerline ? 'neutral' : 'primary'" face="round" extend>
-                    Photo
-                  </ae-button>
-                </ae-button-group>
+                <ae-switch
+                  class="w-full"
+                  @input="updateValue"
+                  name="example"
+                  :choices="[
+                    { label: 'Photo', value: 'photo' },
+                    { label: 'Illustration', value: 'illustration' },
+                  ]"
+                  default="photo"
+                />
               </div>
             </div>
-            <div v-if="centerline">
+            <div v-if="showIllustration">
               <div>
                 <ae-label class="no-margin">Blur Radius</ae-label>
                 <div class="flex flex-row justify-space items-center">
@@ -157,6 +159,9 @@
       droneSettings() {
         return this.$store.state.droneSettings
       },
+      showIllustration() {
+        return this.centerline
+      }
     },
     methods: {
       back() {
@@ -164,6 +169,9 @@
       },
       submit() {
         this.$router.push('positioning')
+      },
+      updateValue(val) {
+        this.centerline = (val !== 'photo');
       },
       updatePreview() {
         this.$store.dispatch(`updateSettings`, {

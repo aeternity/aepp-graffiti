@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="absolute pin-t pin-r p-4" @click="$router.push('/')">
+      <ae-icon class="text-xl" name="close"></ae-icon>
+    </div>
     <OnboardingStep v-if="view === 1" key="v1">
       <div class="w-full flex justify-center items-center">
         <img src="//placehold.it/300x200" />
@@ -47,13 +50,13 @@
 
 
 
-    <footer class="w-full">
+    <footer class="w-full fixed pin-b">
       <div class="w-full flex flex-row justify-center">
         <div v-for="step in MAX_VIEW" :class="step !== view ? 'ae-step-indicator' : 'ae-step-indicator-active'" :key="step">
         </div>
       </div>
       <div class="w-full flex flex-row justify-between p-4">
-        <ae-button v-if="backText" fill="normal" face="round" @click="back">
+        <ae-button v-if="backText" fill="neutral" face="round" @click="back">
           {{backText}}
         </ae-button>
 

@@ -75,7 +75,7 @@ const store = new Vuex.Store({
     },
     apiUrl: API_URL
   },
-  // plugins: [vuexPersist.plugin],
+  plugins: [vuexPersist.plugin],
   getters: {},
   mutations: {
     modifyOriginalImage (state, originalImage) {
