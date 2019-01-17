@@ -46,6 +46,8 @@ function initialState() {
       y: 0
     },
     droneObject: null,
+    progressCallback: () => {
+    },
 
     // HARDCODED SETTINGS
     imageSettings: {
@@ -100,6 +102,9 @@ const store = new Vuex.Store({
     modifyDroneObject(state, newDroneObject) {
       state.droneObject = newDroneObject
     },
+    modifyProgressCallback(state, progressCallback) {
+      state.progressCallback = progressCallback
+    },
     resetState(state) {
       // acquire initial state
       const s = initialState()
@@ -152,17 +157,15 @@ const store = new Vuex.Store({
       const tracer = new DroneTracer(state.droneSettings)
 
       const dronePaint = await tracer.transform(state.originalImage.src, (p) => {
-        if (state.transformedImage.progress !== Math.round(100 * p)) {
-          //commit(`modifyProgress`, Math.round(p * 100));
-          console.log("UPDATING", Math.round(p * 100))
-        }
-      }, {
-        hysteresisHighThreshold: state.settings.hysteresisHighThreshold,
-        centerline: state.settings.centerline,
-        blurKernel: state.settings.blurKernel,
-        binaryThreshold: state.settings.binaryThreshold,
-        dilationRadius: state.settings.dilationRadius
-      })
+          state.progressCallback(p)
+        },
+        {
+          hysteresisHighThreshold: state.settings.hysteresisHighThreshold,
+          centerline: state.settings.centerline,
+          blurKernel: state.settings.blurKernel,
+          binaryThreshold: state.settings.binaryThreshold,
+          dilationRadius: state.settings.dilationRadius
+        })
       commit(`modifyDroneObject`, dronePaint);
       dispatch(`applyPostRenderingChanges`)
 
@@ -199,6 +202,8 @@ const store = new Vuex.Store({
         return state.settings[key] !== update[key]
       })
 
+      console.log(changedKeys);
+
       // UPDATE SETTINGS ANYWAYS
       commit(`modifySettings`, Object.assign({}, state.settings, update))
 
@@ -211,8 +216,11 @@ const store = new Vuex.Store({
         'dilationRadius'
       ]
 
-      if (keys.filter(key => changedKeys.indexOf(key)).length > 0)
+      if (keys.filter(key => changedKeys.indexOf(key) !== -1).length > 0) {
+
         await dispatch(`transformImage`)
+      }
+
 
       if (changedKeys.includes('scaleFactor') ||
         changedKeys.includes('color')) {
@@ -225,6 +233,13 @@ const store = new Vuex.Store({
     },
     resetState({commit}) {
       commit('resetState')
+    },
+    registerProgressCallback({commit}, cb) {
+      commit('modifyProgressCallback', cb)
+    },
+    removeProgressCallback({commit}) {
+      commit('modifyProgressCallback', () => {
+      })
     }
   }
 })

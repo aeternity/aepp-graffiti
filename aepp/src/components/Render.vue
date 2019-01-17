@@ -11,7 +11,6 @@
         <!-- TODO Describe what the options do-->
       </p>
     </InfoLayer>
-
     <div class="w-full pl-8 pr-8 flex">
       <h1 class="w-full text-center">Artwork Preview</h1>
     </div>
@@ -112,9 +111,8 @@
           </ae-list>
         </div>
       </div>
-      <div v-show="isLoading" class="mt-8 relative">
-        <ae-loader class="ae-loader-scaling"></ae-loader>
-        <div class="absolute ae-loader-progress w-full">{{transformedImage.progress}}%</div>
+      <div v-show="isLoading">
+        <BiggerLoader></BiggerLoader>
       </div>
     </div>
   </div>
@@ -123,12 +121,13 @@
 <script>
 
   import InfoLayer from '@/components/InfoLayer'
+  import BiggerLoader from "./BiggerLoader";
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 
   export default {
     name: 'Render',
-    components: {InfoLayer},
+    components: {BiggerLoader, InfoLayer},
     data() {
       return {
         hysteresisHighThreshold: 50,
@@ -137,7 +136,8 @@
         blurKernel: 4,
         binaryThreshold: 45,
         dilationRadius: 4,
-        status: STATUS_LOADING
+        status: STATUS_LOADING,
+        progress: -1
       }
     },
     computed: {
@@ -199,6 +199,12 @@
       changeColor(index) {
         this.currentColor = index
       },
+      progressCallback(progress) {
+        const progress100 = Math.round(progress * 100);
+        if (this.progress !== progress100) {
+          console.log("UPDATING", progress100)
+        }
+      }
     },
     created() {
       this.threshold = this.settings.threshold
@@ -208,10 +214,14 @@
       this.blurKernel = this.settings.blurKernel
       this.binaryThreshold = this.settings.binaryThreshold
       this.dilationRadius = this.settings.dilationRadius
+      this.$store.dispatch('registerProgressCallback', this.progressCallback)
     },
     async mounted() {
       await this.$store.dispatch(`transformImage`)
       this.status = STATUS_READY
+    },
+    beforeDestroy() {
+      this.$store.dispatch('removeProgressCallback')
     }
   }
 </script>
@@ -219,6 +229,11 @@
 <style scoped>
   .no-margin {
     margin: 0 !important;
+  }
+
+  .ae-color-active {
+    border: 3px solid #ff0d6a;
+    box-shadow: 0px 0px 10px;
   }
 
   .ae-loader-progress {
@@ -235,8 +250,4 @@
     border-width: 0.4em;
   }
 
-  .ae-color-active {
-    border: 3px solid #ff0d6a;
-    box-shadow: 0px 0px 10px;
-  }
 </style>

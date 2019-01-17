@@ -4,7 +4,7 @@
       <h1 class="text-center">Your Bids</h1>
     </div>
     <div class="w-full p-4 text-center" v-if="isInitialState">
-      <ae-loader class="p-4"></ae-loader>
+      <BiggerLoader></BiggerLoader>
     </div>
 
     <div class="w-full p-4" v-if="isShowListState">
@@ -14,7 +14,7 @@
           <template slot="header">
             <img :src='bid.image' v-if="bid.image" class="w-full">
             <div class="w-full text-center mt-4" v-else>
-              <ae-loader class="p-4"></ae-loader>
+              <BiggerLoader></BiggerLoader>
             </div>
           </template>
           <div class="w-full">
@@ -46,11 +46,13 @@
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
   import axios from 'axios'
   import Util from '../utils/blockchain_util'
+  import BiggerLoader from "./BiggerLoader";
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2;
 
   export default {
     name: 'Overview',
+    components: {BiggerLoader},
     data () {
       return {
         bids: [],

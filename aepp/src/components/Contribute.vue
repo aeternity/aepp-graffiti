@@ -37,7 +37,7 @@
       </div>
 
       <div class="w-full p-4 text-center" v-if="isLoading">
-        <ae-loader class="p-4"></ae-loader>
+        <BiggerLoader></BiggerLoader>
       </div>
 
       <div v-if="originalImage.src">
@@ -73,12 +73,13 @@
 <script>
 
   import InfoLayer from './InfoLayer'
+  import BiggerLoader from "./BiggerLoader";
 
   const STATUS_INITIAL = 0, STATUS_LOADING = 1, STATUS_SUCCESS = 2, STATUS_ERROR = 3
 
   export default {
     name: 'Upload',
-    components: { InfoLayer },
+    components: {BiggerLoader, InfoLayer },
     data () {
       return {
         fileCount: 0,
