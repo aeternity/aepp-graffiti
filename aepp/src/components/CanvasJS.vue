@@ -11,13 +11,13 @@
     name: 'CanvasJS',
     components: {},
     props: ['draggable', 'moveCallback', 'height'],
-    data () {
+    data() {
       return {
         stage: null,
         layer: null,
         overlayLayer: null,
         windowImages: [],
-        overlayImageId: null,
+        overlayImageId: 'overlayImageId',
         lastDist: 0,
         lastPos: {
           x: -1,
@@ -32,29 +32,26 @@
       }
     },
     methods: {
-      addOverlayImage (imageObject) {
+      addOverlayImage(imageObject) {
 
         // CREATE NEW LAYER
         this.overlayLayer = new Konva.Layer()
         this.stage.add(this.overlayLayer)
 
         // ADD OBJECT ID & LAYER
-        imageObject.ref = 'overlayImage'
+        imageObject.ref = this.overlayImageId
         imageObject.layer = this.overlayLayer
 
         // RENDER IMAGE TO CANVAS
         this.createImage(imageObject)
-
-        // SAVE INFO
-        this.overlayImageId = 'overlayImage'
       },
 
-      moveOverlayImage ({ xDiff, yDiff } ) {
+      moveOverlayImage({xDiff, yDiff}) {
         // GET CURRENT POS
         const oI = this.stage.find(`#${this.overlayImageId}`)[0]
-        const { x, y } = oI.position()
+        const {x, y} = oI.position()
 
-        let currDimensions = { x: oI.width(), y: oI.height() }
+        let currDimensions = {x: oI.width(), y: oI.height()}
 
         // LIMIT TOP & LEFT
         if (x + xDiff < 0 && xDiff < 0) xDiff = -1 * x
@@ -65,7 +62,7 @@
         if (y + currDimensions.y + yDiff > this.canvasSettings.height && yDiff > 0) yDiff = -1 * y - currDimensions.y + this.canvasSettings.height
 
         // UPDATE POS
-        const newPos = { x: x + xDiff, y: y + yDiff }
+        const newPos = {x: x + xDiff, y: y + yDiff}
         oI.position(newPos)
         this.$emit('positionUpdate', newPos)
 
@@ -73,31 +70,62 @@
         this.overlayLayer.draw()
       },
 
-      setOverlayImageSize(width, height) {
+      removeOverlayImage() {
         const oI = this.stage.find(`#${this.overlayImageId}`)[0]
-        if(oI) {
-          oI.clearCache()
-          oI.width(width)
-          oI.height(height)
-          oI.cache()
-        }
-        this.overlayLayer.draw();
+        oI.clearCache()
+        oI.destroy()
+        this.overlayLayer.draw()
       },
 
-      getOverlayPosition () {
+      updateOverlayImageSource({src, width, height}) {
+        const oI = this.stage.find(`#${this.overlayImageId}`)[0]
+        // let windowImage = new Image()
+        let windowImage = document.createElement('img')
+
+        windowImage.onload = () => {
+
+          try {
+            oI.clearCache()
+            oI.image(windowImage)
+            oI.width(width)
+            oI.height(height)
+            oI.cache()
+            this.overlayLayer.draw()
+          } catch (e) {
+            console.error(e)
+          }
+
+        }
+
+        windowImage.onerror = (e) => {
+          console.error(e)
+        }
+
+        windowImage.src = src
+      },
+
+      getOverlayPosition() {
         // GET CURRENT POS
         const oI = this.stage.find(`#${this.overlayImageId}`)[0]
         return oI.position()
       },
 
-      createImage (imageObject) {
+      createImage(imageObject) {
         let windowImage = new Image()
+
         windowImage.onload = () => {
           this.renderImage(windowImage, imageObject)
         }
+
+        windowImage.onerror = (e) => {
+          console.error(e)
+        }
+
         windowImage.src = imageObject.src
       },
-      renderImage (windowImage, imageObject) {
+
+      renderImage(windowImage, imageObject) {
+
         let i = new Konva.Image({
           x: imageObject.position.x,
           y: imageObject.position.y,
@@ -106,6 +134,7 @@
           width: imageObject.width,
           id: imageObject.ref ? imageObject.ref : ''
         })
+
         if (imageObject.layer) {
           imageObject.layer.add(i)
           imageObject.layer.draw()
@@ -115,12 +144,12 @@
           this.layer.draw()
         }
       },
-      moveCanvas ({ xDiff, yDiff }) {
-        const { x, y } = this.stage.getPosition()
-        this.stage.position({ x: x + xDiff, y: y + yDiff })
+      moveCanvas({xDiff, yDiff}) {
+        const {x, y} = this.stage.getPosition()
+        this.stage.position({x: x + xDiff, y: y + yDiff})
         this.stage.batchDraw()
       },
-      getStageDimensions () {
+      getStageDimensions() {
         return {
           width: this.stage.width(),
           height: this.stage.height()
@@ -128,8 +157,8 @@
       },
 
       checkAndSetScale(newScale) {
-        if(newScale > 20) newScale = 20
-        if(newScale < 0.08) newScale = 0.08
+        if (newScale > 20) newScale = 20
+        if (newScale < 0.08) newScale = 0.08
         this.stage.scaleX(newScale)
         this.stage.scaleY(newScale)
         return newScale
@@ -146,8 +175,6 @@
 
         newScale = this.checkAndSetScale(newScale)
 
-        //this.stage.scale({ x: newScale, y: newScale })
-
         let newPos = {
           x: (mousePointTo.x + this.stage.width() / 2 / newScale) * newScale,
           y: (mousePointTo.y + this.stage.height() / 2 / newScale) * newScale
@@ -159,10 +186,10 @@
 
       // DRAG, ZOOM AND NAVIGATIONAL STUFF
 
-      getDistance (p1, p2) {
+      getDistance(p1, p2) {
         return Math.sqrt(Math.pow((p2.x - p1.x), 2) + Math.pow((p2.y - p1.y), 2))
       },
-      onTouchMoveEvent (konvaEvent) {
+      onTouchMoveEvent(konvaEvent) {
         const event = konvaEvent.evt;
         let stage = this.stage;
         let touch1 = event.touches[0]
@@ -213,7 +240,7 @@
           let offsetLeft = this.$refs.stageWrapper.offsetLeft
 
           // GET OLD POS
-          let { x, y } = this.lastPos
+          let {x, y} = this.lastPos
 
           // CHECK IF OLD POS IS NOT DEFAULT
           if (x !== -1 && y !== -1) {
@@ -231,8 +258,8 @@
                 yDiff: touch1.clientY - offsetTop - this.lastPos.y,
               }
 
-              if(this.moveTarget === 'stage') this.moveCanvas(diff);
-              else if(this.moveTarget === 'overlay') {
+              if (this.moveTarget === 'stage') this.moveCanvas(diff);
+              else if (this.moveTarget === 'overlay') {
                 const newDiff = {
                   xDiff: diff.xDiff / this.stage.scaleX(),
                   yDiff: diff.yDiff / this.stage.scaleX()
@@ -267,7 +294,7 @@
           }
         }
 
-        if(konvaEvent.target === this.stage || konvaEvent.target.attrs.id === "") {
+        if (konvaEvent.target === this.stage || konvaEvent.target.attrs.id === "") {
           this.moveTarget = 'stage'
         } else {
           this.moveTarget = 'overlay'
@@ -307,7 +334,7 @@
           x: event.clientX - this.$refs.stageWrapper.offsetLeft,
           y: event.clientY - this.$refs.stageWrapper.offsetTop
         }
-        if(konvaEvent.target === this.stage || konvaEvent.target.attrs.id === "") {
+        if (konvaEvent.target === this.stage || konvaEvent.target.attrs.id === "") {
           this.moveTarget = 'stage'
         } else {
           this.moveTarget = 'overlay'
@@ -326,7 +353,7 @@
         let offsetLeft = this.$refs.stageWrapper.offsetLeft
 
         // GET OLD POS
-        let { x, y } = this.lastPos
+        let {x, y} = this.lastPos
         // CHECK IF OLD POS IS NOT DEFAULT
         if (x !== -1 && y !== -1) {
 
@@ -336,8 +363,8 @@
             yDiff: event.clientY - offsetTop - this.lastPos.y,
           }
 
-          if(this.moveTarget === 'stage') this.moveCanvas(diff);
-          else if(this.moveTarget === 'overlay') {
+          if (this.moveTarget === 'stage') this.moveCanvas(diff);
+          else if (this.moveTarget === 'overlay') {
             const newDiff = {
               xDiff: diff.xDiff / this.stage.scaleX(),
               yDiff: diff.yDiff / this.stage.scaleX()
@@ -353,7 +380,7 @@
         }
       },
     },
-    mounted () {
+    mounted() {
       // SET STAGE WIDTH
       const width = this.$refs.stageWrapper.clientWidth
       const height = Number(this.height) ? Number(this.height) : 300
@@ -370,7 +397,7 @@
       // ADD BACKGROUND
       this.createImage({
         src: this.canvasSettings.url,
-        position: { x: 0, y: 0 },
+        position: {x: 0, y: 0},
         width: this.canvasSettings.width,
         height: this.canvasSettings.height
       })

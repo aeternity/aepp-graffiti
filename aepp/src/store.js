@@ -126,11 +126,11 @@ const store = new Vuex.Store({
 
           const imageSource = await image.getBase64Async(file.type)
 
-          commit(`modifyOriginalImage`, {
+          commit('modifyOriginalImage', {
             src: imageSource,
             file: file
           })
-          commit(`modifyPosition`, {
+          commit('modifyPosition', {
             x: Math.round(Math.random() * 1000),
             y: Math.round(Math.random() * 1000)
           })
@@ -146,7 +146,7 @@ const store = new Vuex.Store({
     },
     async transformImage({commit, state, dispatch}) {
 
-      commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, {
+      commit('modifyTransformedImage', Object.assign({}, state.transformedImage, {
         src: null,
         width: 0,
         height: 0,
@@ -166,15 +166,21 @@ const store = new Vuex.Store({
           binaryThreshold: state.settings.binaryThreshold,
           dilationRadius: state.settings.dilationRadius
         })
-      commit(`modifyDroneObject`, dronePaint);
-      dispatch(`applyPostRenderingChanges`)
+      commit('modifyDroneObject', dronePaint);
+      dispatch('applyPostRenderingChanges')
 
     },
-    applyPostRenderingChanges({commit, state}) {
+    async applyPostRenderingChanges({commit, state, dispatch}) {
 
-      state.droneObject.setPaintingScale(state.settings.scaleFactor)
-      state.droneObject.setPaintingPosition(state.position.x / state.canvas.meterToPixel, state.position.y / state.canvas.meterToPixel)
-      state.droneObject.setPaintingColor(state.droneSettings.colors[state.settings.color])
+      //TODO rerender image on error
+      try {
+        console.log(state.settings.scaleFactor)
+        state.droneObject.setPaintingScale(state.settings.scaleFactor)
+        state.droneObject.setPaintingPosition(state.position.x / state.canvas.meterToPixel, state.position.y / state.canvas.meterToPixel)
+        state.droneObject.setPaintingColor(state.droneSettings.colors[state.settings.color])
+      } catch (e) {
+        console.error(e)
+      }
 
       let image = {}
 
@@ -184,14 +190,14 @@ const store = new Vuex.Store({
       image.width = state.droneObject.paintingWidth / 10
       image.dronetime = Math.round(state.droneObject.estimatedTime / 1000);
 
-      commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, image))
-      commit(`modifyDroneObject`, state.droneObject)
+      commit('modifyTransformedImage', Object.assign({}, state.transformedImage, image))
+      commit('modifyDroneObject', state.droneObject)
     },
     updateOriginalImage({commit, state}, update) {
-      commit(`modifyOriginalImage`, Object.assign({}, state.originalImage, update))
+      commit('modifyOriginalImage', Object.assign({}, state.originalImage, update))
     },
     updateTransformedImage({commit, state}, update) {
-      commit(`modifyTransformedImage`, Object.assign({}, state.transformedImage, update))
+      commit('modifyTransformedImage', Object.assign({}, state.transformedImage, update))
     },
     async updateSettings({commit, state, dispatch}, update) {
 
@@ -205,7 +211,7 @@ const store = new Vuex.Store({
       console.log(changedKeys);
 
       // UPDATE SETTINGS ANYWAYS
-      commit(`modifySettings`, Object.assign({}, state.settings, update))
+      commit('modifySettings', Object.assign({}, state.settings, update))
 
 
       const keys = [
@@ -217,19 +223,17 @@ const store = new Vuex.Store({
       ]
 
       if (keys.filter(key => changedKeys.indexOf(key) !== -1).length > 0) {
-
-        await dispatch(`transformImage`)
+        await dispatch('transformImage')
       }
-
 
       if (changedKeys.includes('scaleFactor') ||
         changedKeys.includes('color')) {
-        await dispatch(`applyPostRenderingChanges`)
+        await dispatch('applyPostRenderingChanges')
       }
 
     },
     updatePosition({commit, state}, update) {
-      commit(`modifyPosition`, Object.assign({}, state.position, update))
+      commit('modifyPosition', Object.assign({}, state.position, update))
     },
     resetState({commit}) {
       commit('resetState')
