@@ -46,7 +46,7 @@ canvas.mergeImages = async (sources) => {
         image.onerror = () => reject(new Error('Couldn\'t load image'));
         image.onload = () => resolve(Object.assign({}, source, {img: image}));
         image.src = source.src;
-    }));
+    }).catch(console.error));
 
     // create canvas context
     const tempCanvas = createCanvas(width, height);
@@ -60,11 +60,13 @@ canvas.mergeImages = async (sources) => {
 
     // draw images to canvas
     loadedImages.forEach(image => {
-        canvasContext.globalAlpha = image.opacity ? image.opacity : 1;
-        if (image.width > 0 && image.height > 0) {
-            canvasContext.drawImage(image.img, image.x || 0, image.y || 0, image.width, image.height);
-        } else {
-            canvasContext.drawImage(image.img, image.x || 0, image.y || 0);
+        if (image) {
+            canvasContext.globalAlpha = image.opacity ? image.opacity : 1;
+            if (image.width > 0 && image.height > 0) {
+                canvasContext.drawImage(image.img, image.x || 0, image.y || 0, image.width, image.height);
+            } else {
+                canvasContext.drawImage(image.img, image.x || 0, image.y || 0);
+            }
         }
     });
 
