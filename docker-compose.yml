@@ -1,0 +1,46 @@
+version: '3'
+services:
+
+  aeternity:
+    image: "aeternity/epoch:latest"
+    command: "-aehttp enable_debug_endpoints true"
+    volumes:
+      - "./node-server/docker/epoch.yaml:/home/epoch/.epoch/epoch/epoch.yaml"
+      - "./node-server/docker/aeternity_uat:/home/epoch/node/data/mnesia"
+
+  ipfs:
+    image: "ipfs/go-ipfs:latest"
+    volumes:
+      - "./node-server/docker/ipfs:/data/ipfs"
+
+  server:
+    build: node-server
+    restart: on-failure
+    environment:
+      - IPFS_URL=ipfs
+      - AETERNITY_URL=aeternity
+    depends_on: 
+      - "aeternity"
+      - "ipfs"
+    links:
+      - "aeternity"
+      - "ipfs"
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./node-server/docker/rendered:/app/rendered"
+      
+  base-aepp:
+    build:
+      context: .
+      dockerfile: Dockerfile.base-aepp
+    ports:
+      - "8084:80"
+      
+  aepp:
+    build: aepp
+    depends_on: 
+      - "server"
+      - "base-aepp"
+    ports:
+      - "8085:80"

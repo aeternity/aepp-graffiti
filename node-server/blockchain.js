@@ -7,11 +7,13 @@ const contractAddress = 'ct_2aLiBbVqAgdzVEhpmjqW33cCmJkkQAWDayEQsFkrkt6AyY2HPG';
 
 let client = null;
 
+const aeternityUrl = process.env.AETERNITY_URL || 'localhost';
+
 blockchain.init = async () => {
     try {
         client = await EpochChain.compose(EpochContract)({
-            url: 'http://localhost:3013',
-            internalUrl: 'http://localhost:3113',
+            url: `http://${aeternityUrl}:3013`,
+            internalUrl: `http://${aeternityUrl}:3113`,
         });
     } catch (e) {
         console.log(e);
