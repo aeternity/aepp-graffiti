@@ -4,6 +4,7 @@ const {createCanvas, Image} = require('canvas');
 const blockchain = require('./blockchain.js');
 const ipfsWrapper = require('./ipfs.js');
 const convert = require('xml-js');
+const Base64 = require('js-base64').Base64;
 
 const canvas = {};
 
@@ -11,6 +12,7 @@ const pathLatest = "./rendered/latest.png";
 
 const renderInterval = 20000;
 
+const svgScalingFactor = 2;
 const canvasCentimeterWidth = 33 * 100;
 const canvasCentimeterHeight = 50 * 100;
 const pixelsPerCentimeter = 1;
@@ -86,11 +88,14 @@ canvas.getSVGDimensions = (svgString) => {
             width = Number(width.match(re)[1]) / (pixelsPerCentimeter * 10)
         }
 
-        //TODO: change svg mm div 20 to fix pixels size arg
-        return {width, height}
+        result.svg._attributes.height = (height / svgScalingFactor) + "mm";
+        result.svg._attributes.width = (width / svgScalingFactor) + "mm";
+
+        const svg = convert.js2xml(result, {compact: true});
+        return {width, height, svg}
 
     } catch (e) {
-        console.error('Could not get width / height from image ', svgString.substr(0, 20));
+        console.error('Could not get width / height from image ', svgString.substr(0, 20), e);
         return {width: 0, height: 0}
     }
 };
@@ -109,11 +114,9 @@ canvas.render = async () => {
     const transformedSources = ipfsSources
         .filter(data => !!data.filebuffer)
         .map(data => {
-            const base64buffer = data.filebuffer.toString('base64');
-            const {width, height} = canvas.getSVGDimensions(data.filebuffer.toString('utf8'));
-
+            const {width, height, svg} = canvas.getSVGDimensions(data.filebuffer.toString('utf8'));
             return {
-                src: 'data:image/svg+xml;base64,' + base64buffer,
+                src: 'data:image/svg+xml;base64,' + Base64.encode(svg),
                 x: data.bid.data.coordinates.x * pixelsPerCentimeter,
                 y: data.bid.data.coordinates.y * pixelsPerCentimeter,
                 width,

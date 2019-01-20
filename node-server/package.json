@@ -19,6 +19,7 @@
         "express": "^4.16.4",
         "express-fileupload": "^1.0.0",
         "ipfs-http-client": "^28.1.0",
+        "js-base64": "^2.5.0",
         "xml-js": "^1.6.8"
     }
 }
