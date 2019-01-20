@@ -16,7 +16,9 @@ RUN git clone -b feature/sdk-intergation https://github.com/aeternity/aepp-base.
 # adjust demo data
 RUN sed -i -e 's/localhost:9001/localhost:8085/g' src/lib/appsRegistry.js
 RUN sed -i -e 's/Drone Project/Drone Graffiti/g' src/lib/appsRegistry.js
-RUN sed -i -e "s/name: 'Base æpp'/name: 'Drone Graffiti Demo'/g" vue.config.js
+RUN sed -i -e "s/Base æpp/Drone Graffiti Demo/g" vue.config.js
+RUN sed -i -e "s/Base æpp/Drone Graffiti Demo/g" public/default.webmanifest
+RUN sed -i -e "s/Base æpp/Drone Graffiti Demo/g" public/index.html
 RUN sed -i -e '/Roma-net/d' src/lib/networksRegistry.js
 RUN sed -i -e '/Edgenet/d' src/lib/networksRegistry.js
 
