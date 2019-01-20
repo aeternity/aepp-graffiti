@@ -32,5 +32,5 @@ app.use((req, res) => {
     res.sendStatus(404);
 });
 
-canvas.init();
+setTimeout(() => canvas.init(), 30000);
 app.listen(3000);

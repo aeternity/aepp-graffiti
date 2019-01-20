@@ -17,6 +17,7 @@ ipfsWrap.writeFile = (buffer) => {
 };
 
 // DEBUG WITH QmQjqVu5qsd4PPqJnTcLXmvznMw7X2UEjtLP9NKCtwWMx3
+// TODO abort if file can't be found
 ipfsWrap.getFile = async (hash) => {
     if(!node) ipfsWrap.init();
     try {
