@@ -33,7 +33,7 @@
           On the bottom you can enter the AE you wish to spend per second for this image. Once you tap continue the bid will be placed and you will be forwarded to your bidding overview.
         </p>
         <p class="p-4 pb-0">
-          You should add 0.45 AE to your bid total as this is an estimate of the fee you have to pay for the smart contract to execute.
+          Your total bid should include the fee you have to pay for the smart contract to execute, so a minimum amount in required.
         </p>
       </InfoLayer>
 
@@ -45,7 +45,7 @@
       </div>
       <div class="w-full p-4">
         <h2 class="w-full text-center mb-4">Required Time</h2>
-        <ae-text face="mono-xl" class="text-center">{{transformedImage.dronetime}} Seconds</ae-text>
+        <ae-text face="mono-xl" class="text-center">{{transformedImage.dronetime}} Minutes</ae-text>
       </div>
       <div class="w-full p-4">
         <h2 class="w-full text-center mb-4">Your Total</h2>
@@ -82,7 +82,7 @@
     components: { LoadingStep, InfoLayer, CanvasWithControlls },
     data () {
       return {
-        bid: 0.45,
+        bid: 1,
         pub: 'ak_QY8VNEkhj7omMUjAvfVBq2NjTDy895LBYbk7qVxQo1qT8VqfE',
         balance: 0,
         client: null,
@@ -153,7 +153,7 @@
         // args: hash, x, y, time
         // amount: ae to contract amount
         const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'place_bid', {
-          args: `(${auctionSlotId}, ${Math.round(this.transformedImage.dronetime / 1000)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
+          args: `(${auctionSlotId}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
           options: { amount: this.bid * 1000000000000000000 }
         }).catch(async e => {
           console.error(e)
