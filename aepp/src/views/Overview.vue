@@ -22,7 +22,7 @@
               Position: X {{bid.data.coordinates.x}}  Y {{bid.data.coordinates.y}}
             </div>
             <div class="w-full">
-              Dronetime: {{bid.time}} Seconds
+              Dronetime: {{bid.time}} Minutes
             </div>
             <div class="w-full">
               Amount: {{bid.amount/1000000000000000000}} AE

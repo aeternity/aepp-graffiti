@@ -27,7 +27,7 @@
           On the bottom you can enter the AE you wish to spend per second for this image. Once you tap continue the bid will be placed and you will be forwarded to your bidding overview.
         </p>
         <p class="p-4 pb-0">
-          First there is the final image and its position on the wall. Then we display the time in seconds it takes to paint the image and the account you are bidding from.
+          First there is the final image and its position on the wall. Then we display the time in minutes it takes to paint the image and the account you are bidding from.
         </p>
         <p class="p-4 pb-0">
           On the bottom you can enter the AE you wish to spend per second for this image. Once you tap continue the bid will be placed and you will be forwarded to your bidding overview.
