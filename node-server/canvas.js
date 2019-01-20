@@ -20,7 +20,7 @@ const height = canvasCentimeterHeight * pixelsPerCentimeter;
 let current_height = 0;
 
 intervalJob = async () => {
-    current_height = await blockchain.height();
+    current_height = await blockchain.height().catch(console.error);
     console.log('intervalJob', current_height);
     await canvas.render();
 };
@@ -98,7 +98,7 @@ canvas.getSVGDimensions = (svgString) => {
 canvas.render = async () => {
 
     // get all files from ipfs that were included in bids
-    const auctionSlot = await blockchain.auctionSlot();
+    const auctionSlot = await blockchain.auctionSlot().catch(console.error);
     const ipfsSources = await Promise.all(auctionSlot.successfulBids.map(bid => {
         return ipfsWrapper.getFile(bid.data.artworkReference).then(filebuffer => {
             return {filebuffer: filebuffer, bid: bid};
