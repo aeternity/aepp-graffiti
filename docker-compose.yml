@@ -12,6 +12,9 @@ services:
     image: "ipfs/go-ipfs:latest"
     volumes:
       - "./node-server/docker/ipfs:/data/ipfs"
+    ports:
+      - "4001:4001"
+      - "4001:4002/udp"
 
   server:
     build: node-server
