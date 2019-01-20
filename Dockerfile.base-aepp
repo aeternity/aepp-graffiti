@@ -13,6 +13,16 @@ USER app
 
 RUN git clone -b feature/sdk-intergation https://github.com/aeternity/aepp-base.git .
 
+# adjust demo data
+RUN sed -i -e 's/localhost:9001/localhost:8085/g' src/lib/appsRegistry.js
+RUN sed -i -e 's/Drone Project/Drone Graffiti/g' src/lib/appsRegistry.js
+RUN sed -i -e "s/name: 'Base æpp'/name: 'Drone Graffiti Demo'/g" vue.config.js
+RUN sed -i -e '/Roma-net/d' src/lib/networksRegistry.js
+RUN sed -i -e '/Edgenet/d' src/lib/networksRegistry.js
+
+# add demo seed
+RUN sed -i -e "s/seed: ''/seed: 'flower run enforce width destroy fence term leader layer leave worry veteran'/g" src/pages/mobile/Recover.vue
+
 RUN npm install
 RUN npm run build
 
