@@ -6,8 +6,14 @@ contract ArtAuction =
 
   record state =
     { is_admin : is_admin
+    , auction_metadata : auction_metadata
     , latest_auction_slot_id : int
     , auction_slots : auction_slots }
+
+  record auction_metadata =
+    { geolocation : string
+    , canvas_width : int
+    , canvas_height : int }
 
   record auction_slot =
     { id : int
@@ -34,10 +40,19 @@ contract ArtAuction =
     { x : int
     , y : int }
 
-  public function init() : state =
+  public function init(geolocation' : string,
+                       canvas_width' : int,
+                       canvas_height' : int) : state =
+    let auction_metadata' = { geolocation = geolocation',
+                              canvas_width = canvas_width',
+                              canvas_height = canvas_height' }
     { is_admin = {[Call.caller] = true},
+      auction_metadata = auction_metadata',
       latest_auction_slot_id = 0,
       auction_slots = {} }
+
+  public function get_auction_metadata() : auction_metadata =
+    state.auction_metadata
 
   public stateful function add_auction_slot(time_capacity' : int,
                                             start_block_height' : int,
@@ -74,7 +89,6 @@ contract ArtAuction =
       Some(auction_slot) => auction_slot
       None => abort("auction_slot does not exist")
 
-  // TODO: check canvas size
   public stateful function place_bid(auction_slot_id : int,
                                      time' : int,
                                      artwork_reference' : string,
@@ -87,6 +101,10 @@ contract ArtAuction =
     require(auction_slot.end_block_height > Chain.block_height, "place_bid auction_slot is already closed at height")
     require(auction_slot.minimum_time_per_bid =< time', "place_bid time has to be greater or equals auction_slot minimum_time_per_bid")
     require(auction_slot.maximum_time_per_bid >= time', "place_bid time has to be smaller or equals auction_slot maximum_time_per_bid")
+    require(x' >= 0, "x has to be greater or equals 0")
+    require(y' >= 0, "y has to be greater or equals 0")
+    require(state.auction_metadata.canvas_width >= x', "x has to be smaller canvas width")
+    require(state.auction_metadata.canvas_height >= y', "y has to be smaller canvas height")
 
     let coordinates' = { x = x', y = y' }
     let artwork_data' = { artwork_reference = artwork_reference', coordinates = coordinates' }

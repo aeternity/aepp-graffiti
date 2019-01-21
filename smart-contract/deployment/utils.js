@@ -5,6 +5,7 @@ const artworkDataType = `(string, ${coordinatesType})`;
 const bidType = `(address, int, int, int, ${artworkDataType})`;
 const auctionSlotType = `(int, int, int, int, list(${bidType}), list(${bidType}), int, int)`;
 const auctionSlotListType = `list(${auctionSlotType})`;
+const auctionMetaDataType = '(string, int, int)';
 
 const coordinatesToObject = (object) => {
     return {
@@ -47,7 +48,15 @@ const auctionSlotToObject = (object) => {
 
 const auctionSlotListToObject = (object) => object.value.map(auctionSlotToObject);
 
+const auctionMetaDataToObject = (object) => {
+    return {
+        geolocation: object.value[0].value,
+        canvasWidth: object.value[1].value,
+        canvasHeight: object.value[2].value,
+    }
+};
+
 module.exports = {
-    coordinatesType, artworkDataType, bidType, auctionSlotType, auctionSlotListType,
-    coordinatesToObject, artworkDataToObject, bidToObject, bidListToObject, auctionSlotToObject, auctionSlotListToObject
+    coordinatesType, artworkDataType, bidType, auctionSlotType, auctionSlotListType, auctionMetaDataType,
+    coordinatesToObject, artworkDataToObject, bidToObject, bidListToObject, auctionSlotToObject, auctionSlotListToObject, auctionMetaDataToObject
 };

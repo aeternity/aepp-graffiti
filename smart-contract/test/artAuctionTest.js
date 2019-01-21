@@ -41,7 +41,7 @@ describe('ArtAuction', () => {
         }).catch(console.error);
 
         const deployPromise = compiledContract.deploy({ // Deploy it
-            initState: '()',
+            initState: '("0.000000,-0.000000", 3300, 5000)',
             options: {
                 ttl: config.ttl,
                 amount: 0
@@ -50,6 +50,17 @@ describe('ArtAuction', () => {
 
         assert.isFulfilled(deployPromise, 'Could not deploy the ArtAuction Contract'); // Check it is deployed
         contract = await deployPromise;
+    });
+
+
+    it('Static Call and Decode ArtAuction Contract; get_auction_metadata', async () => {
+        const staticCallAuctionSlot = await contract.callStatic('get_auction_metadata', {args: '()'});
+        const decodedAuctionSlot = await staticCallAuctionSlot.decode(Utils.auctionMetaDataType);
+
+        const auctionSlot = Utils.auctionMetaDataToObject(decodedAuctionSlot);
+        assert.equal(auctionSlot.geolocation, "0.000000,-0.000000");
+        assert.equal(auctionSlot.canvasWidth, 3300);
+        assert.equal(auctionSlot.canvasHeight, 5000);
     });
 
     it('Call ArtAuction Contract; add auction slot', async () => {
@@ -153,7 +164,6 @@ describe('ArtAuction', () => {
         assert.equal(auctionSlot2.failedBids.length, 2);
         const contractBalance = await owner.balance(contract.address);
         const successfulAmount = auctionSlot2.successfulBids.map(bid => parseInt(bid.amount)).reduce((x, y) => x + y, 0);
-        console.log("auctionSlot2", JSON.stringify(auctionSlot2, null, 2));
         assert.equal(successfulAmount, contractBalance);
     });
 
