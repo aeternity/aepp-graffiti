@@ -188,7 +188,7 @@ const store = new Vuex.Store({
 
       image.height = state.droneObject.paintingHeight / 10
       image.width = state.droneObject.paintingWidth / 10
-      image.dronetime = Math.round(state.droneObject.estimatedTime / 1000);
+      image.dronetime = Math.round(state.droneObject.estimatedTime / 1000 / 60);
 
       commit('modifyTransformedImage', Object.assign({}, state.transformedImage, image))
       commit('modifyDroneObject', state.droneObject)
