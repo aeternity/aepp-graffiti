@@ -1,4 +1,4 @@
-contract ArtAuction =
+contract DroneGraffitiAuction =
 
   type is_admin = map(address, bool)
 

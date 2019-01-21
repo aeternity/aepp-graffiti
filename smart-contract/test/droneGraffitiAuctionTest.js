@@ -1,5 +1,5 @@
 const Ae = require('@aeternity/aepp-sdk').Universal;
-const Utils = require('../deployment/utils');
+const Utils = require('../deployment/auctionUtils');
 
 const config = {
     host: "http://localhost:3001/",
