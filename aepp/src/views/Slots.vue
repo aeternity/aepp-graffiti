@@ -150,12 +150,16 @@
   import Util from '../utils/blockchain_util'
   import BiggerLoader from '@/components/BiggerLoader'
   import Countdown from '@/components/Countdown'
+  import AeList from '@aeternity/aepp-components/src/components/ae-list/ae-list'
+  import AeListItem from '@aeternity/aepp-components/src/components/ae-list-item/ae-list-item'
+  import AeButton from '@aeternity/aepp-components/src/components/aeButton/aeButton'
+  import AeText from '@aeternity/aepp-components/src/components/ae-text/ae-text'
 
   const SHOW_LIST = 1, EMPTY_LIST = 2, LOADING = 3
 
   export default {
     name: 'Slots',
-    components: { Countdown, BiggerLoader, InfoLayer },
+    components: { AeText, AeButton, AeListItem, AeList, Countdown, BiggerLoader, InfoLayer },
     data () {
       return {
         state: LOADING,
