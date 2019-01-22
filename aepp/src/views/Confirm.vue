@@ -175,7 +175,6 @@
       async runBid () {
         // args: hash, x, y, time
         // amount: ae to contract amount
-        this.bid = 0;
 
         const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'place_bid', {
           args: `(${this.biddingSlotId}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
