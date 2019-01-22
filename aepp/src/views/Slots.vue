@@ -31,7 +31,7 @@
               <div>
                 <h2 class="text-black">Slot {{slot.id}} ({{slot.successfulBids.length}} Bids)</h2>
               </div>
-              <div class="flex flex-col pr-6">
+              <div class="flex flex-col mt-2">
                 <span>
                   Estimated time left
                 </span>
@@ -39,7 +39,7 @@
                   <Countdown :initialTime="(slot.endBlockHeight - height) * 180"></Countdown>
                 </span>
               </div>
-              <div class="flex flex-col pr-6">
+              <div class="flex flex-col mt-2">
                 <span>
                   Minimum Bid / Minute
                 </span>
@@ -51,6 +51,14 @@
                 </span>
               </div>
 
+              <div class="flex flex-col mt-2">
+                <span class="font-mono text-red text-lg" v-if="slot.maximumTimePerBid < transformedImage.dronetime">
+                  Your artwork is too big for this slot. Consider making it smaller.
+                </span>
+                <span class="font-mono text-red text-lg" v-if="slot.minimumTimePerBid > transformedImage.dronetime">
+                  Your artwork is too small for this slot. Consider making it larger.
+                </span>
+              </div>
               <!--
               <div class="flex flex-row justify-between">
                 <div class="flex flex-col pr-6">
@@ -126,10 +134,10 @@
 
           </ae-card>
         </div>
-        <div v-if="choice">
+        <div >
           <div class="w-full">
             <ae-list>
-              <ae-list-item>
+              <ae-list-item v-if="choice">
                 <ae-button face="round" fill="primary" @click="next" extend>Continue</ae-button>
               </ae-list-item>
               <ae-list-item @click="$router.push('positioning')" class="justify-center">
@@ -150,12 +158,12 @@
   import Util from '../utils/blockchain_util'
   import BiggerLoader from '@/components/BiggerLoader'
   import Countdown from '@/components/Countdown'
-  import { AeList, AeListItem, AeButton, AeText } from '@aeternity/aepp-components'
+  import { AeList, AeListItem, AeButton, AeText, AeCard, AeCheck } from '@aeternity/aepp-components'
   const SHOW_LIST = 1, EMPTY_LIST = 2, LOADING = 3
 
   export default {
     name: 'Slots',
-    components: { AeText, AeButton, AeListItem, AeList, Countdown, BiggerLoader, InfoLayer },
+    components: { AeText, AeButton, AeListItem, AeList, AeCard, AeCheck, Countdown, BiggerLoader, InfoLayer },
     data () {
       return {
         state: LOADING,
@@ -178,6 +186,9 @@
       },
       blockchainSettings () {
         return this.$store.state.blockchainSettings
+      },
+      transformedImage () {
+        return this.$store.state.transformedImage
       }
     },
     methods: {
