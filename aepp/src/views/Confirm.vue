@@ -73,6 +73,7 @@
   import axios from 'axios'
   import InfoLayer from '@/components/InfoLayer'
   import LoadingStep from '@/components/LoadingStep'
+  import Util from '@/utils/blockchain_util'
 
   const STATUS_INITIAL = 1, STATUS_LOADING = 2;
   const LOADING_DATA = 0, LOADING_IPFS = 1, LOADING_CONTRACT = 2, LOADING_FINISHED = 3;
@@ -106,6 +107,9 @@
       },
       isLoading () {
         return this.currentStatus === STATUS_LOADING
+      },
+      biddingSlotId() {
+        return this.$store.state.biddingSlotId
       }
     },
     methods: {
@@ -127,6 +131,7 @@
           this.currentLoadingStep = LOADING_CONTRACT
           await this.runBid()
           this.currentLoadingStep = LOADING_FINISHED
+          this.$store.dispatch('resetState')
         } catch (e) {
           console.log(e)
         }
@@ -149,12 +154,11 @@
         return bb
       },
       async runBid () {
-        const auctionSlotId = 1;
         // args: hash, x, y, time
         // amount: ae to contract amount
         const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'place_bid', {
-          args: `(${auctionSlotId}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
-          options: { amount: this.bid * 1000000000000000000 }
+          args: `(${this.biddingSlotId}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
+          options: { amount: Util.aeToAtoms(this.bid )}
         }).catch(async e => {
           console.error(e)
           const decodedError = await this.client.contractDecodeData('string', e.returnValue).catch(e => console.error(e))

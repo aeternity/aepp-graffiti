@@ -36,7 +36,7 @@
                   Estimated time left
                 </span>
                 <span class="font-mono text-black text-lg">
-                  <Countdown :initialTime="(slot.endBlockHeight - height) * 350"></Countdown>
+                  <Countdown :initialTime="(slot.endBlockHeight - height) * 180"></Countdown>
                 </span>
               </div>
               <div class="flex flex-col pr-6">
@@ -150,11 +150,7 @@
   import Util from '../utils/blockchain_util'
   import BiggerLoader from '@/components/BiggerLoader'
   import Countdown from '@/components/Countdown'
-  import AeList from '@aeternity/aepp-components/src/components/ae-list/ae-list'
-  import AeListItem from '@aeternity/aepp-components/src/components/ae-list-item/ae-list-item'
-  import AeButton from '@aeternity/aepp-components/src/components/aeButton/aeButton'
-  import AeText from '@aeternity/aepp-components/src/components/ae-text/ae-text'
-
+  import { AeList, AeListItem, AeButton, AeText } from '@aeternity/aepp-components'
   const SHOW_LIST = 1, EMPTY_LIST = 2, LOADING = 3
 
   export default {
@@ -213,6 +209,7 @@
         this.choice = slotId
       },
       next() {
+        this.$store.dispatch('updateBiddingSlotId', this.choice)
         this.$router.push('confirm')
       }
     },

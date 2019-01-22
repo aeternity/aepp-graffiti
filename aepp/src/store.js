@@ -6,15 +6,15 @@ import DroneTracer from '../node_modules/dronetracer/src/DroneTracer/main.js'
 
 Vue.use(Vuex)
 
-const API_URL = 'https://ae-art-server.piwo.app';
+const API_URL = 'https://ae-art-server.piwo.app'
 // const API_URL = 'http://localhost:3000';
 // const API_URL = 'http://192.168.43.131:3000';
 const vuexPersist = new VuexPersist({
   key: 'ae-drone',
   storage: window.localStorage
-});
+})
 
-function initialState() {
+function initialState () {
   return {
     originalImage: {
       src: null,
@@ -46,13 +46,13 @@ function initialState() {
       y: 0
     },
     droneObject: null,
-    progressCallback: () => {
-    },
+    biddingSlotId: null,
+    progressCallback: () => {},
 
     // HARDCODED SETTINGS
     imageSettings: {
-      max: {width: 1000, height: 1000},
-      min: {width: 400, height: 300}
+      max: { width: 1000, height: 1000 },
+      min: { width: 400, height: 300 }
     },
     canvas: {
       url: API_URL + '/rendered/latest.png',
@@ -84,28 +84,32 @@ const store = new Vuex.Store({
   plugins: [vuexPersist.plugin],
   getters: {},
   mutations: {
-    modifyOriginalImage(state, originalImage) {
+    modifyOriginalImage (state, originalImage) {
       state.originalImage = originalImage
     },
-    modifyTransformedImage(state, transformedImage) {
+    modifyTransformedImage (state, transformedImage) {
       state.transformedImage = transformedImage
     },
-    modifySettings(state, settings) {
+    modifySettings (state, settings) {
       state.settings = settings
     },
-    modifyPosition(state, position) {
+    modifyPosition (state, position) {
       state.position = position
     },
-    modifyProgress(state, progress) {
+    modifyProgress (state, progress) {
       state.transformedImage.progress = progress
     },
-    modifyDroneObject(state, newDroneObject) {
+    modifyDroneObject (state, newDroneObject) {
       state.droneObject = newDroneObject
     },
-    modifyProgressCallback(state, progressCallback) {
+    modifyProgressCallback (state, progressCallback) {
       state.progressCallback = progressCallback
     },
-    resetState(state) {
+    modifyBiddingSlotId (state, slotId) {
+      state.biddingSlotId = slotId
+    },
+
+    resetState (state) {
       // acquire initial state
       const s = initialState()
       Object.keys(s).forEach(key => {
@@ -114,7 +118,7 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    uploadImage({state, commit}, file) {
+    uploadImage ({ state, commit }, file) {
 
       const fReader = new FileReader()
 
@@ -141,10 +145,10 @@ const store = new Vuex.Store({
 
       fReader.readAsDataURL(file)
     },
-    resetImage({commit}) {
+    resetImage ({ commit }) {
       commit('modifyOriginalImage', {})
     },
-    async transformImage({commit, state, dispatch}) {
+    async transformImage ({ commit, state, dispatch }) {
 
       commit('modifyTransformedImage', Object.assign({}, state.transformedImage, {
         src: null,
@@ -166,11 +170,11 @@ const store = new Vuex.Store({
           binaryThreshold: state.settings.binaryThreshold,
           dilationRadius: state.settings.dilationRadius
         })
-      commit('modifyDroneObject', dronePaint);
+      commit('modifyDroneObject', dronePaint)
       dispatch('applyPostRenderingChanges')
 
     },
-    async applyPostRenderingChanges({commit, state}) {
+    async applyPostRenderingChanges ({ commit, state }) {
 
       //TODO rerender image on error
       try {
@@ -188,31 +192,30 @@ const store = new Vuex.Store({
 
       image.height = state.droneObject.paintingHeight / 10
       image.width = state.droneObject.paintingWidth / 10
-      image.dronetime = Math.round(state.droneObject.estimatedTime / 1000 / 60);
+      image.dronetime = Math.round(state.droneObject.estimatedTime / 1000 / 60)
 
       commit('modifyTransformedImage', Object.assign({}, state.transformedImage, image))
       commit('modifyDroneObject', state.droneObject)
     },
-    updateOriginalImage({commit, state}, update) {
+    updateOriginalImage ({ commit, state }, update) {
       commit('modifyOriginalImage', Object.assign({}, state.originalImage, update))
     },
-    updateTransformedImage({commit, state}, update) {
+    updateTransformedImage ({ commit, state }, update) {
       commit('modifyTransformedImage', Object.assign({}, state.transformedImage, update))
     },
-    async updateSettings({commit, state, dispatch}, update) {
+    async updateSettings ({ commit, state, dispatch }, update) {
 
       // CHECK IF ADDITIONAL ACTIONS ARE REQUIRED
-      console.log("applying changes");
+      console.log('applying changes')
       const updatedKeys = Object.keys(update)
       const changedKeys = updatedKeys.filter(key => {
         return state.settings[key] !== update[key]
       })
 
-      console.log(changedKeys);
+      console.log(changedKeys)
 
       // UPDATE SETTINGS ANYWAYS
       commit('modifySettings', Object.assign({}, state.settings, update))
-
 
       const keys = [
         'hysteresisHighThreshold',
@@ -232,18 +235,21 @@ const store = new Vuex.Store({
       }
 
     },
-    updatePosition({commit, state}, update) {
+    updatePosition ({ commit, state }, update) {
       commit('modifyPosition', Object.assign({}, state.position, update))
     },
-    resetState({commit}) {
+    resetState ({ commit }) {
       commit('resetState')
     },
-    registerProgressCallback({commit}, cb) {
+    registerProgressCallback ({ commit }, cb) {
       commit('modifyProgressCallback', cb)
     },
-    removeProgressCallback({commit}) {
+    removeProgressCallback ({ commit }) {
       commit('modifyProgressCallback', () => {
       })
+    },
+    updateBiddingSlotId ({ commit }, slotId) {
+      commit('modifyBiddingSlotId', slotId)
     }
   }
 })
