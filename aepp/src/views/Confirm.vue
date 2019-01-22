@@ -110,7 +110,7 @@
     },
     methods: {
       back () {
-        this.$router.push('positioning')
+        this.$router.push('slots')
       },
       async next () {
         try {

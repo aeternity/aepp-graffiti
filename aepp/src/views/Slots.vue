@@ -126,6 +126,18 @@
 
           </ae-card>
         </div>
+        <div v-if="choice">
+          <div class="w-full">
+            <ae-list>
+              <ae-list-item>
+                <ae-button face="round" fill="primary" @click="next" extend>Continue</ae-button>
+              </ae-list-item>
+              <ae-list-item @click="$router.push('positioning')" class="justify-center">
+                <ae-text face="uppercase-base" weight="bold">Back</ae-text>
+              </ae-list-item>
+            </ae-list>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -173,6 +185,7 @@
         const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
 
         const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
+
         this.slots = Util.auctionSlotListToObject(decodedAllBids).map(slot => {
           slot.minimumBid = Math.min.apply(Math, slot.successfulBids.map(function(bid) { return bid.amountPerTime; }))
           slot.minimumBid = slot.successfulBids.length === 0 ? 0 : Util.atomsToAe(slot.minimumBid);
@@ -194,6 +207,9 @@
       },
       selectSlot(slotId) {
         this.choice = slotId
+      },
+      next() {
+        this.$router.push('confirm')
       }
     },
     created () {
