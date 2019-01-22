@@ -11,6 +11,16 @@ services:
       - "3013:3013"
       - "3113:3113"
 
+  nodeproxy:
+    image: nginx:latest
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./nginx-default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx-cors.conf:/etc/nginx/cors.conf
+    depends_on: 
+      - "aeternity"
+
   ipfs:
     image: "ipfs/go-ipfs:latest"
     volumes:
