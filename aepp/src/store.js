@@ -128,7 +128,7 @@ const store = new Vuex.Store({
 
           commit('modifyOriginalImage', {
             src: imageSource,
-            file: file
+            type: file.type
           })
           commit('modifyPosition', {
             x: Math.round(Math.random() * 1000),
@@ -170,7 +170,7 @@ const store = new Vuex.Store({
       dispatch('applyPostRenderingChanges')
 
     },
-    async applyPostRenderingChanges({commit, state, dispatch}) {
+    async applyPostRenderingChanges({commit, state}) {
 
       //TODO rerender image on error
       try {

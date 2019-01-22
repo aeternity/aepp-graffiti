@@ -47,10 +47,8 @@
       },
       next () {
         const { x, y } = this.$refs.canvas.getOverlayPosition()
-        const scale = this.$refs.canvas.getScale()
         this.$store.dispatch(`updatePosition`, { x: Math.round(x), y: Math.round(y) })
-        this.$store.dispatch(`updateSettings`, { scaleFactor: Number(scale)})
-        this.$router.push('confirm')
+        this.$router.push('slots')
       }
     }
   }

@@ -46,7 +46,10 @@ const auctionSlotToObject = (object) => {
   }
 };
 
-const auctionSlotListToObject = (object) => object.value.map(auctionSlotToObject);
+const atomsToAe = (atoms) => atoms / 1000000000000000000
+const aeToAtoms = (ae) => ae * 1000000000000000000
+
+const auctionSlotListToObject = (object) => object.value.map(auctionSlotToObject)
 
 const auctionMetaDataToObject = (object) => {
   return {
@@ -57,6 +60,7 @@ const auctionMetaDataToObject = (object) => {
 };
 
 export default {
-  coordinatesType, artworkDataType, bidType, auctionSlotType, auctionSlotListType, auctionMetaDataType,
-  coordinatesToObject, artworkDataToObject, bidToObject, bidListToObject, auctionSlotToObject, auctionSlotListToObject, auctionMetaDataToObject
-};
+  coordinatesToObject, artworkDataToObject, bidToObject, bidListToObject, auctionSlotToObject, auctionSlotListToObject,
+  auctionMetaDataToObject, coordinatesType, artworkDataType, bidType, auctionSlotType, auctionSlotListType,
+  auctionMetaDataType, atomsToAe, aeToAtoms
+}
