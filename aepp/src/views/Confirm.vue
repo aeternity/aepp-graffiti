@@ -5,18 +5,19 @@
         <h1 class="w-full text-center">Processing Bid</h1>
       </div>
       <div class="w-full p-4 flex flex-col">
-        <LoadingStep :currentStep="currentLoadingStep" :activeStep="0">Processing Data</LoadingStep>
-        <LoadingStep :currentStep="currentLoadingStep" :active-step="1">Uploading to IPFS</LoadingStep>
-        <LoadingStep :currentStep="currentLoadingStep" :active-step="2">Running Smart Contract</LoadingStep>
+        <LoadingStep :currentStep="currentLoadingStep" :activeStep="0"  :errorStep="errorStep">Processing Data</LoadingStep>
+        <LoadingStep :currentStep="currentLoadingStep" :active-step="1" :errorStep="errorStep">Uploading to IPFS</LoadingStep>
+        <LoadingStep :currentStep="currentLoadingStep" :active-step="2" :errorStep="errorStep">Running Smart Contract</LoadingStep>
 
         <div class="w-full p-4 text-center">
           <div v-if="currentLoadingStep === 3" class="font-mono text-lg text-grey-darkest">
             <span>Congratulations<br />Bid Successful</span>
             <ae-button extend class="mt-8" face="round" fill="primary" @click="$router.push('overview')">Continue to Bid Status</ae-button>
           </div>
-        </div>
-        <div>
-
+          <div v-if="errorStep" class="font-mono text-lg text-red">
+            <span>Oh no :(<br />Bid Failed</span>
+            <ae-button extend class="mt-8" face="round" fill="primary" @click="resetView">Try again</ae-button>
+          </div>
         </div>
       </div>
     </div>
@@ -74,13 +75,14 @@
   import InfoLayer from '@/components/InfoLayer'
   import LoadingStep from '@/components/LoadingStep'
   import Util from '@/utils/blockchain_util'
+  import { AeButton, AeInput, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
 
   const STATUS_INITIAL = 1, STATUS_LOADING = 2;
   const LOADING_DATA = 0, LOADING_IPFS = 1, LOADING_CONTRACT = 2, LOADING_FINISHED = 3;
 
   export default {
     name: 'Confirm',
-    components: { LoadingStep, InfoLayer, CanvasWithControlls },
+    components: { LoadingStep, InfoLayer, CanvasWithControlls,  AeInput, AeText, AeList, AeListItem, AeButton },
     data () {
       return {
         bid: 1,
@@ -89,7 +91,8 @@
         client: null,
         ipfsAddr: null,
         currentStatus: STATUS_INITIAL,
-        currentLoadingStep: LOADING_DATA
+        currentLoadingStep: LOADING_DATA,
+        errorStep: null
       }
     },
     computed: {
@@ -110,28 +113,45 @@
       },
       biddingSlotId() {
         return this.$store.state.biddingSlotId
-      }
+      },
     },
     methods: {
       back () {
         this.$router.push('slots')
       },
+      resetView() {
+        this.currentStatus = STATUS_INITIAL;
+        this.currentLoadingStep = LOADING_DATA;
+        this.errorStep = null;
+      },
       async next () {
         try {
+
           this.currentStatus = STATUS_LOADING
+
           this.currentLoadingStep = LOADING_DATA
+
           const data = new FormData()
           const file = this.dataURItoBlob(this.transformedImage.src)
-          console.log(file)
           data.append('image', file)
+
           this.currentLoadingStep = LOADING_IPFS
-          const response = await axios.post(`${this.$store.state.apiUrl}/upload`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
-          this.ipfsAddr = response.data.hash
+          try {
+            const response = await axios.post(`${this.$store.state.apiUrl}/upload`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
+            this.ipfsAddr = response.data.hash
+          } catch (e) {
+            this.errorStep = LOADING_IPFS
+          }
 
           this.currentLoadingStep = LOADING_CONTRACT
-          await this.runBid()
-          this.currentLoadingStep = LOADING_FINISHED
-          this.$store.dispatch('resetState')
+          try {
+            await this.runBid()
+            this.currentLoadingStep = LOADING_FINISHED
+            this.$store.dispatch('resetState')
+          } catch (e) {
+            this.errorStep = LOADING_CONTRACT
+          }
+
         } catch (e) {
           console.log(e)
         }
@@ -150,19 +170,23 @@
         }
 
         // write the ArrayBuffer to a blob, and you're done
-        const bb = new Blob([ab], { type: 'image/svg' })
-        return bb
+        return new Blob([ab], { type: 'image/svg' })
       },
       async runBid () {
         // args: hash, x, y, time
         // amount: ae to contract amount
+        this.bid = 0;
+
         const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'place_bid', {
           args: `(${this.biddingSlotId}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
           options: { amount: Util.aeToAtoms(this.bid )}
         }).catch(async e => {
-          console.error(e)
-          const decodedError = await this.client.contractDecodeData('string', e.returnValue).catch(e => console.error(e))
+          const decodedError = await this.client.contractDecodeData('string', e.returnValue).catch(e => {
+            console.error(e);
+            throw Error('Could not decode error data');
+          })
           console.log('decodedError', decodedError)
+          throw Error(JSON.stringify(decodedError))
         })
 
         console.log('calledBid', calledBid)

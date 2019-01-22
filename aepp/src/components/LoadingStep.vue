@@ -3,8 +3,9 @@
     <div class="p-4">
       <transition mode="out-in" name="loading">
         <p v-if="currentStep < activeStep" class="w-4 h-4"></p>
-        <ae-loader v-if="currentStep === activeStep"></ae-loader>
+        <ae-loader v-if="!errorStep && currentStep === activeStep"></ae-loader>
         <ae-icon  v-if="currentStep > activeStep" name="check"></ae-icon>
+        <ae-icon  v-if="errorStep && activeStep >= errorStep" name="close"></ae-icon>
       </transition>
       </div>
     <div class="p-4 pl-0 font-mono text-lg text-grey-darkest">
@@ -14,19 +15,15 @@
 </template>
 
 <script>
+  import {AeLoader, AeIcon} from '@aeternity/aepp-components';
+
   export default {
     name: 'LoadingStep',
-    props: ['activeStep', 'currentStep', ]
+    props: ['activeStep', 'currentStep', 'errorStep'],
+    components: { AeLoader, AeIcon }
   }
 </script>
 
 <style scoped>
-  .fade-enter-active, .loading-leave-active {
-    transition: opacity .3s ease;
-    transition-delay: 0;
-  }
-  .loading-enter, .loading-leave-to
-    /* .component-fade-leave-active below version 2.1.8 */ {
-    opacity: 0;
-  }
+
 </style>
