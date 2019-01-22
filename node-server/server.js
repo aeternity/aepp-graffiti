@@ -25,8 +25,8 @@ app.get('/ipfs', logic.ipfs);
 /* upload form-data image key */
 app.post('/upload', logic.upload);
 
-app.get('/slots', logic.getSlots);
-app.post('/slots', logic.setSlots);
+/* get slots */
+app.get('/slots/:id', logic.getSlots);
 
 app.use((req, res) => {
     res.sendStatus(404);
