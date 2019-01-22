@@ -4,7 +4,6 @@ import Contribute from './views/Contribute.vue'
 import Render from './views/Render.vue'
 import Positioning from './views/Positioning.vue'
 import Confirm from './views/Confirm.vue'
-import Test from './views/Test.vue'
 import Desktop from './views/Desktop'
 import Overview from './views/Overview'
 import IFrame from './views/IFrame'
@@ -71,12 +70,6 @@ export default () => {
       path: '/slots',
       name: 'slots',
       component: Slots,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/test',
-      name: 'test',
-      component: Test,
       props: route => ({ query: route.query })
     }
   ]
