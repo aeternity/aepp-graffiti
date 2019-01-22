@@ -58,14 +58,14 @@ function initialState () {
       url: API_URL + '/rendered/latest.png',
       width: 3300,
       height: 5000,
-      meterToPixel: 100, // Meter * meterToPixel = Pixel
+      pixelToMM: 10, // Pixel * pixelToMM = mm
     },
     droneSettings: {
       wallId: 'MX19-001',
       gpsLocation: [0, 0],
       wallSize: [30000, 20000],   // in mm
       canvasSize: [20000, 20000], // mm
-      canvasPosition: [10000, 0], // mm (origin = [bottom left])
+      canvasPosition: [0, 0], // mm (origin = [bottom left])
       colors: ['#000000', '#eb340f', '#0f71eb'], // default [#000]
       droneResolution: 200,       // min distance drone can move, in mm
       dronePrecisionError: 150,   // error margin, mm
@@ -180,7 +180,7 @@ const store = new Vuex.Store({
       try {
         console.log(state.settings.scaleFactor)
         state.droneObject.setPaintingScale(state.settings.scaleFactor)
-        state.droneObject.setPaintingPosition(state.position.x / state.canvas.meterToPixel, state.position.y / state.canvas.meterToPixel)
+        state.droneObject.setPaintingPosition(state.position.x * state.canvas.pixelToMM, state.position.y * state.canvas.pixelToMM)
         state.droneObject.setPaintingColor(state.droneSettings.colors[state.settings.color])
       } catch (e) {
         console.error(e)
@@ -235,8 +235,9 @@ const store = new Vuex.Store({
       }
 
     },
-    updatePosition ({ commit, state }, update) {
+    updatePosition ({ commit, state, dispatch }, update) {
       commit('modifyPosition', Object.assign({}, state.position, update))
+      dispatch('applyPostRenderingChanges')
     },
     resetState ({ commit }) {
       commit('resetState')
