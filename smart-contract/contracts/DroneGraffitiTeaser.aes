@@ -12,7 +12,8 @@ contract DroneGraffitiTeaser =
   record artwork =
     { user : address
     , dronetime : int
-    , artwork_reference : string }
+    , artwork_reference : string
+    , updated_at : int }
 
   public function init(geolocation' : string) : state =
     { is_admin = {[Call.caller] = true},
@@ -38,10 +39,12 @@ contract DroneGraffitiTeaser =
 
     let artwork = { user = Call.caller,
                     dronetime = dronetime',
-                    artwork_reference = artwork_reference' }
+                    artwork_reference = artwork_reference',
+                    updated_at = Chain.block_height }
 
     put(state{ artworks[artwork_id] = artwork })
     artwork
+
 
   // internal functions //
 

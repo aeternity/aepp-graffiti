@@ -48,7 +48,7 @@ describe('DroneGraffitiTeaser', () => {
             }
         });
 
-        assert.isFulfilled(deployPromise, 'Could not deploy the DroneGraffitiAuction Contract'); // Check it is deployed
+        assert.isFulfilled(deployPromise, 'Could not deploy the DroneGraffitiTeaser Contract'); // Check it is deployed
         contract = await deployPromise;
     });
 
