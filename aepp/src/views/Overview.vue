@@ -12,23 +12,35 @@
         <ae-card class="mb-4" :key='Date.now()'>
 
           <template slot="header">
-            <img :src='bid.image' v-if="bid.image" class="w-full">
+            <img :src='bid.image' v-if="bid.image" class="w-full" alt="Bidding Image">
             <div class="w-full text-center mt-4" v-else>
               <BiggerLoader></BiggerLoader>
             </div>
           </template>
           <div class="w-full">
-            <div class="w-full">
-              Position: X {{bid.data.coordinates.x}}  Y {{bid.data.coordinates.y}}
+            <div class="flex flex-col mt-2">
+                <span>
+                  Bid
+                </span>
+              <span class="font-mono text-black text-lg">
+                  {{bid.amount}} AE
+                </span>
             </div>
-            <div class="w-full">
-              Dronetime: {{bid.time}} Minutes
+            <div class="flex flex-col mt-2">
+                <span>
+                  Estimated Painting Time
+                </span>
+              <span class="font-mono text-black text-lg">
+                  {{bid.time}} Minutes
+                </span>
             </div>
-            <div class="w-full">
-              Amount: {{bid.amount/1000000000000000000}} AE
-            </div>
-            <div class="w-full">
-              State: Successful
+            <div class="flex flex-col mt-2">
+                <span>
+                  Current Status
+                </span>
+              <span class="font-mono text-black text-lg">
+                  Successful
+                </span>
             </div>
           </div>
         </ae-card>
@@ -47,12 +59,13 @@
   import axios from 'axios'
   import Util from '../utils/blockchain_util'
   import BiggerLoader from "../components/BiggerLoader";
+  import { AeCard } from '@aeternity/aepp-components';
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2;
 
   export default {
     name: 'Overview',
-    components: {BiggerLoader},
+    components: {BiggerLoader, AeCard},
     data () {
       return {
         bids: [],
@@ -79,7 +92,12 @@
         const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
 
         const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
-        this.bids = Util.auctionSlotListToObject(decodedAllBids).map(slot => slot.successfulBids.filter(bid => bid.user === this.address)).flat()
+        this.bids = Util.auctionSlotListToObject(decodedAllBids).map(slot => {
+          return slot.successfulBids.filter(bid => bid.user === this.address).map( bid => {
+            bid.amount = Util.atomsToAe(bid.amount)
+            return bid
+          })
+        }).flat()
 
         if(this.bids.length > 0) this.state = SHOW_LIST
         else return this.state = EMPTY_LIST
