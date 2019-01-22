@@ -3,7 +3,7 @@ const Util = require('./blockchain_util');
 const blockchain = {};
 
 // can eventually be called by name in the future
-const contractAddress = 'ct_2uts19NsCspRABkuXZEAxxqqJzj7q43KJu2iRa8AcMHwPQUCGY';
+const contractAddress = 'ct_pWRLNGRdJbdbRoQscejwQZKnavAHgGqKZDr1H1jdvyCppap92';
 
 let client = null;
 
@@ -24,13 +24,13 @@ blockchain.height = async () => {
     return await client.height().catch(console.error);
 };
 
-blockchain.auctionSlot = async () => {
+blockchain.auctionSlots = async () => {
     if (!client) await blockchain.init();
 
-    const calledAuctionSlot = await client.contractEpochCall(contractAddress, 'sophia-address', 'get_auction_slot', '(1)').catch(console.error);
-    const decodedAuctionSlot = await client.contractEpochDecodeData(Util.auctionSlotType, calledAuctionSlot.out).catch(console.error);
+    const calledAuctionSlots = await client.contractEpochCall(contractAddress, 'sophia-address', 'all_auction_slots', '()').catch(console.error);
+    const decodedAuctionSlots = await client.contractEpochDecodeData(Util.auctionSlotListType, calledAuctionSlots.out).catch(console.error);
 
-    return Util.auctionSlotToObject(decodedAuctionSlot);
+    return Util.auctionSlotListToObject(decodedAuctionSlots);
 };
 
 module.exports = blockchain;

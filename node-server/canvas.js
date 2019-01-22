@@ -103,8 +103,10 @@ canvas.getSVGDimensions = (svgString) => {
 canvas.render = async () => {
 
     // get all files from ipfs that were included in bids
-    const auctionSlot = await blockchain.auctionSlot().catch(console.error);
-    const ipfsSources = await Promise.all(auctionSlot.successfulBids.map(bid => {
+    const auctionSlots = await blockchain.auctionSlots().catch(console.error);
+    const successfulBids = auctionSlots.map(slot => slot.successfulBids).reduce((acc, val) => acc.concat(val), []);
+
+    const ipfsSources = await Promise.all(successfulBids.map(bid => {
         return ipfsWrapper.getFile(bid.data.artworkReference).then(filebuffer => {
             return {filebuffer: filebuffer, bid: bid};
         }).catch(e => console.error(e));

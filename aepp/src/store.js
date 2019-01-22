@@ -73,7 +73,7 @@ function initialState() {
       minimumImageSize: [10, 10]
     },
     blockchainSettings: {
-      contractAddress: 'ct_2uts19NsCspRABkuXZEAxxqqJzj7q43KJu2iRa8AcMHwPQUCGY'
+      contractAddress: 'ct_pWRLNGRdJbdbRoQscejwQZKnavAHgGqKZDr1H1jdvyCppap92'
     },
     apiUrl: API_URL
   }

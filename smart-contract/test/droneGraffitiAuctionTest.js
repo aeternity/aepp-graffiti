@@ -8,7 +8,6 @@ const config = {
     ttl: 55
 };
 
-
 describe('DroneGraffitiAuction', () => {
 
     let owner;
@@ -51,7 +50,6 @@ describe('DroneGraffitiAuction', () => {
         assert.isFulfilled(deployPromise, 'Could not deploy the DroneGraffitiAuction Contract'); // Check it is deployed
         contract = await deployPromise;
     });
-
 
     it('Static Call and Decode DroneGraffitiAuction Contract; get_auction_metadata', async () => {
         const staticCallAuctionSlot = await contract.callStatic('get_auction_metadata', {args: '()'});

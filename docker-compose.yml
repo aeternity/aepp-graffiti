@@ -7,6 +7,9 @@ services:
     volumes:
       - "./node-server/docker/epoch.yaml:/home/epoch/.epoch/epoch/epoch.yaml"
       - "./node-server/docker/aeternity_uat:/home/epoch/node/data/mnesia"
+    ports:
+      - "3013:3013"
+      - "3113:3113"
 
   ipfs:
     image: "ipfs/go-ipfs:latest"
@@ -15,6 +18,7 @@ services:
     ports:
       - "4001:4001"
       - "4001:4002/udp"
+      - "5001:5001"
 
   server:
     build: node-server
