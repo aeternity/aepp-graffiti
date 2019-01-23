@@ -97,7 +97,7 @@ canvas.getSVGDimensions = (svgString) => {
 
     } catch (e) {
         console.error('Could not get width / height from image ', svgString.substr(0, 20), e);
-        return {width: 0, height: 0}
+        return {width: 0, height: 0, svg: null}
     }
 };
 
@@ -108,7 +108,7 @@ canvas.render = async () => {
     const successfulBids = auctionSlots.map(slot => slot.successfulBids).reduce((acc, val) => acc.concat(val), []).sort((a, b) => a.seqId - b.seqId);
 
     try {
-        successfulBids.map(bid => storage.backupBid(bid.data.artworkReference, bid));
+        await Promise.all(successfulBids.map(async bid => await storage.backupBid(bid.data.artworkReference, bid)));
     } catch (e) {
         console.warn('bid upload failed');
         console.warn(e.message);
@@ -121,10 +121,18 @@ canvas.render = async () => {
     }));
 
     // filter files unable to be fetched, map to base64 encoding with coordinates included
-    const transformedSources = ipfsSources
+    const transformedSources = await Promise.all(ipfsSources
         .filter(data => !!data.filebuffer)
-        .map(data => {
+        .map(async data => {
             const {width, height, svg} = canvas.getSVGDimensions(data.filebuffer.toString('utf8'));
+            if(!svg) return console.error('Could not get width and height from svg ' + data.bid.data.artworkReference);
+            try{
+                await storage.backupSVG(data.bid.data.artworkReference, svg);
+            } catch (e) {
+                console.warn('svg upload failed');
+                console.warn(e.message);
+            }
+
             return {
                 src: 'data:image/svg+xml;base64,' + Base64.encode(svg),
                 x: data.bid.data.coordinates.x * pixelsPerCentimeter,
@@ -132,7 +140,7 @@ canvas.render = async () => {
                 width,
                 height
             };
-        });
+        }));
 
     const buffer = await canvas.mergeImages(transformedSources);
     fs.writeFileSync(path.join(__dirname, canvas.pathByHeight()), buffer);
