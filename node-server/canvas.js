@@ -105,7 +105,10 @@ canvas.render = async () => {
 
     // get all files from ipfs that were included in bids
     const auctionSlots = await blockchain.auctionSlots().catch(console.error);
-    const successfulBids = auctionSlots.map(slot => slot.successfulBids).reduce((acc, val) => acc.concat(val), []).sort((a, b) => a.seqId - b.seqId);
+    const successfulBids = auctionSlots
+        .sort((a, b) => a.endBlockHeight - b.endBlockHeight) // sort slots ascending by end block height
+        .map(slot => slot.successfulBids.sort((a, b) => a.seqId - b.seqId)) // sort bids in slot ascending
+        .reduce((acc, val) => acc.concat(val), []); // flatten inner arrays
 
     Promise.all(successfulBids.map(
         async bid => await storage.backupBid(bid.data.artworkReference, bid)))
@@ -126,7 +129,6 @@ canvas.render = async () => {
         .map(async data => {
 
             const {width, height, svg} = canvas.getSVGDimensions(data.filebuffer.toString('utf8'));
-
             if (!svg) return console.error('Could not get width and height from svg ' + data.bid.data.artworkReference);
 
             storage.backupSVG(data.bid.data.artworkReference, svg).catch((e) => {
