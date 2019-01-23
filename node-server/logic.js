@@ -69,17 +69,21 @@ logic.getSlots = async (req, res) => {
             }).catch(e => console.error(e));
         }));
 
-        const sanityFails = {};
+        let sanityFails = {};
 
         // filter files unable to be fetched, map to base64 encoding with coordinates included
-        const transformedSources = ipfsSources.filter(data => {
-            const [success, dataSanityFails] = svgUtil.sanityCheck(data);
-            Object.assign(dataSanityFails, sanityFails);
-            return success;
+        const transformedSources = ipfsSources.map(data => {
+            const [success, updatedData, dataSanityFails] = svgUtil.sanityCheck(data);
+            sanityFails = Object.assign(dataSanityFails, sanityFails);
+            return [success, updatedData];
         });
 
+        const filteredSources = transformedSources
+            .filter(transformed => transformed[0])
+            .map(transformed => transformed[1]);
+
         const zip = new JSZip();
-        transformedSources.map(data => {
+        filteredSources.map(data => {
             zip.file(`${data.bid.seqId}.svg`, data.base64, {base64: true}); //'data:image/svg+xml;base64,'
             zip.file(`${data.bid.seqId}.json`, JSON.stringify(data.bid));
         });

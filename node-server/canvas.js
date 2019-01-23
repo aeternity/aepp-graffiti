@@ -6,6 +6,7 @@ const ipfsWrapper = require('./ipfs.js');
 const convert = require('xml-js');
 const Base64 = require('js-base64').Base64;
 const storage = require('./storage.js');
+const svgUtil = require('./svg_util.js')
 
 const canvas = {};
 
@@ -13,7 +14,6 @@ const pathLatest = "./rendered/latest.png";
 
 const renderInterval = 20000;
 
-const svgScalingFactor = 2;
 const canvasCentimeterWidth = 33 * 100;
 const canvasCentimeterHeight = 50 * 100;
 const pixelsPerCentimeter = 1;
@@ -76,31 +76,6 @@ canvas.mergeImages = async (sources) => {
     return tempCanvas.toBuffer('image/png');
 };
 
-canvas.getSVGDimensions = (svgString) => {
-    try {
-        const result = convert.xml2js(svgString, {compact: true});
-        let height = String(result.svg._attributes.height);
-        let width = String(result.svg._attributes.width);
-        const re = /([\d.]+)mm/;
-        if (height.includes('mm')) {
-            height = Number(height.match(re)[1]) / (pixelsPerCentimeter * 10)
-        }
-        if (width.includes('mm')) {
-            width = Number(width.match(re)[1]) / (pixelsPerCentimeter * 10)
-        }
-
-        result.svg._attributes.height = (height / svgScalingFactor) + "mm";
-        result.svg._attributes.width = (width / svgScalingFactor) + "mm";
-
-        const svg = convert.js2xml(result, {compact: true});
-        return {width, height, svg}
-
-    } catch (e) {
-        console.error('Could not get width / height from image ', svgString.substr(0, 20), e);
-        return {width: 0, height: 0, svg: null}
-    }
-};
-
 canvas.render = async () => {
 
     // get all files from ipfs that were included in bids
@@ -110,8 +85,8 @@ canvas.render = async () => {
         .map(slot => slot.successfulBids.sort((a, b) => a.seqId - b.seqId)) // sort bids in slot ascending
         .reduce((acc, val) => acc.concat(val), []); // flatten inner arrays
 
-    Promise.all(successfulBids.map(
-        async bid => await storage.backupBid(bid.data.artworkReference, bid)))
+    Promise.all(successfulBids
+        .map(async bid => await storage.backupBid(bid.data.artworkReference, bid)))
         .catch((e) => {
             console.warn('bid upload failed');
             console.warn(e.message);
@@ -128,7 +103,7 @@ canvas.render = async () => {
         .filter(data => !!data.filebuffer)
         .map(async data => {
 
-            const {width, height, svg} = canvas.getSVGDimensions(data.filebuffer.toString('utf8'));
+            const {width, height, svg} = svgUtil.getSVGDimensions(data.filebuffer.toString('utf8'));
             if (!svg) return console.error('Could not get width and height from svg ' + data.bid.data.artworkReference);
 
             storage.backupSVG(data.bid.data.artworkReference, svg).catch((e) => {
