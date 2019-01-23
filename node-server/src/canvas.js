@@ -84,24 +84,23 @@ canvas.render = async () => {
         .map(slot => slot.successfulBids.sort((a, b) => a.seqId - b.seqId)) // sort bids in slot ascending
         .reduce((acc, val) => acc.concat(val), []); // flatten inner arrays
 
+    // backup data
     Promise.all(successfulBids
         .map(async bid => await storage.backupBid(bid.data.artworkReference, bid)))
-        .catch((e) => {
-            console.warn('bid upload failed');
-            console.warn(e.message);
-        });
+        .catch((e) => console.warn('bid upload failed', e.message));
 
+    // fetching files from ipfs
     const ipfsSources = await Promise.all(successfulBids.map(bid => {
         return ipfsWrapper.getFile(bid.data.artworkReference).then(filebuffer => {
             return {filebuffer: filebuffer, bid: bid};
-        }).catch(e => console.error(e));
+        }).catch(console.error);
     }));
 
-    // filter files unable to be fetched, map to base64 encoding with coordinates included
+    // filter files unable to be fetched and failing sanity checks, map to base64 encoding with coordinates included
     const transformedSources = await Promise.all(ipfsSources
         .filter(data => !!data.filebuffer)
+        .filter(data => svgUtil.sanityCheck(data).checkPassed)
         .map(async data => {
-
             const {width, height, svg} = svgUtil.getSVGDimensions(data.filebuffer.toString('utf8'));
             if (!svg) return console.error('Could not get width and height from svg ' + data.bid.data.artworkReference);
 

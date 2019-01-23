@@ -72,20 +72,31 @@ logic.getSlots = async (req, res) => {
         let sanityFails = {};
 
         // filter files unable to be fetched, map to base64 encoding with coordinates included
-        const transformedSources = ipfsSources.map(data => {
-            const [success, updatedData, dataSanityFails] = svgUtil.sanityCheck(data);
-            sanityFails = Object.assign(dataSanityFails, sanityFails);
-            return [success, updatedData];
+        const sanityCheckedDataSources = ipfsSources.map(data => {
+            const sanityChecked = svgUtil.sanityCheck(data);
+            sanityFails = Object.assign(sanityChecked.dataFails, sanityFails);
+            return sanityChecked
         });
 
-        const filteredSources = transformedSources
-            .filter(transformed => transformed[0])
-            .map(transformed => transformed[1]);
+        const filteredSources = sanityCheckedDataSources
+            .filter(sanityChecked => sanityChecked.checkPassed)
+            .map(sanityChecked => sanityChecked.data);
+
+        const sanityFailedSources = sanityCheckedDataSources
+            .filter(sanityChecked => !sanityChecked.checkPassed)
+            .map(sanityChecked => sanityChecked.data);
+
 
         const zip = new JSZip();
         filteredSources.map(data => {
             zip.file(`${data.bid.seqId}.svg`, data.base64, {base64: true}); //'data:image/svg+xml;base64,'
             zip.file(`${data.bid.seqId}.json`, JSON.stringify(data.bid));
+        });
+
+        const sanityFailedFolder = zip.folder("sanity_fails");
+        sanityFailedSources.map(data => {
+            sanityFailedFolder.file(`${data.bid.seqId}.svg`, data.base64, {base64: true}); //'data:image/svg+xml;base64,'
+            sanityFailedFolder.file(`${data.bid.seqId}.json`, JSON.stringify(data.bid));
         });
 
         if (Object.keys(sanityFails).length > 0) {

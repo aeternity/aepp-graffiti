@@ -40,7 +40,8 @@ const sanityCheck = data => {
         if (!data.filebuffer) {
             sanityFails[data.bid.seqId] = 'Could not fetch file';
             console.error(data.bid.seqId + ': Could not fetch file');
-            return [false, data, sanityFails];
+
+            return {checkPassed: false, data: data, dataFails: sanityFails}
         }
 
         const svgString = data.filebuffer.toString('utf8');
@@ -54,12 +55,16 @@ const sanityCheck = data => {
         if (!height.includes('mm') || !height.match(re)[1]) {
             sanityFails[data.bid.seqId] = 'Height not recognized';
             console.error(data.bid.seqId + ': Height not recognized');
-            return [false, data, sanityFails];
+
+            data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));
+            return {checkPassed: false, data: data, dataFails: sanityFails}
         }
         if (!width.includes('mm') || !width.match(re)[1]) {
             sanityFails[data.bid.seqId] = 'Width not recognized';
             console.error(data.bid.seqId + ': Width not recognized');
-            return [false, data, sanityFails];
+
+            data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));
+            return {checkPassed: false, data: data, dataFails: sanityFails}
         }
 
         let origin = String(result.svg._attributes['wallCanvas:origin']);
@@ -75,11 +80,13 @@ const sanityCheck = data => {
             console.error(data.bid.seqId + ': Contract coordinates is not equal to svg data');
             console.error(data.bid.seqId + `: Contract: x:${data.bid.data.coordinates.x * centimeterToMillimeter} y:${data.bid.data.coordinates.y * centimeterToMillimeter}`);
             console.error(data.bid.seqId + `: SVG-Data: x:${x} y:${y}`);
-            return [false, data, sanityFails];
+
+            data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));
+            return {checkPassed: false, data: data, dataFails: sanityFails}
         }
 
         data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));
-        return [true, data, sanityFails];
+        return {checkPassed: true, data: data, dataFails: sanityFails}
     } catch (e) {
         console.error(data.bid.seqId + ': Sanity Check failed');
     }
