@@ -107,12 +107,12 @@ canvas.render = async () => {
     const auctionSlots = await blockchain.auctionSlots().catch(console.error);
     const successfulBids = auctionSlots.map(slot => slot.successfulBids).reduce((acc, val) => acc.concat(val), []).sort((a, b) => a.seqId - b.seqId);
 
-    try {
-        await Promise.all(successfulBids.map(async bid => await storage.backupBid(bid.data.artworkReference, bid)));
-    } catch (e) {
-        console.warn('bid upload failed');
-        console.warn(e.message);
-    }
+    Promise.all(successfulBids.map(
+        async bid => await storage.backupBid(bid.data.artworkReference, bid)))
+        .catch((e) => {
+            console.warn('bid upload failed');
+            console.warn(e.message);
+        });
 
     const ipfsSources = await Promise.all(successfulBids.map(bid => {
         return ipfsWrapper.getFile(bid.data.artworkReference).then(filebuffer => {
@@ -124,14 +124,15 @@ canvas.render = async () => {
     const transformedSources = await Promise.all(ipfsSources
         .filter(data => !!data.filebuffer)
         .map(async data => {
+
             const {width, height, svg} = canvas.getSVGDimensions(data.filebuffer.toString('utf8'));
-            if(!svg) return console.error('Could not get width and height from svg ' + data.bid.data.artworkReference);
-            try{
-                await storage.backupSVG(data.bid.data.artworkReference, svg);
-            } catch (e) {
+
+            if (!svg) return console.error('Could not get width and height from svg ' + data.bid.data.artworkReference);
+
+            storage.backupSVG(data.bid.data.artworkReference, svg).catch((e) => {
                 console.warn('svg upload failed');
                 console.warn(e.message);
-            }
+            });
 
             return {
                 src: 'data:image/svg+xml;base64,' + Base64.encode(svg),
