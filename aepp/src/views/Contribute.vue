@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-screen">
 
     <InfoLayer>
       <h2>Uploading an Image</h2>
@@ -11,43 +11,41 @@
       </p>
     </InfoLayer>
 
-    <div class="w-full pl-4 pr-4 flex">
-      <h1 class="w-full text-center">Contribute</h1>
-    </div>
+    <WhiteHeader title="Contribute" :back="back"></WhiteHeader>
 
-    <div class="w-full p-4 flex justify-center">
-      <div class="w-full" v-if="isInitial">
+    <div class="w-full p-8 flex justify-center">
+      <div class="w-full h-full" v-if="isInitial">
         <form enctype="multipart/form-data" novalidate class="w-full">
-          <div class="dropbox border relative flex justify-center items-center h-64">
+          <div class="dropbox border-4 border-grey border-dashed relative flex justify-center items-center h-64 bg-grey-light rounded-lg">
             <input type="file" name="image" ref="uploadInput"
                    @change="filesChange($event.target.files)"
                    accept="image/*" class="absolute pin opacity-0 w-full h-full">
-            <p v-if="isInitial" class="p-4 text-center">
-              Upload an JPEG or PNG image. <br> Click to browse.
-            </p>
+            <div v-if="isInitial" class="p-4 text-center text-grey-dark">
+              <h3>Place your art here</h3><br>
+              <span>Upload an JPEG or PNG image. <br> Click to browse.</span>
+            </div>
           </div>
         </form>
-        <div class="w-full p-4">
-          <ae-list>
-            <ae-list-item @click="back" class="justify-center">
-              <ae-text face="uppercase-base" weight="bold">Return to Homepage</ae-text>
-            </ae-list-item>
-          </ae-list>
-        </div>
       </div>
 
-      <div class="w-full p-4 text-center" v-if="isLoading">
+      <div class="w-full text-center" v-if="isLoading">
         <BiggerLoader></BiggerLoader>
       </div>
 
       <div v-if="originalImage.src">
-        <div class="w-full flex justify-center p-4">
-          <img ref="image" class="w-full h-full" @load="imageLoad" :src="originalImage.src" :alt="originalImage.name">
+        <div class="w-full flex justify-center mb-6 bg-white p-4 rounded-lg">
+          <div class="ae-image-preview">
+            <img ref="image" class="w-full h-full" @load="imageLoad" :src="originalImage.src" :alt="originalImage.name">
+          </div>
         </div>
-        <div class="w-full p-4">
+        <div class="text-center mb-4">
+          <h2 class="mb-2">That's a piece of art!</h2>
+          <span class="text-grey-darkest leading-normal font-medium">Continue to make it suiteable for the wall or reset to choose another one.</span>
+        </div>
+        <div class="w-full">
           <ae-list>
             <ae-list-item class="justify-center">
-              <ae-button face="round" fill="primary" @click="next" extend>Preview Artwork</ae-button>
+              <ae-button face="round" fill="primary" @click="next" extend>Continue with this art</ae-button>
             </ae-list-item>
             <ae-list-item @click="reset" class="justify-center">
               <ae-text face="uppercase-base" weight="bold">Reset</ae-text>
@@ -74,12 +72,14 @@
 
   import InfoLayer from '../components/InfoLayer'
   import BiggerLoader from "../components/BiggerLoader";
+  import WhiteHeader from '@/components/WhiteHeader'
+  import { AeList, AeListItem, AeButton, AeText } from '@aeternity/aepp-components'
 
   const STATUS_INITIAL = 0, STATUS_LOADING = 1, STATUS_SUCCESS = 2, STATUS_ERROR = 3
 
   export default {
     name: 'Upload',
-    components: {BiggerLoader, InfoLayer },
+    components: { WhiteHeader, BiggerLoader, InfoLayer, AeList, AeListItem, AeButton, AeText },
     data () {
       return {
         fileCount: 0,
@@ -160,4 +160,17 @@
 
 <style scoped>
 
+  .dropbox {
+    height: 60vh;
+  }
+
+  .ae-image-preview {
+    max-height: 30vh;
+  }
+
+  .ae-image-preview img {
+    max-height: inherit;
+    width: auto;
+    height: auto;
+  }
 </style>

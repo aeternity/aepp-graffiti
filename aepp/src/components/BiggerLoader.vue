@@ -1,13 +1,17 @@
 <template>
-  <div class="mt-8 relative">
+  <div class="mt-8 relative flex justify-center">
     <ae-loader class="ae-loader-scaling"></ae-loader>
-    <div class="absolute ae-loader-progress w-full">{{progress}}%</div>
+    <div class="absolute ae-loader-progress w-full">{{progress}}</div>
   </div>
 </template>
 
 <script>
+
+  import { AeLoader } from '@aeternity/aepp-components'
+
   export default {
     name: "BiggerLoader",
+    components: {AeLoader},
     props: ['progress']
   }
 </script>
