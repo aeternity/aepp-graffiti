@@ -116,6 +116,7 @@ describe('DroneGraffitiAuction', () => {
         const decoded = await called.decode(Utils.auctionSlotType);
         const auctionSlot = Utils.auctionSlotToObject(decoded);
         assert.equal(auctionSlot.successfulBids.length, 1);
+        assert.equal(auctionSlot.successfulBids[0].seqId, 1);
         assert.equal(auctionSlot.successfulBids[0].user, publicKey);
         assert.equal(auctionSlot.successfulBids[0].amount, amount);
         assert.equal(auctionSlot.successfulBids[0].time, 20);
@@ -144,6 +145,7 @@ describe('DroneGraffitiAuction', () => {
         const auctionSlot = Utils.auctionSlotToObject(decoded);
         assert.equal(auctionSlot.successfulBids.length, 3);
         assert.equal(auctionSlot.failedBids.length, 1);
+        assert.equal(auctionSlot.failedBids[0].seqId, 2);
         assert.equal(auctionSlot.failedBids[0].amount, 5000);
         assert.equal(auctionSlot.failedBids[0].time, 30);
 

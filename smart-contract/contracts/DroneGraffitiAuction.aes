@@ -6,6 +6,7 @@ contract DroneGraffitiAuction =
     { is_admin : is_admin
     , auction_metadata : auction_metadata
     , latest_auction_slot_id : int
+    , latest_bid_seq_id : int
     , auction_slots : list(auction_slot) }
 
   record auction_metadata =
@@ -24,7 +25,8 @@ contract DroneGraffitiAuction =
     , end_block_height : int }
 
   record bid =
-    { user : address
+    { seq_id : int
+    , user : address
     , amount : int
     , time : int
     , amount_per_time : int
@@ -47,6 +49,7 @@ contract DroneGraffitiAuction =
     { is_admin = {[Call.caller] = true},
       auction_metadata = auction_metadata',
       latest_auction_slot_id = 0,
+      latest_bid_seq_id = 0,
       auction_slots = [] }
 
   public function get_auction_metadata() : auction_metadata =
@@ -104,9 +107,11 @@ contract DroneGraffitiAuction =
     require(state.auction_metadata.canvas_width >= x', "x has to be smaller canvas width")
     require(state.auction_metadata.canvas_height >= y', "y has to be smaller canvas height")
 
+    let next_seq_id = state.latest_bid_seq_id + 1
     let coordinates' = { x = x', y = y' }
     let artwork_data' = { artwork_reference = artwork_reference', coordinates = coordinates' }
-    let bid = { user = Call.caller,
+    let bid = { seq_id = next_seq_id,
+                user = Call.caller,
                 amount = Call.value,
                 time = time',
                 amount_per_time = Call.value / time',
@@ -124,7 +129,7 @@ contract DroneGraffitiAuction =
     // filter auction_slot from list in state, then add the updated one
     let filter_function = (e) => e.id != auction_slot.id
     let filtered_auction_slots = filter(filter_function, state.auction_slots)
-    put(state{ auction_slots = updated_auction_slot :: filtered_auction_slots })
+    put(state{ auction_slots = updated_auction_slot :: filtered_auction_slots, latest_bid_seq_id = next_seq_id })
 
     refund_new_to_low_bids(split_successful_bids_tuple)
     updated_auction_slot
