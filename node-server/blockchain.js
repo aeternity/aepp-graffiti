@@ -3,7 +3,7 @@ const Util = require('./blockchain_util');
 const blockchain = {};
 
 // can eventually be called by name in the future
-const contractAddress = 'ct_pWRLNGRdJbdbRoQscejwQZKnavAHgGqKZDr1H1jdvyCppap92';
+const contractAddress = 'ct_2U9MkZK9JXTUemAURfCd8BDQZcXK4Gk8Hwfqxf1ASSYNrQnhjz';
 
 let client = null;
 

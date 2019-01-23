@@ -59,14 +59,14 @@
   import axios from 'axios'
   import Util from '../utils/blockchain_util'
   import BiggerLoader from "../components/BiggerLoader";
-  import { AeCard } from '@aeternity/aepp-components';
+  import {AeCard} from '@aeternity/aepp-components';
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2;
 
   export default {
     name: 'Overview',
     components: {BiggerLoader, AeCard},
-    data () {
+    data() {
       return {
         bids: [],
         state: INITAL_STATE,
@@ -88,28 +88,28 @@
       }
     },
     methods: {
-      async updateMyBids()  {
+      async updateMyBids() {
         const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
 
         const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
         this.bids = Util.auctionSlotListToObject(decodedAllBids).map(slot => {
-          return slot.successfulBids.filter(bid => bid.user === this.address).map( bid => {
+          return slot.successfulBids.filter(bid => bid.user === this.address).map(bid => {
             bid.amount = Util.atomsToAe(bid.amount)
             return bid
           })
-        }).flat()
+        }).flat().sort((a, b) => b.seqId - a.seqId)
 
-        if(this.bids.length > 0) this.state = SHOW_LIST
+        if (this.bids.length > 0) this.state = SHOW_LIST
         else return this.state = EMPTY_LIST
 
-        this.bids = await Promise.all(this.bids.map( async bid => {
+        this.bids = await Promise.all(this.bids.map(async bid => {
           let response = await axios.get(this.$store.state.apiUrl + "/ipfs?hash=" + bid.data.artworkReference);
           bid.image = 'data:image/svg+xml;base64,' + btoa(response.data);
           return bid;
         }))
       }
     },
-    created () {
+    created() {
       Aepp().then(async ae => {
         this.client = ae
         this.address = await this.client.address()

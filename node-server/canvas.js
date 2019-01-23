@@ -104,7 +104,7 @@ canvas.render = async () => {
 
     // get all files from ipfs that were included in bids
     const auctionSlots = await blockchain.auctionSlots().catch(console.error);
-    const successfulBids = auctionSlots.map(slot => slot.successfulBids).reduce((acc, val) => acc.concat(val), []);
+    const successfulBids = auctionSlots.map(slot => slot.successfulBids).reduce((acc, val) => acc.concat(val), []).sort((a, b) => a.seqId - b.seqId);
 
     const ipfsSources = await Promise.all(successfulBids.map(bid => {
         return ipfsWrapper.getFile(bid.data.artworkReference).then(filebuffer => {

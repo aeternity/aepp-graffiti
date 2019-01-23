@@ -2,7 +2,7 @@ const Crypto = require('@aeternity/aepp-sdk').Crypto;
 
 const coordinatesType = '(int, int)';
 const artworkDataType = `(string, ${coordinatesType})`;
-const bidType = `(address, int, int, int, ${artworkDataType})`;
+const bidType = `(int, address, int, int, int, ${artworkDataType})`;
 const auctionSlotType = `(int, int, int, int, list(${bidType}), list(${bidType}), int, int)`;
 const auctionSlotListType = `list(${auctionSlotType})`;
 const auctionMetaDataType = '(string, int, int)';
@@ -23,11 +23,12 @@ const artworkDataToObject = (object) => {
 
 const bidToObject = (object) => {
     return {
-        user: Crypto.addressFromDecimal(object.value[0].value),
-        amount: object.value[1].value,
-        time: object.value[2].value,
-        amountPerTime: object.value[3].value,
-        data: artworkDataToObject(object.value[4])
+        seqId: object.value[0].value,
+        user: Crypto.addressFromDecimal(object.value[1].value),
+        amount: object.value[2].value,
+        time: object.value[3].value,
+        amountPerTime: object.value[4].value,
+        data: artworkDataToObject(object.value[5])
     }
 };
 
