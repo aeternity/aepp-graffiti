@@ -5,6 +5,7 @@ const app = express();
 const logic = require('./logic');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const storage = require('./storage.js');
 
 app.use(bodyParser.json());
 app.use(cors({
@@ -33,4 +34,5 @@ app.use((req, res) => {
 });
 
 setTimeout(() => canvas.init(), 30000);
+storage.init();
 app.listen(3000);

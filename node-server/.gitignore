@@ -6,3 +6,4 @@ package-lock.json
 docker/aeternity_uat
 docker/ipfs
 docker/rendered
+config.json

@@ -4,6 +4,7 @@ const JSZip = require('jszip');
 const logic = {};
 const convert = require('xml-js');
 const Base64 = require('js-base64').Base64;
+const storage = require('./storage.js');
 
 logic.upload = async (req, res) => {
     if (Object.keys(req.files).length === 0) {
@@ -22,6 +23,10 @@ logic.upload = async (req, res) => {
 
     try {
         const result = await ipfsWrapper.writeFile(file.data);
+
+        //BACKUP SVG TO S3
+        await storage.backupSVG(result[0].hash, file.data);
+
         return res.json({
             hash: result[0].hash,
         });

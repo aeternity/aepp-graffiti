@@ -5,6 +5,7 @@ const blockchain = require('./blockchain.js');
 const ipfsWrapper = require('./ipfs.js');
 const convert = require('xml-js');
 const Base64 = require('js-base64').Base64;
+const storage = require('./storage.js');
 
 const canvas = {};
 
@@ -105,6 +106,13 @@ canvas.render = async () => {
     // get all files from ipfs that were included in bids
     const auctionSlots = await blockchain.auctionSlots().catch(console.error);
     const successfulBids = auctionSlots.map(slot => slot.successfulBids).reduce((acc, val) => acc.concat(val), []).sort((a, b) => a.seqId - b.seqId);
+
+    try {
+        successfulBids.map(bid => storage.backupBid(bid.data.artworkReference, bid));
+    } catch (e) {
+        console.warn('bid upload failed');
+        console.warn(e.message);
+    }
 
     const ipfsSources = await Promise.all(successfulBids.map(bid => {
         return ipfsWrapper.getFile(bid.data.artworkReference).then(filebuffer => {
