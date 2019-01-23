@@ -3,14 +3,12 @@ const path = require('path');
 const {createCanvas, Image} = require('canvas');
 const blockchain = require('./blockchain.js');
 const ipfsWrapper = require('./ipfs.js');
-const convert = require('xml-js');
 const Base64 = require('js-base64').Base64;
 const storage = require('./storage.js');
-const svgUtil = require('./svg_util.js')
+const svgUtil = require('./svg_util.js');
 
 const canvas = {};
 
-const pathLatest = "./rendered/latest.png";
 
 const renderInterval = 20000;
 
@@ -36,8 +34,9 @@ canvas.init = async () => {
     setInterval(intervalJob, renderInterval);
 };
 
+canvas.pathLatest = "../rendered/latest.png";
 canvas.pathByHeight = () => {
-    return `./rendered/height/${current_height}.png`;
+    return `../rendered/height/${current_height}.png`;
 };
 
 canvas.mergeImages = async (sources) => {
@@ -122,7 +121,7 @@ canvas.render = async () => {
 
     const buffer = await canvas.mergeImages(transformedSources);
     fs.writeFileSync(path.join(__dirname, canvas.pathByHeight()), buffer);
-    fs.writeFileSync(path.join(__dirname, pathLatest), buffer);
+    fs.writeFileSync(path.join(__dirname, canvas.pathLatest), buffer);
     console.log('did merge and write', transformedSources.length);
 };
 

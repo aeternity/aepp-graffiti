@@ -1,11 +1,11 @@
 const express = require('express');
-const canvas = require('./canvas.js');
+const canvas = require('./src/canvas.js');
 const fileUpload = require('express-fileupload');
 const app = express();
-const logic = require('./logic');
+const logic = require('./src/logic');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const storage = require('./storage.js');
+const storage = require('./src/storage.js');
 
 app.use(bodyParser.json());
 app.use(cors({

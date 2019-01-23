@@ -1,6 +1,6 @@
 const fs = require('fs');
 const S3 = require('aws-sdk/clients/s3');
-const config = require('./config.json');
+const config = require('../config.json');
 const path = require('path');
 
 const client = new S3({
