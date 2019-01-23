@@ -7,3 +7,4 @@ docker/aeternity_uat
 docker/ipfs
 docker/rendered
 config.json
+rendered/
