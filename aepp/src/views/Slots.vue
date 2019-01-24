@@ -8,144 +8,68 @@
         contract will take all top bids and send them to the drones to paint.
       </p>
     </InfoLayer>
-    <div class="w-full pl-8 pr-8 text-center">
-      <h1 class="w-full text-center mb-4">Auction Slots</h1>
-      <h3>Current Block Height: <span class="font-mono">{{height}}</span></h3>
-    </div>
-    <div class="w-full p-8 flex justify-center items-center">
+    <WhiteHeader title="Bidding" :back="back"></WhiteHeader>
 
-      <div v-if="isLoadingState">
+
+    <div class="w-full p-8 pb-6">
+      <div class="flex justify-center flex-col">
+        <h1 class="text-center mb-2">Drone Slots</h1>
+        <span class="text-xl text-center leading-normal text-grey-darker">Bid for a slot for your art to be<br> sprayed on the wall</span>
+      </div>
+    </div>
+
+    <div class="w-full p-8 flex justify-center items-center" v-if="isLoadingState">
+      <div >
         <BiggerLoader></BiggerLoader>
       </div>
+    </div>
 
-      <div v-if="isShowListState" class="w-full">
-        <div v-for="slot in slots" class="w-full">
-          <ae-card class="mb-4 w-full">
-            <div class="flex flex-col relative w-full" @click="selectSlot(slot.id)">
+    <div v-if="isShowListState" class="w-full">
 
-              <div class="absolute pin-t pin-r">
-                <ae-check v-model="choice" :value="slot.id" type="radio">
-                </ae-check>
-              </div>
-
-              <div>
-                <h2 class="text-black">Slot {{slot.id}} ({{slot.successfulBids.length}} Bids)</h2>
-              </div>
-              <div class="flex flex-col mt-2">
+      <swiper :options="swiperOption" ref="mySwiper" @slideChange="slideChange">
+        <swiper-slide v-for="slot in slots" :key="slot.id" class="ae-max-width">
+          <div class="mt-2 mb-2">
+            <ae-card>
+              <div class="flex flex-col relative w-full">
+                <div>
+                  <h2 class="text-black">Slot {{slot.id}} ({{slot.successfulBids.length}} Bids)</h2>
+                </div>
+                <div class="flex flex-col text-black text-base mt-2">
                 <span>
                   Estimated time left
                 </span>
-                <span class="font-mono text-black text-lg">
+                  <span class="font-mono text-black text-xl">
                   <Countdown :initialTime="(slot.endBlockHeight - height) * 180"></Countdown>
                 </span>
-              </div>
-              <div class="flex flex-col mt-2">
+                </div>
+                <ae-divider></ae-divider>
+                <div class="flex flex-col text-black text-base mt-2">
                 <span>
                   Minimum Bid / Minute
                 </span>
-                <span class="font-mono text-black text-lg" v-if="slot.successfulBids.length > 0">
+                  <span class="font-mono text-black text-xl" v-if="slot.successfulBids.length > 0">
                   {{slot.minimumBid.toFixed(5)}} AE
                 </span>
-                <span class="font-mono text-black text-lg" v-else>
+                  <span class="font-mono text-black text-xl" v-else>
                   0 AE (No Bids)
                 </span>
-              </div>
+                </div>
 
-              <div class="flex flex-col mt-2">
+                <div class="flex flex-col mt-2">
                 <span class="font-mono text-red text-lg" v-if="slot.maximumTimePerBid < transformedImage.dronetime">
                   Your artwork is too big for this slot. Consider making it smaller.
                 </span>
-                <span class="font-mono text-red text-lg" v-if="slot.minimumTimePerBid > transformedImage.dronetime">
+                  <span class="font-mono text-red text-lg" v-if="slot.minimumTimePerBid > transformedImage.dronetime">
                   Your artwork is too small for this slot. Consider making it larger.
                 </span>
-              </div>
-              <!--
-              <div class="flex flex-row justify-between">
-                <div class="flex flex-col pr-6">
-                <span>
-                  From
-                </span>
-                  <span class="font-mono text-black text-lg">
-                  {{slot.startBlockHeight}}
-                </span>
-                </div>
-                <div class="flex flex-col pr-6">
-                <span>
-                  To
-                </span>
-                  <span class="font-mono text-black text-lg">
-                  {{slot.endBlockHeight}}
-                </span>
-                </div>
-                <div class="flex flex-col pr-6">
-                <span>
-                  Time
-                </span>
-                  <span class="font-mono text-black text-lg">
-                  {{slot.timeCapacity}}
-                </span>
-                </div>
-                <div class="flex flex-col" v-if="slot.startBlockHeight < height && slot.endBlockHeight > height">
-                <span>
-                  &nbsp;
-                </span>
-                  <span class="font-mono text-black text-lg">
-                  ACTIVE
-                </span>
-
                 </div>
               </div>
-              <div class="flex flex-row justify-between">
-                <div class="flex flex-col pr-6">
-                <span>
-                  Maximum Bid Per Minute
-                </span>
-                  <span class="font-mono text-black text-lg">
-                  {{slot.maximumTimePerBid}}
-                </span>
-                </div>
-                <div class="flex flex-col pr-6">
-                <span>
-                  Minimum Bid Per Minute
-                </span>
-                  <span class="font-mono text-black text-lg">
-                  {{slot.minimumTimePerBid}}
-                </span>
-                </div>
-                <div class="flex flex-col pr-6">
-                <span>
-                  Time
-                </span>
-                  <span class="font-mono text-black text-lg">
-                  {{slot.timeCapacity}}
-                </span>
-                </div>
-                <div class="flex flex-col" v-if="slot.startBlockHeight < height && slot.endBlockHeight > height">
-                <span>
-                  &nbsp;
-                </span>
-                  <span class="font-mono text-black text-lg">
-                  ACTIVE
-                </span>
-                </div>
-              </div>
-              -->
-            </div>
-
-          </ae-card>
-        </div>
-        <div >
-          <div class="w-full">
-            <ae-list>
-              <ae-list-item v-if="choice">
-                <ae-button face="round" fill="primary" @click="next" extend>Continue</ae-button>
-              </ae-list-item>
-              <ae-list-item @click="$router.push('positioning')" class="justify-center">
-                <ae-text face="uppercase-base" weight="bold">Back</ae-text>
-              </ae-list-item>
-            </ae-list>
+            </ae-card>
           </div>
-        </div>
+        </swiper-slide>
+      </swiper>
+      <div class="w-full mt-6 flex justify-center">
+        <ae-button class="ae-max-width" face="round" fill="primary" @click="next" extend>Bid on this slot</ae-button>
       </div>
     </div>
   </div>
@@ -154,16 +78,20 @@
 <script>
   import InfoLayer from '@/components/InfoLayer'
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import axios from 'axios'
   import Util from '../utils/blockchain_util'
   import BiggerLoader from '@/components/BiggerLoader'
   import Countdown from '@/components/Countdown'
-  import { AeList, AeListItem, AeButton, AeText, AeCard, AeCheck } from '@aeternity/aepp-components'
+  import { AeButton, AeCard, AeCheck, AeDivider } from '@aeternity/aepp-components'
+  import WhiteHeader from '@/components/WhiteHeader'
+  import 'swiper/dist/css/swiper.css'
+
+  import { swiper, swiperSlide } from 'vue-awesome-swiper'
+
   const SHOW_LIST = 1, EMPTY_LIST = 2, LOADING = 3
 
   export default {
     name: 'Slots',
-    components: { AeText, AeButton, AeListItem, AeList, AeCard, AeCheck, Countdown, BiggerLoader, InfoLayer },
+    components: { AeDivider, WhiteHeader, AeButton, AeCard, AeCheck, Countdown, BiggerLoader, InfoLayer, swiper, swiperSlide },
     data () {
       return {
         state: LOADING,
@@ -171,7 +99,12 @@
         slots: [],
         client: null,
         height: 0,
-        choice: null
+        choice: null,
+        swiperOption: {
+          slidesPerView: 'auto',
+          spaceBetween: 35,
+          centeredSlides: true
+        }
       }
     },
     computed: {
@@ -192,14 +125,20 @@
       }
     },
     methods: {
+      slideChange() {
+        const realIndex = this.$refs.mySwiper.swiper.realIndex
+        this.choice = this.slots.find(slot => slot.index === realIndex).id
+      },
       async updateMyBids () {
         const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
 
         const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
 
+        let slotIndex = 0;
         this.slots = Util.auctionSlotListToObject(decodedAllBids).map(slot => {
-          slot.minimumBid = Math.min.apply(Math, slot.successfulBids.map(function(bid) { return bid.amountPerTime; }))
-          slot.minimumBid = slot.successfulBids.length === 0 ? 0 : Util.atomsToAe(slot.minimumBid);
+          slot.index = slotIndex++;
+          slot.minimumBid = Math.min.apply(Math, slot.successfulBids.map(function (bid) { return bid.amountPerTime }))
+          slot.minimumBid = slot.successfulBids.length === 0 ? 0 : Util.atomsToAe(slot.minimumBid)
           return slot
         })
 
@@ -208,20 +147,16 @@
         if (this.slots.length > 0) this.state = SHOW_LIST
         else return this.state = EMPTY_LIST
 
-        /*
-        this.bids = await Promise.all(this.bids.map(async bid => {
-          let response = await axios.get(this.$store.state.apiUrl + '/ipfs?hash=' + bid.data.artworkReference)
-          bid.image = 'data:image/svg+xml;base64,' + btoa(response.data)
-          return bid
-        }))
-        */
+        this.choice = this.slots[0].id
       },
-      selectSlot(slotId) {
-        this.choice = slotId
+      next () {
+        this.$store.dispatch('updateBidding', {
+          slot: this.choice
+        })
+        this.$router.push('amount')
       },
-      next() {
-        this.$store.dispatch('updateBiddingSlotId', this.choice)
-        this.$router.push('confirm')
+      back () {
+        this.$router.push('positioning')
       }
     },
     created () {
@@ -235,6 +170,9 @@
   }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+  .ae-max-width {
+    width: 75%;
+    max-width: 75%;
+  }
 </style>

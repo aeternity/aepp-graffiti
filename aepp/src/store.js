@@ -46,7 +46,10 @@ function initialState () {
       y: 0
     },
     droneObject: null,
-    biddingSlotId: null,
+    bid: {
+      slot: null,
+      amount: null
+    },
     progressCallback: () => {},
 
     // HARDCODED SETTINGS
@@ -63,8 +66,8 @@ function initialState () {
     droneSettings: {
       wallId: 'MX19-001',
       gpsLocation: [0, 0],
-      wallSize: [30000, 20000],   // in mm
-      canvasSize: [20000, 20000], // mm
+      wallSize: [33000, 50000],   // in mm
+      canvasSize: [33000, 50000], // mm
       canvasPosition: [0, 0], // mm (origin = [bottom left])
       colors: ['#000000', '#eb340f', '#0f71eb'], // default [#000]
       droneResolution: 200,       // min distance drone can move, in mm
@@ -105,8 +108,8 @@ const store = new Vuex.Store({
     modifyProgressCallback (state, progressCallback) {
       state.progressCallback = progressCallback
     },
-    modifyBiddingSlotId (state, slotId) {
-      state.biddingSlotId = slotId
+    modifyBidding (state, bid) {
+      state.bid= bid
     },
 
     resetState (state) {
@@ -177,21 +180,26 @@ const store = new Vuex.Store({
     async applyPostRenderingChanges ({ commit, state }) {
 
       //TODO rerender image on error
-      try {
-        console.log(state.settings.scaleFactor)
-        state.droneObject.setPaintingScale(state.settings.scaleFactor)
-        state.droneObject.setPaintingPosition(state.position.x * state.canvas.pixelToMM, state.position.y * state.canvas.pixelToMM)
-        state.droneObject.setPaintingColor(state.droneSettings.colors[state.settings.color])
-      } catch (e) {
-        console.error(e)
+
+
+      let result = state.droneObject.setPaintingPosition(state.position.x * state.canvas.pixelToMM, state.position.y * state.canvas.pixelToMM)
+      if(!result) {
+        throw Error('Position out of bound');
       }
+
+      result = state.droneObject.setPaintingScale(state.settings.scaleFactor)
+      if(!result)  {
+        throw Error('Scale out of bound');
+      }
+
+      state.droneObject.setPaintingColor(state.droneSettings.colors[state.settings.color])
 
       let image = {}
 
       image.src = `data:image/svg+xml;base64,${btoa(state.droneObject.svgFile)}`
 
-      image.height = state.droneObject.paintingHeight / 10
-      image.width = state.droneObject.paintingWidth / 10
+      image.height = Math.ceil(state.droneObject.paintingHeight / 10)
+      image.width = Math.ceil(state.droneObject.paintingWidth / 10)
       image.dronetime = Math.round(state.droneObject.estimatedTime / 1000 / 60)
 
       commit('modifyTransformedImage', Object.assign({}, state.transformedImage, image))
@@ -212,7 +220,9 @@ const store = new Vuex.Store({
         return state.settings[key] !== update[key]
       })
 
-      console.log(changedKeys)
+      const originalValues = {};
+      changedKeys.map(key => originalValues[key] = state.settings[key]);
+
 
       // UPDATE SETTINGS ANYWAYS
       commit('modifySettings', Object.assign({}, state.settings, update))
@@ -231,13 +241,38 @@ const store = new Vuex.Store({
 
       if (changedKeys.includes('scaleFactor') ||
         changedKeys.includes('color')) {
-        await dispatch('applyPostRenderingChanges')
+        try {
+          await dispatch('applyPostRenderingChanges')
+        } catch (e) {
+          console.error(e.message)
+          console.log(update, originalValues)
+          commit('modifySettings', Object.assign({}, state.settings, originalValues))
+        }
       }
 
     },
-    updatePosition ({ commit, state, dispatch }, update) {
+    async updateScaleFactor({commit, state, dispatch } , update) {
+      const oldScale = state.settings.scaleFactor;
+      commit('modifySettings', Object.assign({}, state.settings, update))
+      try {
+        await dispatch('applyPostRenderingChanges')
+      } catch (e) {
+        console.error(e.message)
+        console.log(update, oldScale)
+        commit('modifySettings', Object.assign({}, state.settings, oldScale))
+      }
+    },
+
+    async updatePosition ({ commit, state, dispatch }, update) {
+      const oldPosition = state.position;
       commit('modifyPosition', Object.assign({}, state.position, update))
-      dispatch('applyPostRenderingChanges')
+      try {
+        await dispatch('applyPostRenderingChanges')
+      } catch (e) {
+        console.error(e.message)
+        console.log(update, oldPosition)
+        commit('modifyPosition', Object.assign({}, state.position, oldPosition))
+      }
     },
     resetState ({ commit }) {
       commit('resetState')
@@ -249,8 +284,8 @@ const store = new Vuex.Store({
       commit('modifyProgressCallback', () => {
       })
     },
-    updateBiddingSlotId ({ commit }, slotId) {
-      commit('modifyBiddingSlotId', slotId)
+    updateBidding ({ commit, state }, bid) {
+      commit('modifyBidding', Object.assign({}, state.bid, bid))
     }
   }
 })

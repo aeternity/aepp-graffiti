@@ -121,7 +121,7 @@
   import InfoLayer from '@/components/InfoLayer'
   import BiggerLoader from '../components/BiggerLoader'
   import WhiteHeader from '@/components/WhiteHeader'
-  import { AeSwitch, AeIcon, AeButtonGroup, AeInput, AeBackdrop, AeCard, AeLabel, AeButton } from '@aeternity/aepp-components'
+  import { AeSwitch, AeIcon, AeButtonGroup, AeBackdrop, AeCard, AeButton } from '@aeternity/aepp-components'
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 
@@ -130,10 +130,8 @@
     components: {
       AeIcon,
       AeButtonGroup,
-      AeInput,
       AeBackdrop,
       AeCard,
-      AeLabel,
       AeButton,
       WhiteHeader,
       BiggerLoader,

@@ -6,42 +6,54 @@
         Drag and drop the artwork to your desired position on the wall. You can pinch to zoom and drag to move.
       </p>
       <p class="p-4 pb-0">
-        To adjust the size of your artwork use the scale slider down below. For more detailed positioning you can enter the X and Y coordinates in the in put fields below.
+        To adjust the size of your artwork use the scale slider down below. For more detailed positioning you can enter
+        the X and Y coordinates in the in put fields below.
       </p>
     </InfoLayer>
+    <WhiteHeader :back="back" title="Place your art"></WhiteHeader>
+    <div class="w-full h-full">
+      <CanvasWithControlls :height=height :draggable=true ref="canvas"></CanvasWithControlls>
+    </div>
+    <div class="w-full absolute pin-b">
+      <div class="m-8 mb-6 mt-0 flex flex-row items-center justify-between">
+        <div class="flex flex-row">
+          <div @click="minus" class="rounded-full w-12 h-12 ae-color-secondary flex justify-center items-center mr-4">
+            <span class="text-2xl text-white">&minus;</span>
+          </div>
+          <div @click="plus" class="rounded-full w-12 h-12 ae-color-secondary flex justify-center items-center">
+            <span class="text-2xl text-white">+</span>
+          </div>
 
-    <div class="w-full pl-8 pr-8">
-      <h1 class="w-full text-center">Positioning</h1>
+        </div>
+        <ae-button face="round" fill="primary" @click="next">Place art</ae-button>
+      </div>
     </div>
-    <div class="w-full pt-4">
-        <CanvasWithControlls :draggable=true :showToggle="true" :showScale="true" ref="canvas"></CanvasWithControlls>
-    </div>
-    <div class="w-full p-8 pt-0">
-      <ae-list>
-        <ae-list-item>
-          <ae-button face="round" fill="primary" @click="next" extend>Continue</ae-button>
-        </ae-list-item>
-        <ae-list-item @click="back" class="justify-center">
-          <ae-text face="uppercase-base" weight="bold">Adjust Image Style</ae-text>
-        </ae-list-item>
-      </ae-list>
-    </div>
+
   </div>
 </template>
 
 <script>
   import CanvasWithControlls from '../components/CanvasWithControlls.vue'
   import InfoLayer from '@/components/InfoLayer'
+  import WhiteHeader from '@/components/WhiteHeader'
+  import { AeButton } from '@aeternity/aepp-components';
 
   export default {
     name: 'Positioning',
-    components: { InfoLayer, CanvasWithControlls },
+    components: { WhiteHeader, InfoLayer, CanvasWithControlls, AeButton },
     data () {
       return {
-        scale: 1
+        scale: 1,
+        height: window.innerHeight - 64
       }
     },
     methods: {
+      minus () {
+        this.$refs.canvas.changeOverlayScale(-0.1)
+      },
+      plus () {
+        this.$refs.canvas.changeOverlayScale(0.1)
+      },
       back () {
         this.$router.push('render')
       },
@@ -55,5 +67,8 @@
 </script>
 
 <style scoped>
+  .ae-color-secondary {
+    background: #6948a1
+  }
 
 </style>

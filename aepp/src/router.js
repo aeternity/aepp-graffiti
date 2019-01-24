@@ -9,6 +9,7 @@ import Onboarding from './views/Onboarding'
 import Slots from './views/Slots'
 import Canvas from './views/desktop/Canvas'
 import Admin from './views/desktop/Admin'
+import Amount from './views/Amount'
 
 export default () => {
   const routes = [
@@ -70,6 +71,12 @@ export default () => {
       path: '/desktop/admin',
       name: 'admin',
       component: Admin,
+      props: route => ({ query: route.query })
+    },
+    {
+      path: '/amount',
+      name: 'amount',
+      component: Amount,
       props: route => ({ query: route.query })
     }
   ]

@@ -35,7 +35,6 @@
       },
       'title': {
         type: String,
-
       }
     },
     methods: {

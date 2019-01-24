@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="isLoading">
-      <div class="w-full pl-4 pr-4 flex">
+      <div class="w-full pl-4 pr-4 pt-8 flex">
         <h1 class="w-full text-center">Processing Bid</h1>
       </div>
       <div class="w-full p-4 flex flex-col">
@@ -49,10 +49,6 @@
         <ae-text face="mono-xl" class="text-center">{{transformedImage.dronetime}} Minutes</ae-text>
       </div>
       <div class="w-full p-4">
-        <h2 class="w-full text-center mb-4">Your Total</h2>
-        <ae-input type="number" aemount v-model="bid" label="AE"></ae-input>
-      </div>
-      <div class="w-full p-4">
         <ae-list>
           <ae-list-item>
             <ae-button face="round" fill="primary" @click="next" extend>Place Bid</ae-button>
@@ -85,12 +81,11 @@
     components: { LoadingStep, InfoLayer, CanvasWithControlls,  AeInput, AeText, AeList, AeListItem, AeButton },
     data () {
       return {
-        bid: 1,
         pub: 'ak_QY8VNEkhj7omMUjAvfVBq2NjTDy895LBYbk7qVxQo1qT8VqfE',
         balance: 0,
         client: null,
         ipfsAddr: null,
-        currentStatus: STATUS_INITIAL,
+        currentStatus: STATUS_LOADING,
         currentLoadingStep: LOADING_DATA,
         errorStep: null
       }
@@ -111,18 +106,19 @@
       isLoading () {
         return this.currentStatus === STATUS_LOADING
       },
-      biddingSlotId() {
-        return this.$store.state.biddingSlotId
+      bid() {
+        return this.$store.state.bid
       },
     },
     methods: {
       back () {
         this.$router.push('slots')
       },
-      resetView() {
-        this.currentStatus = STATUS_INITIAL;
+      async resetView() {
+        this.currentStatus = STATUS_LOADING;
         this.currentLoadingStep = LOADING_DATA;
         this.errorStep = null;
+        await this.next();
       },
       async next () {
         try {
@@ -177,8 +173,8 @@
         // amount: ae to contract amount
 
         const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'place_bid', {
-          args: `(${this.biddingSlotId}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
-          options: { amount: Util.aeToAtoms(this.bid )}
+          args: `(${this.bid.slot}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
+          options: { amount: Util.aeToAtoms(this.bid.amount )}
         }).catch(async e => {
           const decodedError = await this.client.contractDecodeData('string', e.returnValue).catch(e => {
             console.error(e);
@@ -196,15 +192,7 @@
         console.log('client: ', ae)
         console.log(ae.Ae, ae.Chain, ae.post, ae.Tx)
         this.client = ae
-        ae.address()
-          .then(address => {
-            this.pub = address
-            ae.balance(address).then(balance => {
-              // logs current balance of "A_PUB_ADDRESS"
-              console.log('balance', balance)
-              this.balance = Number(balance)
-            })
-          })
+        await this.next();
       })
     }
   }
