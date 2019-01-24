@@ -27,12 +27,11 @@
 
         this.seconds = Math.floor(this.time % 60)
         this.minutes = Math.floor(this.time % (60 * 60) / 60)
-        this.hours = Math.floor(this.time % (24 * 60 * 60) / (60 * 24))
+        this.hours = Math.floor(this.time % (24 * 60 * 60) / (60 * 60))
         this.days = Math.floor(this.time / (24 * 60 * 60))
       }
     },
     created () {
-      console.log(this.initialTime)
       this.updateTime()
       this.interval = setInterval(() => {
         this.updateTime()
