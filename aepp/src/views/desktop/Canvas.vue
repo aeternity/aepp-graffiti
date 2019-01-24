@@ -5,7 +5,7 @@
 <script>
   import CanvasJS from '@/components/CanvasJS'
   export default {
-    name: 'Desktop',
+    name: 'Canvas',
     components: { CanvasJS },
     data() {
       return {

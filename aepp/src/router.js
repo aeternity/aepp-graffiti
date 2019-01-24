@@ -4,9 +4,8 @@ import Contribute from './views/Contribute.vue'
 import Render from './views/Render.vue'
 import Positioning from './views/Positioning.vue'
 import Confirm from './views/Confirm.vue'
-import Desktop from './views/Desktop'
 import Overview from './views/Overview'
-import IFrame from './views/IFrame'
+import Canvas from './views/desktop/Canvas'
 import Onboarding from './views/Onboarding'
 import Slots from './views/Slots'
 
@@ -43,15 +42,9 @@ export default () => {
       props: route => ({ query: route.query })
     },
     {
-      path: '/desktop',
-      name: 'desktop',
-      component: Desktop,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/iframe',
-      name: 'iframe',
-      component: IFrame,
+      path: '/desktop/canvas',
+      name: 'canvas',
+      component: Canvas,
       props: route => ({ query: route.query })
     },
     {
