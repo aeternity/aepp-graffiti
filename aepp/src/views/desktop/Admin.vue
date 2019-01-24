@@ -149,12 +149,12 @@
               endBlockHeight: slot.endBlockHeight,
               capacityUsed: slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0),
               success: {
-                bids: slot.successfulBids,
+                bids: slot.successfulBids.sort((a, b) => a.seqId - b.seqId),
                 amountSum: Util.atomsToAe(slot.successfulBids.reduce((acc, x) => Number(x.amount) + acc, 0)),
                 amountPerTime: slot.successfulBids.map(x => Number(x.amountPerTime)).map(x => Util.atomsToAe(x).toFixed(4))
               },
               failed: {
-                bids: slot.failedBids,
+                bids: slot.failedBids.sort((a, b) => a.seqId - b.seqId),
                 amountSum: Util.atomsToAe(slot.failedBids.reduce((acc, x) => Number(x.amount) + acc, 0)),
                 amountPerTime: slot.failedBids.map(x => Number(x.amountPerTime)).map(x => Util.atomsToAe(x).toFixed(4))
               },
