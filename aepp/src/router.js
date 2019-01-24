@@ -5,9 +5,10 @@ import Render from './views/Render.vue'
 import Positioning from './views/Positioning.vue'
 import Confirm from './views/Confirm.vue'
 import Overview from './views/Overview'
-import Canvas from './views/desktop/Canvas'
 import Onboarding from './views/Onboarding'
 import Slots from './views/Slots'
+import Canvas from './views/desktop/Canvas'
+import Admin from './views/desktop/Admin'
 
 export default () => {
   const routes = [
@@ -42,12 +43,6 @@ export default () => {
       props: route => ({ query: route.query })
     },
     {
-      path: '/desktop/canvas',
-      name: 'canvas',
-      component: Canvas,
-      props: route => ({ query: route.query })
-    },
-    {
       path: '/overview',
       name: 'overview',
       component: Overview,
@@ -63,6 +58,18 @@ export default () => {
       path: '/slots',
       name: 'slots',
       component: Slots,
+      props: route => ({ query: route.query })
+    },
+    {
+      path: '/desktop/canvas',
+      name: 'canvas',
+      component: Canvas,
+      props: route => ({ query: route.query })
+    },
+    {
+      path: '/desktop/admin',
+      name: 'admin',
+      component: Admin,
       props: route => ({ query: route.query })
     }
   ]
