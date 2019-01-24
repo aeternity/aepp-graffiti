@@ -8,7 +8,7 @@
   export default {
     name: 'Countdown',
     props: ['initialTime'],
-    data () {
+    data() {
       return {
         interval: null,
         timeRunning: 0,
@@ -20,24 +20,22 @@
       }
     },
     methods: {
-      updateTime () {
+      updateTime() {
 
-        this.timeRunning++
-        this.time = this.initialTime - this.timeRunning
+        this.timeRunning++;
+        this.time = this.initialTime - this.timeRunning;
 
-        this.seconds = Math.floor(this.time % 60)
-        this.minutes = Math.floor(this.time % (60 * 60) / 60)
-        this.hours = Math.floor(this.time % (24 * 60 * 60) / (60 * 60))
+        this.seconds = Math.floor(this.time % 60);
+        this.minutes = Math.floor(this.time % (60 * 60) / 60);
+        this.hours = Math.floor(this.time % (24 * 60 * 60) / (60 * 60));
         this.days = Math.floor(this.time / (24 * 60 * 60))
       }
     },
-    created () {
-      this.updateTime()
-      this.interval = setInterval(() => {
-        this.updateTime()
-      }, 1000)
+    created() {
+      this.updateTime();
+      this.interval = setInterval(this.updateTime, 1000)
     },
-    beforeDestroy () {
+    beforeDestroy() {
       clearInterval(this.interval)
     }
   }

@@ -79,51 +79,60 @@
         slots: [],
         height: 0,
         avgBlockTime: 3 * 60,
-        loading: true
+        loading: true,
+        interval: null
       }
     },
-    async created() {
+    methods: {
+      async loadData() {
+        const client = await EpochChain.compose(EpochContract)({
+          url: `https://ae-art-testnet.piwo.app`,
+          internalUrl: `https://ae-art-testnet.piwo.app`,
+        }).catch(console.error);
 
-      const client = await EpochChain.compose(EpochContract)({
-        url: `https://ae-art-testnet.piwo.app`,
-        internalUrl: `https://ae-art-testnet.piwo.app`,
-      }).catch(console.error);
+        this.height = await client.height();
 
-      this.height = await client.height();
+        const called = await client.contractEpochCall(this.$store.state.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()').catch(console.error);
+        const decoded = await client.contractEpochDecodeData(Util.auctionSlotListType, called.out).catch(console.error);
+        this.slots = Util.auctionSlotListToObject(decoded)
+          .sort((a, b) => a.endBlockHeight - b.endBlockHeight)
+          .map(slot => {
+            return {
+              id: slot.id,
+              downloadLink: `${this.$store.state.apiUrl}/slots/${slot.id}`,
+              timing: {
+                past: slot.startBlockHeight < this.height && slot.endBlockHeight <= this.height,
+                active: slot.startBlockHeight < this.height && slot.endBlockHeight > this.height,
+                future: slot.startBlockHeight >= this.height && slot.endBlockHeight > this.height
+              },
+              timeCapacity: slot.timeCapacity,
+              minimumTimePerBid: slot.minimumTimePerBid,
+              maximumTimePerBid: slot.maximumTimePerBid,
+              startBlockHeight: slot.startBlockHeight,
+              endBlockHeight: slot.endBlockHeight,
+              capacityUsed: slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0),
+              success: {
+                bids: slot.successfulBids,
+                amountSum: Util.atomsToAe(slot.successfulBids.reduce((acc, x) => Number(x.amount) + acc, 0)),
+                amountPerTime: slot.successfulBids.map(x => Number(x.amountPerTime)).map(x => Util.atomsToAe(x).toFixed(4))
+              },
+              failed: {
+                bids: slot.failedBids,
+                amountSum: Util.atomsToAe(slot.failedBids.reduce((acc, x) => Number(x.amount) + acc, 0)),
+                amountPerTime: slot.failedBids.map(x => Number(x.amountPerTime)).map(x => Util.atomsToAe(x).toFixed(4))
+              },
 
-      const called = await client.contractEpochCall(this.$store.state.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()').catch(console.error);
-      const decoded = await client.contractEpochDecodeData(Util.auctionSlotListType, called.out).catch(console.error);
-      this.slots = Util.auctionSlotListToObject(decoded)
-        .sort((a, b) => a.endBlockHeight - b.endBlockHeight)
-        .map(slot => {
-          return {
-            id: slot.id,
-            downloadLink: `${this.$store.state.apiUrl}/slots/${slot.id}`,
-            timing: {
-              past: slot.startBlockHeight < this.height && slot.endBlockHeight <= this.height,
-              active: slot.startBlockHeight < this.height && slot.endBlockHeight > this.height,
-              future: slot.startBlockHeight >= this.height && slot.endBlockHeight > this.height
-            },
-            timeCapacity: slot.timeCapacity,
-            minimumTimePerBid: slot.minimumTimePerBid,
-            maximumTimePerBid: slot.maximumTimePerBid,
-            startBlockHeight: slot.startBlockHeight,
-            endBlockHeight: slot.endBlockHeight,
-            capacityUsed: slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0),
-            success: {
-              bids: slot.successfulBids,
-              amountSum: Util.atomsToAe(slot.successfulBids.reduce((acc, x) => Number(x.amount) + acc, 0)),
-              amountPerTime: slot.successfulBids.map(x => Number(x.amountPerTime)).map(x => Util.atomsToAe(x).toFixed(4))
-            },
-            failed: {
-              bids: slot.failedBids,
-              amountSum: Util.atomsToAe(slot.failedBids.reduce((acc, x) => Number(x.amount) + acc, 0)),
-              amountPerTime: slot.failedBids.map(x => Number(x.amountPerTime)).map(x => Util.atomsToAe(x).toFixed(4))
-            },
-
-          }
-        });
-      this.loading = false;
+            }
+          });
+        this.loading = false;
+      }
+    },
+    created() {
+      this.loadData();
+      this.interval = setInterval(this.loadData, 30000);
+    },
+    beforeDestroy() {
+      clearInterval(this.interval)
     }
   }
 </script>
