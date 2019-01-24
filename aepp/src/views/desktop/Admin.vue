@@ -6,7 +6,7 @@
       <pre>{{height}}</pre>
       <br>
       <h2>slots</h2><br>
-      <div class="flex">
+      <div class="flex slot-row">
         <div class="w-1/6">Slot Id</div>
         <div class="w-1/6">Time Capacity</div>
         <div class="w-1/6">Bid Time Bounds</div>
@@ -23,13 +23,14 @@
             <ae-badge v-if="slot.timing.past">past</ae-badge>
             <ae-badge v-if="slot.timing.future">future</ae-badge>
             <br>
-            <ae-button v-if="slot.timing.past" face="icon" fill="primary">
+            <ae-button v-if="slot.timing.past" face="round" fill="primary">
               <a :href="slot.downloadLink">
+                export
                 <ae-icon name="save"/>
               </a>
             </ae-button>
           </div>
-          <div class="w-1/6">{{slot.capacityUsed}} used of {{slot.timeCapacity}}</div>
+          <div class="w-1/6">{{slot.capacityUsed}} min used of {{slot.timeCapacity}} min</div>
           <div class="w-1/6">
             Minimum Time: {{slot.minimumTimePerBid}}<br>
             Maximum Time: {{slot.maximumTimePerBid}}
@@ -50,6 +51,11 @@
               Min: {{Math.min(...slot.success.amountPerTime)}} AE/Min<br>
               Max: {{Math.max(...slot.success.amountPerTime)}} AE/Min
             </div>
+            <ae-button v-if="slot.success.bids.length" face="round" fill="primary"
+                       @click="showBids(slot.id, 'successful', slot.success.bids)">
+              inspect
+              <ae-icon name="eye"/>
+            </ae-button>
           </div>
           <div class="w-1/6">
             Count: {{slot.failed.bids.length}}<br>
@@ -57,6 +63,34 @@
             <div v-if="slot.failed.bids.length">
               Min: {{Math.min(...slot.failed.amountPerTime)}} AE/Min<br>
               Max: {{Math.max(...slot.failed.amountPerTime)}} AE/Min
+            </div>
+            <ae-button v-if="slot.failed.bids.length" face="round" fill="primary"
+                       @click="showBids(slot.id, 'failed', slot.success.bids)">
+              inspect
+              <ae-icon name="eye"/>
+            </ae-button>
+          </div>
+        </div>
+      </div>
+      <ae-loader v-if="inspectBidsLoading"/>
+      <div v-if="this.inspectBids">
+        <h2>{{this.inspectBids.state}} bids Slot {{this.inspectBids.slotId}}</h2>
+        <div class="flex slot-row">
+          <div class="w-1/2">Data</div>
+          <div class="w-1/2">Preview</div>
+        </div>
+        <div v-for="bid in this.inspectBids.bids" :key="bid.seqId">
+          <div class="flex slot-row">
+            <div class="w-1/2">
+              Sequence: {{bid.seqId}}<br>
+              Amount: {{bid.amountAe}} AE<br>
+              Time: {{bid.time}} Min<br>
+              Amount/Time: {{bid.amountPerTimeAe}} AE/Min<br>
+              Bidder: {{bid.user}}<br>
+              X:{{bid.data.coordinates.x}} Y:{{bid.data.coordinates.y}}
+            </div>
+            <div class="w-1/2">
+              <img :src='bid.image' v-if="bid.image" class="w-full preview-image" alt="Bidding Image">
             </div>
           </div>
         </div>
@@ -70,6 +104,7 @@
   import Util from '@/utils/blockchain_util';
   import Countdown from '@/components/Countdown';
   import {AeBadge, AeLoader, AeButton, AeIcon} from '@aeternity/aepp-components'
+  import axios from 'axios'
 
   export default {
     name: 'Canvas',
@@ -80,7 +115,9 @@
         height: 0,
         avgBlockTime: 3 * 60,
         loading: true,
-        interval: null
+        interval: null,
+        inspectBidsLoading: false,
+        inspectBids: null
       }
     },
     methods: {
@@ -125,6 +162,18 @@
             }
           });
         this.loading = false;
+      },
+      async showBids(slotId, state, bids) {
+        this.inspectBidsLoading = true;
+        bids = await Promise.all(bids.map(async bid => {
+          let response = await axios.get(this.$store.state.apiUrl + "/ipfs?hash=" + bid.data.artworkReference);
+          bid.image = 'data:image/svg+xml;base64,' + btoa(response.data);
+          bid.amountAe = Util.atomsToAe(bid.amount);
+          bid.amountPerTimeAe = Util.atomsToAe(bid.amountPerTime).toFixed(4);
+          return bid;
+        }));
+        this.inspectBidsLoading = false;
+        this.inspectBids = {slotId: slotId, state: state, bids: bids};
       }
     },
     created() {
@@ -141,7 +190,7 @@
   @import "~@aeternity/aepp-components/src/styles/variables/colors.scss";
 
   a {
-    color: $color-neutral-minimum;
+    color: $color-neutral-maximum;
     text-decoration: none;
   }
 
@@ -152,5 +201,14 @@
 
   .active-badge {
     background-color: $color-primary;
+  }
+
+  .ae-button {
+    transform-origin: top left;
+    transform: scale(0.7);
+  }
+
+  .preview-image {
+    max-height: 300px;
   }
 </style>
