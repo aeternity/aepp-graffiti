@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ae-loader v-if="loading"/>
+    <bigger-loader v-if="loading"/>
     <div v-if="!loading">
       <h2>current height</h2><br>
       <pre>{{height}}</pre>
@@ -14,7 +14,6 @@
         <div class="w-1/6">Successful Bids</div>
         <div class="w-1/6">Failed Bids</div>
       </div>
-      <hr>
       <div v-for="slot in slots" :key="slot.id">
         <div class="flex slot-row">
           <div class="w-1/6">
@@ -32,24 +31,26 @@
           </div>
           <div class="w-1/6">{{slot.capacityUsed}} min used of {{slot.timeCapacity}} min</div>
           <div class="w-1/6">
-            Minimum Time: {{slot.minimumTimePerBid}}<br>
-            Maximum Time: {{slot.maximumTimePerBid}}
+            Minimum Time: {{slot.minimumTimePerBid}} min<br>
+            Maximum Time: {{slot.maximumTimePerBid}} min
           </div>
           <div class="w-1/6">
-            Start: {{slot.startBlockHeight}}<br>
+            Start height {{slot.startBlockHeight}}<br>
+            est.
             <Countdown :initialTime="(slot.startBlockHeight - height) * avgBlockTime"></Countdown>
             <br>
             <br>
-            End:&nbsp;&nbsp;{{slot.endBlockHeight}}<br>
+            End height&nbsp;&nbsp;{{slot.endBlockHeight}}<br>
+            est.
             <Countdown :initialTime="(slot.endBlockHeight - height) * avgBlockTime"></Countdown>
-            <br>
           </div>
           <div class="w-1/6">
             Count: {{slot.success.bids.length}}<br>
-            Total: {{slot.success.amountSum}} AE<br>
+            Σ Amount: {{slot.success.amountSum}} AE<br>
+            Σ Time: {{slot.success.timeSum}} min
             <div v-if="slot.success.bids.length">
-              Min: {{Math.min(...slot.success.amountPerTime)}} AE/Min<br>
-              Max: {{Math.max(...slot.success.amountPerTime)}} AE/Min
+              Min: {{Math.min(...slot.success.amountPerTime)}} AE/min<br>
+              Max: {{Math.max(...slot.success.amountPerTime)}} AE/min
             </div>
             <ae-button v-if="slot.success.bids.length" face="round" fill="primary"
                        @click="showBids(slot.id, 'successful', slot.success.bids)">
@@ -59,10 +60,11 @@
           </div>
           <div class="w-1/6">
             Count: {{slot.failed.bids.length}}<br>
-            Total: {{slot.failed.amountSum}} AE<br>
+            Σ Amount: {{slot.failed.amountSum}} AE<br>
+            Σ Time: {{slot.failed.timeSum}} min
             <div v-if="slot.failed.bids.length">
-              Min: {{Math.min(...slot.failed.amountPerTime)}} AE/Min<br>
-              Max: {{Math.max(...slot.failed.amountPerTime)}} AE/Min
+              Min: {{Math.min(...slot.failed.amountPerTime)}} AE/min<br>
+              Max: {{Math.max(...slot.failed.amountPerTime)}} AE/min
             </div>
             <ae-button v-if="slot.failed.bids.length" face="round" fill="primary"
                        @click="showBids(slot.id, 'failed', slot.success.bids)">
@@ -72,9 +74,9 @@
           </div>
         </div>
       </div>
-      <ae-loader v-if="inspectBidsLoading"/>
+      <bigger-loader v-if="inspectBidsLoading"/>
       <div v-if="this.inspectBids">
-        <h2>{{this.inspectBids.state}} bids Slot {{this.inspectBids.slotId}}</h2>
+        <h2>{{this.inspectBids.state}} bids Slot {{this.inspectBids.slotId}}</h2><br>
         <div class="flex slot-row">
           <div class="w-1/2">Data</div>
           <div class="w-1/2">Preview</div>
@@ -84,8 +86,8 @@
             <div class="w-1/2">
               Sequence: {{bid.seqId}}<br>
               Amount: {{bid.amountAe}} AE<br>
-              Time: {{bid.time}} Min<br>
-              Amount/Time: {{bid.amountPerTimeAe}} AE/Min<br>
+              Time: {{bid.time}} min<br>
+              Amount/Time: {{bid.amountPerTimeAe}} AE/min<br>
               Bidder: {{bid.user}}<br>
               X:{{bid.data.coordinates.x}} Y:{{bid.data.coordinates.y}}
             </div>
@@ -103,12 +105,13 @@
   import {EpochChain, EpochContract} from '@aeternity/aepp-sdk';
   import Util from '@/utils/blockchain_util';
   import Countdown from '@/components/Countdown';
-  import {AeBadge, AeLoader, AeButton, AeIcon} from '@aeternity/aepp-components'
+  import {AeBadge, AeButton, AeIcon} from '@aeternity/aepp-components'
   import axios from 'axios'
+  import BiggerLoader from '@/components/BiggerLoader';
 
   export default {
     name: 'Canvas',
-    components: {AeLoader, AeBadge, AeButton, AeIcon, Countdown},
+    components: {BiggerLoader, AeBadge, AeButton, AeIcon, Countdown},
     data() {
       return {
         slots: [],
@@ -151,11 +154,13 @@
               success: {
                 bids: slot.successfulBids.sort((a, b) => a.seqId - b.seqId),
                 amountSum: Util.atomsToAe(slot.successfulBids.reduce((acc, x) => Number(x.amount) + acc, 0)),
+                timeSum: slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0),
                 amountPerTime: slot.successfulBids.map(x => Number(x.amountPerTime)).map(x => Util.atomsToAe(x).toFixed(4))
               },
               failed: {
                 bids: slot.failedBids.sort((a, b) => a.seqId - b.seqId),
                 amountSum: Util.atomsToAe(slot.failedBids.reduce((acc, x) => Number(x.amount) + acc, 0)),
+                timeSum: slot.failedBids.reduce((acc, x) => Number(x.time) + acc, 0),
                 amountPerTime: slot.failedBids.map(x => Number(x.amountPerTime)).map(x => Util.atomsToAe(x).toFixed(4))
               },
 
@@ -165,6 +170,7 @@
       },
       async showBids(slotId, state, bids) {
         this.inspectBidsLoading = true;
+        this.inspectBids = null;
         bids = await Promise.all(bids.map(async bid => {
           let response = await axios.get(this.$store.state.apiUrl + "/ipfs?hash=" + bid.data.artworkReference);
           bid.image = 'data:image/svg+xml;base64,' + btoa(response.data);
