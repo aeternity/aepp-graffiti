@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="absolute pin-t pin-r p-4" @click="$router.push('/')">
+    <div class="absolute pin-t pin-r p-4" @click="quit()">
       <ae-icon class="text-xl" name="close"></ae-icon>
     </div>
     <OnboardingStep v-if="view === 1" key="v1">
@@ -48,8 +48,6 @@
       </div>
     </OnboardingStep>
 
-
-
     <footer class="w-full fixed pin-b">
       <div class="w-full flex flex-row justify-center">
         <div v-for="step in MAX_VIEW" :class="step !== view ? 'ae-step-indicator' : 'ae-step-indicator-active'" :key="step">
@@ -96,12 +94,19 @@
       }
     },
     methods: {
+      quit(){
+        this.$store.dispatch('setFirstTimeOpenedFalse');
+        this.$router.push('/')
+      },
       next() {
-        if(this.view === this.MAX_VIEW) return this.$router.push('contribute')
+        if(this.view === this.MAX_VIEW)  {
+          this.$store.dispatch('setFirstTimeOpenedFalse');
+          return this.$router.push('contribute');
+        }
         this.view += 1
       },
       back() {
-        if(this.view === this.MIN_VIEW) return this.$router.push('home')
+        if(this.view === this.MIN_VIEW) return this.$router.push('home');
         this.view -= 1
       }
     }

@@ -16,6 +16,7 @@ const vuexPersist = new VuexPersist({
 
 function initialState () {
   return {
+    firstTimeOpened: true,
     originalImage: {
       src: null,
       width: 0,
@@ -87,6 +88,9 @@ const store = new Vuex.Store({
   plugins: [vuexPersist.plugin],
   getters: {},
   mutations: {
+    modifyFirstTimeOpenedFalse (state) {
+      state.firstTimeOpened = false
+    },
     modifyOriginalImage (state, originalImage) {
       state.originalImage = originalImage
     },
@@ -150,6 +154,9 @@ const store = new Vuex.Store({
     },
     resetImage ({ commit }) {
       commit('modifyOriginalImage', {})
+    },
+    setFirstTimeOpenedFalse ({ commit }) {
+      commit('modifyFirstTimeOpenedFalse', {})
     },
     async transformImage ({ commit, state, dispatch }) {
 
