@@ -16,7 +16,7 @@ const vuexPersist = new VuexPersist({
 
 function initialState () {
   return {
-    firstTimeOpened: true,
+    firstTimeOpened: false,
     originalImage: {
       src: null,
       width: 0,
