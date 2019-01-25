@@ -5,20 +5,18 @@
       <div class="flex justify-center flex-col">
         <h1 class="text-center mb-2">Place your bid</h1>
         <span class="text-xl text-center leading-normal text-grey-darker">
-          Your art takes the drone {{transformedImage.dronetime}} minutes<br>
-          to paint. How much AE do you want<br>
-          to bid per minute?
+          Your art takes the drone {{transformedImage.dronetime}} minutes to paint. How much AE do you want to bid per minute?
         </span>
       </div>
       <div class="mt-8">
-        <ae-input type="number" label="Amount per Minute" placeholder="1" aemount :value="amount" @input="updateData">
+        <ae-input type="number" label="Amount per Minute" step="0.01" placeholder="1" min="0" aemount :value="amount" @input="updateData">
           <template slot="header">
             <span class="text-grey">AE</span>
           </template>
           <ae-toolbar slot="footer">
             <div class="w-full flex justify-between">
               <span>{{transformedImage.dronetime}} Minutes</span>
-              <span>{{total}} AE in total</span>
+              <span>~{{total.toLocaleString('en-US')}} AE in total</span>
             </div>
           </ae-toolbar>
         </ae-input>
