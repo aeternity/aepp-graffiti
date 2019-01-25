@@ -42,7 +42,7 @@ services:
       - "aeternity"
       - "ipfs"
     ports:
-      - "3000:3000"
+      - "3003:3000"
     volumes:
       - "./node-server/docker/rendered:/app/rendered"
       
