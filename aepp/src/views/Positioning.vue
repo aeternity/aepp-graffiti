@@ -12,7 +12,7 @@
     </InfoLayer>
     <WhiteHeader :back="back" title="Place your art"></WhiteHeader>
     <div class="w-full h-full">
-      <CanvasWithControlls :height=height :draggable=true ref="canvas"></CanvasWithControlls>
+      <CanvasWithControlls :height=height :draggable=true :greyed-out=true ref="canvas"></CanvasWithControlls>
     </div>
     <div class="w-full absolute pin-b">
       <div class="m-8 mb-6 mt-0 flex flex-row items-center justify-between">

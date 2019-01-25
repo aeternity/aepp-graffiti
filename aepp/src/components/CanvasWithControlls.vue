@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-full">
-    <CanvasJS @positionUpdate="updateVisualPosition" :height=height ref="canvas" :draggable=draggable></CanvasJS>
+    <CanvasJS @positionUpdate="updateVisualPosition" :height=height ref="canvas" :draggable=draggable :greyed-out=greyedOut></CanvasJS>
   </div>
 </template>
 
@@ -24,6 +24,10 @@
       'height': {
         type: Number,
         default: 300
+      },
+      'greyedOut': {
+        type: Boolean,
+        default: false
       }
     },
     computed: {

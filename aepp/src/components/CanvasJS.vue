@@ -10,7 +10,7 @@
   export default {
     name: 'CanvasJS',
     components: {},
-    props: ['draggable', 'moveCallback', 'height'],
+    props: ['draggable', 'moveCallback', 'height', 'greyedOut'],
     data() {
       return {
         stage: null,
@@ -415,7 +415,7 @@
         height: this.canvasSettings.height
       });
 
-      this.addGreyedOut();
+      if(this.greyedOut) this.addGreyedOut();
 
 
       if (this.draggable) {
