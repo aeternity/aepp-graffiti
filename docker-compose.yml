@@ -41,8 +41,6 @@ services:
     links:
       - "aeternity"
       - "ipfs"
-    ports:
-      - "3003:3000"
     volumes:
       - "./node-server/docker/rendered:/app/rendered"
       
