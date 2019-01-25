@@ -10,7 +10,7 @@ const svgUtil = require('./svg_util.js');
 const canvas = {};
 
 
-const renderInterval = 20000;
+const renderInterval = 5000;
 
 const canvasCentimeterWidth = 33 * 100;
 const canvasCentimeterHeight = 50 * 100;
@@ -19,6 +19,8 @@ const width = canvasCentimeterWidth * pixelsPerCentimeter;
 const height = canvasCentimeterHeight * pixelsPerCentimeter;
 
 let current_height = 0;
+
+canvas.latestSeqId = 0;
 
 intervalJob = async () => {
     current_height = await blockchain.height().catch(console.error);
@@ -77,12 +79,25 @@ canvas.mergeImages = async (sources) => {
 
 canvas.render = async () => {
 
+    const start = new Date().getTime();
+
     // get all files from ipfs that were included in bids
     const auctionSlots = await blockchain.auctionSlots().catch(console.error);
     const successfulBids = auctionSlots
         .sort((a, b) => a.endBlockHeight - b.endBlockHeight) // sort slots ascending by end block height
         .map(slot => slot.successfulBids.sort((a, b) => a.seqId - b.seqId)) // sort bids in slot ascending
         .reduce((acc, val) => acc.concat(val), []); // flatten inner arrays
+
+    const latestSeqId = Math.max(...successfulBids.map(x => x.seqId));
+    console.log(latestSeqId);
+
+    if (canvas.latestSeqId === latestSeqId) {
+        console.log('will not rerender, latest seqId', latestSeqId, 'timing', new Date().getTime() - start, 'ms');
+        return;
+    } else {
+        console.log('will rerender to seqId', latestSeqId);
+        canvas.latestSeqId = latestSeqId;
+    }
 
     // backup data
     Promise.all(successfulBids
@@ -121,7 +136,7 @@ canvas.render = async () => {
     const buffer = await canvas.mergeImages(transformedSources);
     fs.writeFileSync(path.join(__dirname, canvas.pathByHeight()), buffer);
     fs.writeFileSync(path.join(__dirname, canvas.pathLatest), buffer);
-    console.log('did merge and write', transformedSources.length);
+    console.log('did merge and write', transformedSources.length, 'timing', new Date().getTime() - start, 'ms');
 };
 
 module.exports = canvas;
