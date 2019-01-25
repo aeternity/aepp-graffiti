@@ -10,7 +10,7 @@ const svgUtil = require('./svg_util.js');
 const canvas = {};
 
 
-const renderInterval = 5000;
+const renderInterval = 10000;
 
 const canvasCentimeterWidth = 33 * 100;
 const canvasCentimeterHeight = 50 * 100;
