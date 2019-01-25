@@ -9,7 +9,7 @@
     components: { CanvasJS },
     data() {
       return {
-        height: 500
+        height: window.innerHeight
       }
     },
     created() {
