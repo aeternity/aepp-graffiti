@@ -1,9 +1,9 @@
 <template>
   <div>
-    <WhiteHeader title="Drone Art"></WhiteHeader>
+    <WhiteHeader title="Drone Graffiti"></WhiteHeader>
 
     <div class="w-full h-full">
-      <CanvasJS :height="height" :draggable=true></CanvasJS>
+      <CanvasJS :height="height" :draggable=true :fill-scale=true></CanvasJS>
     </div>
     <div @click="$router.push('contribute')" class="absolute pin-b pin-r p-8 ">
       <ae-icon  name="plus" fill="primary" face="round"

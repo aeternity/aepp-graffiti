@@ -10,7 +10,7 @@
   export default {
     name: 'CanvasJS',
     components: {},
-    props: ['draggable', 'moveCallback', 'height', 'greyedOut'],
+    props: ['draggable', 'moveCallback', 'height', 'greyedOut', 'fillScale'],
     data() {
       return {
         stage: null,
@@ -32,7 +32,7 @@
       }
     },
     methods: {
-      addGreyedOut(){
+      addGreyedOut() {
         const layer = new Konva.Layer();
         const rect = new Konva.Rect({
           x: 0,
@@ -40,7 +40,8 @@
           width: this.canvasSettings.width,
           height: this.canvasSettings.height,
           opacity: 0.7,
-          fill: '#ffffff'});
+          fill: '#ffffff'
+        });
         layer.add(rect);
         this.stage.add(layer)
       },
@@ -167,6 +168,21 @@
           width: this.stage.width(),
           height: this.stage.height()
         }
+      },
+
+      checkAndSetFillScale() {
+        const container = document.querySelector('#stageWrapper');
+        const containerWidth = container.offsetWidth;
+        const smallerThanContainerScale = 0.95;
+        const scale = (containerWidth / this.canvasSettings.width) * smallerThanContainerScale;
+        this.checkAndSetScale(scale);
+
+        const smallerThanContainerBorder = (containerWidth - (containerWidth * smallerThanContainerScale)) / 2;
+        let newPos = {
+          x: smallerThanContainerBorder,
+          y: smallerThanContainerBorder,
+        };
+        this.stage.position(newPos)
       },
 
       checkAndSetScale(newScale) {
@@ -415,8 +431,8 @@
         height: this.canvasSettings.height
       });
 
-      if(this.greyedOut) this.addGreyedOut();
-
+      if (this.greyedOut) this.addGreyedOut();
+      if (this.fillScale) this.checkAndSetFillScale();
 
       if (this.draggable) {
         /*
