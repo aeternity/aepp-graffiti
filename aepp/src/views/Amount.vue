@@ -37,7 +37,7 @@
     components: { AeInput, WhiteHeader, AeToolbar, AeButton },
     data () {
       return {
-        amount: null,
+        amount: 0.1,
         total: 0
       }
     },
@@ -65,6 +65,9 @@
         })
         this.$router.push('confirm');
       }
+    },
+    mounted() {
+      this.total = this.amount * this.transformedImage.dronetime
     }
   }
 </script>

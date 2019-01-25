@@ -4,13 +4,14 @@
       <ae-icon v-if="back" name="back"></ae-icon>
     </div>
     <div class="ae-title">
+      <img src="@/assets/0_DGP_Logo_black_1.svg" class="logo"/>
       <span>{{title}}</span>
     </div>
     <ae-dropdown class="ae-menu">
       <ae-icon name="more" class="ae-back" slot="button"/>
       <li>
-        <ae-button @click="$router.push('/')">
-          How does it work
+        <ae-button @click="$router.push('onboarding')">
+          Show Onboarding
         </ae-button>
       </li>
       <li>
@@ -18,16 +19,21 @@
           My Bids
         </ae-button>
       </li>
+      <li>
+        <ae-button @click="$router.push('/')">
+          Main Screen
+        </ae-button>
+      </li>
     </ae-dropdown>
   </div>
 </template>
 
 <script>
-  import { AeIcon, AeDropdown, AeButton } from '@aeternity/aepp-components'
+  import {AeIcon, AeDropdown, AeButton} from '@aeternity/aepp-components'
 
   export default {
     name: 'WhiteHeader',
-    components: { AeDropdown, AeIcon, AeButton },
+    components: {AeDropdown, AeIcon, AeButton},
     props: {
       'back': {
         type: Function,
@@ -39,7 +45,7 @@
     },
     methods: {
       goBack() {
-        if(this.back) this.back();
+        if (this.back) this.back();
       }
     }
   }
@@ -57,6 +63,11 @@
     position: relative;
     font-family: "Inter UI", sans-serif;
     z-index: 10;
+  }
+
+  .logo {
+    height: 2.5rem;
+    margin-right: 0.8rem
   }
 
   .ae-back {

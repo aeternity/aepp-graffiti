@@ -5,46 +5,46 @@
     </div>
     <OnboardingStep v-if="view === 1" key="v1">
       <div class="w-full flex justify-center items-center">
-        <img src="//placehold.it/300x200" />
+        <img src="@/assets/0_DGP_lockup_black_1.svg" class="onboarding-logo" />
       </div>
       <div class="mt-4">
         <ae-text align="center" weight="bold" class="text-center" fill="primary" face="sans-l">Welcome!</ae-text>
       </div>
       <div class="text-center w-2/3">
-        <ae-text align="center" class="text-center" face="sans-base" >Paint your creative ideas on a wall. In Mexico City.</ae-text>
+        <ae-text align="center" class="text-center" face="sans-base" >Let drones spray your creative ideas on a wall in Mexico City.</ae-text>
       </div>
     </OnboardingStep>
     <OnboardingStep v-if="view === 2" key="v2">
       <div class="w-full flex justify-center items-center">
-        <img src="//placehold.it/300x200" />
+        <img src="@/assets/0_DGP_lockup_black_1.svg" class="onboarding-logo" />
       </div>
       <div class="mt-4">
         <ae-text align="center" weight="bold" class="text-center" fill="primary" face="sans-l">How?</ae-text>
       </div>
       <div class="text-center w-2/3">
-        <ae-text align="center" class="text-center" face="sans-base" >Upload your own creation in this app. Modify the settings and bid for drone time.</ae-text>
+        <ae-text align="center" class="text-center" face="sans-base" >Upload your own creation in this app. Refine the conversion settings and bid for drone time.</ae-text>
       </div>
     </OnboardingStep>
     <OnboardingStep v-if="view === 3" key="v2">
       <div class="w-full flex justify-center items-center">
-        <img src="//placehold.it/300x200" />
+        <img src="@/assets/0_DGP_lockup_black_1.svg" class="onboarding-logo" />
       </div>
       <div class="mt-4">
         <ae-text align="center" weight="bold" class="text-center" fill="primary" face="sans-l">Bidding?</ae-text>
       </div>
       <div class="text-center w-2/3">
-        <ae-text align="center" class="text-center" face="sans-base" >Your artwork will take a certain amount of time. The available time gets allocated to the highest bidders.</ae-text>
+        <ae-text align="center" class="text-center" face="sans-base" >Your artwork will take a certain amount of time for the drones to spray. The available time gets allocated to the highest bidders.</ae-text>
       </div>
     </OnboardingStep>
     <OnboardingStep v-if="view === 4" key="v2">
       <div class="w-full flex justify-center items-center">
-        <img src="//placehold.it/300x200" />
+        <img src="@/assets/0_DGP_lockup_black_1.svg" class="onboarding-logo" />
       </div>
       <div class="mt-4">
         <ae-text align="center" weight="bold" class="text-center" fill="primary" face="sans-l">Drones?</ae-text>
       </div>
       <div class="text-center w-2/3">
-        <ae-text align="center" class="text-center" face="sans-base" >If your bid is successful our drones will paint your artwork on the wall in Mexico City.</ae-text>
+        <ae-text align="center" class="text-center" face="sans-base" >If your bid is successful at the end of one auction slot our drones will spray your artwork on the wall in Mexico City.</ae-text>
       </div>
     </OnboardingStep>
 
@@ -114,20 +114,26 @@
 </script>
 
 <style type="scss">
-.ae-step-indicator {
-  background: #555;
-  border-radius: 10px;
-  height: 10px;
-  width: 10px;
-  margin-left: 2px;
-  margin-right: 2px;
-}
-.ae-step-indicator-active {
-  background: #FF0D6A;
-  border-radius: 10px;
-  height: 10px;
-  width: 10px;
-  margin-left: 2px;
-  margin-right: 2px;
-}
+  .onboarding-logo {
+    margin-top: 20px;
+    height: 200px;
+  }
+
+  .ae-step-indicator {
+    background: #555;
+    border-radius: 10px;
+    height: 10px;
+    width: 10px;
+    margin-left: 2px;
+    margin-right: 2px;
+  }
+
+  .ae-step-indicator-active {
+    background: #FF0D6A;
+    border-radius: 10px;
+    height: 10px;
+    width: 10px;
+    margin-left: 2px;
+    margin-right: 2px;
+  }
 </style>

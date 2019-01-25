@@ -1,8 +1,7 @@
 <template>
   <div>
-    <div class="w-full p-4">
-      <h1 class="text-center">Your Bids</h1>
-    </div>
+    <WhiteHeader title="Your Bids"></WhiteHeader>
+
     <div class="w-full p-4 text-center" v-if="isInitialState">
       <BiggerLoader></BiggerLoader>
     </div>
@@ -12,7 +11,7 @@
         <ae-card class="mb-4" :key='Date.now()'>
 
           <template slot="header">
-            <img :src='bid.image' v-if="bid.image" class="w-full" alt="Bidding Image">
+            <img :src='bid.image' v-if="bid.image" class="w-full bid-image" alt="Bidding Image">
             <div class="w-full text-center mt-4" v-else>
               <BiggerLoader></BiggerLoader>
             </div>
@@ -58,14 +57,15 @@
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
   import axios from 'axios'
   import Util from '../utils/blockchain_util'
-  import BiggerLoader from "../components/BiggerLoader";
+  import BiggerLoader from "@/components/BiggerLoader";
+  import WhiteHeader from "@/components/WhiteHeader";
   import {AeCard} from '@aeternity/aepp-components';
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2;
 
   export default {
     name: 'Overview',
-    components: {BiggerLoader, AeCard},
+    components: {BiggerLoader, AeCard, WhiteHeader},
     data() {
       return {
         bids: [],
@@ -120,5 +120,7 @@
 </script>
 
 <style scoped>
-
+  .bid-image {
+    max-height: 200px;
+  }
 </style>

@@ -13,7 +13,7 @@
 </template>
 
 <script>
-  import CanvasJS from '../components/CanvasJS.vue'
+  import CanvasJS from '@/components/CanvasJS.vue'
   import WhiteHeader from '@/components/WhiteHeader'
   import {AeIcon} from '@aeternity/aepp-components/'
 
