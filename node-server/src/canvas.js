@@ -56,9 +56,13 @@ canvas.mergeImages = async (sources) => {
     const tempCanvas = createCanvas(width, height);
     const canvasContext = tempCanvas.getContext('2d');
 
-    // set background color similar to wall
-    canvasContext.fillStyle = "#FFFABA";
+    canvasContext.fillStyle = "#ebebeb";
     canvasContext.fillRect(0, 0, width, height);
+
+
+    // set background color similar to wall
+    canvasContext.fillStyle = "#fbfbfb";
+    canvasContext.fillRect(5, 5, width - 10, height - 10);
 
     const loadedImages = await Promise.all(images);
 
