@@ -3,8 +3,8 @@
     <div @click="goBack" class="ae-back">
       <ae-icon v-if="back" name="back"></ae-icon>
     </div>
-    <div class="ae-title">
-      <img src="@/assets/0_DGP_Logo_black_1.svg" class="logo"/>
+    <div class="ae-title" >
+      <img src="@/assets/0_DGP_Logo_black_1.svg" class="logo" @click="$router.push('/')" />
       <span>{{title}}</span>
     </div>
     <ae-dropdown class="ae-menu">
