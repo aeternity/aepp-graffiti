@@ -33,17 +33,7 @@
     },
     methods: {
       addGreyedOut() {
-        const layer = new Konva.Layer();
-        const rect = new Konva.Rect({
-          x: 0,
-          y: 0,
-          width: this.canvasSettings.width,
-          height: this.canvasSettings.height,
-          opacity: 0.7,
-          fill: '#ffffff'
-        });
-        layer.add(rect);
-        this.stage.add(layer)
+        this.layer.opacity(0.3)
       },
 
       addOverlayImage(imageObject) {
