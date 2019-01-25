@@ -9,6 +9,10 @@
       <ae-icon name="plus" fill="primary" face="round"
                class="ae-icon-size shadow"></ae-icon>
     </div>
+    <div @click="$router.go()" class="absolute pin-b p-8 ">
+      <ae-icon name="reload" fill="primary" face="round"
+               class="ae-icon-size shadow"></ae-icon>
+    </div>
   </div>
 </template>
 
