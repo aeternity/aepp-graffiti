@@ -11,7 +11,7 @@
         <!-- TODO Describe what the options do-->
       </p>
     </InfoLayer>
-    <WhiteHeader title="Your Drone Art" :back="back"></WhiteHeader>
+    <WhiteHeader title="Refine Your Artwork" :back="back"></WhiteHeader>
     <div v-show="isLoading">
       <BiggerLoader></BiggerLoader>
     </div>
@@ -106,10 +106,10 @@
     <div class="w-full absolute pin-b mb-6">
       <ae-button-group class="mr-4 ml-4">
         <ae-button face="round" fill="secondary" @click="showBackdrop">
-          Edit Art
+          Edit Artwork
         </ae-button>
         <ae-button face="round" fill="primary" @click="submit">
-          Place Art
+          Set Position
         </ae-button>
       </ae-button-group>
     </div>

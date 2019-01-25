@@ -10,7 +10,7 @@
         the X and Y coordinates in the in put fields below.
       </p>
     </InfoLayer>
-    <WhiteHeader :back="back" title="Place your art"></WhiteHeader>
+    <WhiteHeader :back="back" title="Place Your Artwork"></WhiteHeader>
     <div class="w-full h-full">
       <CanvasWithControlls :height=height :draggable=true :greyed-out=true ref="canvas"></CanvasWithControlls>
     </div>
@@ -25,7 +25,7 @@
           </div>
 
         </div>
-        <ae-button face="round" fill="primary" @click="next">Place art</ae-button>
+        <ae-button face="round" fill="primary" @click="next">Place Art</ae-button>
       </div>
     </div>
 

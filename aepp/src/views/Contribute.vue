@@ -11,7 +11,7 @@
       </p>
     </InfoLayer>
 
-    <WhiteHeader title="Contribute" :back="back"></WhiteHeader>
+    <WhiteHeader title="Choose Artwork" :back="back"></WhiteHeader>
 
     <div class="w-full p-8 flex justify-center">
       <div class="w-full h-full" v-if="isInitial">
