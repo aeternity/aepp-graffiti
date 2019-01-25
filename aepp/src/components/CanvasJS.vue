@@ -32,6 +32,19 @@
       }
     },
     methods: {
+      addGreyedOut(){
+        const layer = new Konva.Layer();
+        const rect = new Konva.Rect({
+          x: 0,
+          y: 0,
+          width: this.canvasSettings.width,
+          height: this.canvasSettings.height,
+          opacity: 0.7,
+          fill: '#ffffff'});
+        layer.add(rect);
+        this.stage.add(layer)
+      },
+
       addOverlayImage(imageObject) {
 
         // CREATE NEW LAYER
@@ -400,7 +413,10 @@
         position: {x: 0, y: 0},
         width: this.canvasSettings.width,
         height: this.canvasSettings.height
-      })
+      });
+
+      this.addGreyedOut();
+
 
       if (this.draggable) {
         /*
