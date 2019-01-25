@@ -415,7 +415,7 @@
 
       // ADD BACKGROUND
       this.createImage({
-        src: this.canvasSettings.url,
+        src: this.canvasSettings.url + '?date=' + new Date().getTime(),
         position: {x: 0, y: 0},
         width: this.canvasSettings.width,
         height: this.canvasSettings.height
