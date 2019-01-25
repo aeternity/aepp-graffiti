@@ -47,10 +47,16 @@ const auctionSlotToObject = (object) => {
   }
 };
 
-const atomsToAe = (atoms) => atoms / 1000000000000000000
-const aeToAtoms = (ae) => ae * 1000000000000000000
+const atomsToAe = (atoms) => atoms / 1000000000000000000;
+const aeToAtoms = (ae) => ae * 1000000000000000000;
 
-const auctionSlotListToObject = (object) => object.value.map(auctionSlotToObject)
+const slotIsActive = (slot, height) => slot.startBlockHeight < height && slot.endBlockHeight > height;
+const slotIsPast = (slot, height) => slot.startBlockHeight < height && slot.endBlockHeight <= height;
+const slotIsFuture = (slot, height) => slot.startBlockHeight >= height && slot.endBlockHeight > height;
+const slotCapacityUsed = (slot) => slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0);
+const slotCapacityRemaining = (slot) => slot.timeCapacity - slotCapacityUsed(slot);
+
+const auctionSlotListToObject = (object) => object.value.map(auctionSlotToObject);
 
 const auctionMetaDataToObject = (object) => {
   return {
@@ -63,5 +69,5 @@ const auctionMetaDataToObject = (object) => {
 export default {
   coordinatesToObject, artworkDataToObject, bidToObject, bidListToObject, auctionSlotToObject, auctionSlotListToObject,
   auctionMetaDataToObject, coordinatesType, artworkDataType, bidType, auctionSlotType, auctionSlotListType,
-  auctionMetaDataType, atomsToAe, aeToAtoms
+  auctionMetaDataType, atomsToAe, aeToAtoms, slotIsActive, slotIsPast, slotIsFuture, slotCapacityUsed, slotCapacityRemaining
 }

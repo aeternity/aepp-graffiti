@@ -132,7 +132,7 @@
 
         this.height = await client.height();
 
-        const called = await client.contractEpochCall(this.$store.state.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()').catch(console.error);
+        const called = await client.contractEpochCall(this.$store.state.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()', '').catch(console.error);
         const decoded = await client.contractEpochDecodeData(Util.auctionSlotListType, called.out).catch(console.error);
         this.slots = Util.auctionSlotListToObject(decoded)
           .sort((a, b) => a.endBlockHeight - b.endBlockHeight)
@@ -141,16 +141,16 @@
               id: slot.id,
               downloadLink: `${this.$store.state.apiUrl}/slots/${slot.id}`,
               timing: {
-                past: slot.startBlockHeight < this.height && slot.endBlockHeight <= this.height,
-                active: slot.startBlockHeight < this.height && slot.endBlockHeight > this.height,
-                future: slot.startBlockHeight >= this.height && slot.endBlockHeight > this.height
+                past: Util.slotIsPast(slot, this.height),
+                active: Util.slotIsActive(slot, this.height),
+                future: Util.slotIsFuture(slot, this.height)
               },
               timeCapacity: slot.timeCapacity,
               minimumTimePerBid: slot.minimumTimePerBid,
               maximumTimePerBid: slot.maximumTimePerBid,
               startBlockHeight: slot.startBlockHeight,
               endBlockHeight: slot.endBlockHeight,
-              capacityUsed: slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0),
+              capacityUsed: Util.slotCapacityUsed(slot) ,
               success: {
                 bids: slot.successfulBids.sort((a, b) => a.seqId - b.seqId),
                 amountSum: Util.atomsToAe(slot.successfulBids.reduce((acc, x) => Number(x.amount) + acc, 0)),

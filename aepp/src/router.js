@@ -62,6 +62,12 @@ export default () => {
       props: route => ({ query: route.query })
     },
     {
+      path: '/amount',
+      name: 'amount',
+      component: Amount,
+      props: route => ({ query: route.query })
+    },
+    {
       path: '/desktop/canvas',
       name: 'canvas',
       component: Canvas,
@@ -71,12 +77,6 @@ export default () => {
       path: '/desktop/admin',
       name: 'admin',
       component: Admin,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/amount',
-      name: 'amount',
-      component: Amount,
       props: route => ({ query: route.query })
     }
   ]
