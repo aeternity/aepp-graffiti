@@ -25,10 +25,18 @@
         this.timeRunning++;
         this.time = this.initialTime - this.timeRunning;
 
-        this.seconds = Math.floor(this.time % 60);
-        this.minutes = Math.floor(this.time % (60 * 60) / 60);
-        this.hours = Math.floor(this.time % (24 * 60 * 60) / (60 * 60));
-        this.days = Math.floor(this.time / (24 * 60 * 60))
+        if(this.time >= 0) {
+          this.seconds = Math.floor(this.time % 60)
+          this.minutes = Math.floor(this.time % (60 * 60) / 60)
+          this.hours = Math.floor(this.time % (24 * 60 * 60) / (60 * 60))
+          this.days = Math.floor(this.time / (24 * 60 * 60))
+        } else {
+          this.seconds = Math.ceil(this.time % 60)
+          this.minutes = Math.ceil(this.time % (60 * 60) / 60)
+          this.hours = Math.ceil(this.time % (24 * 60 * 60) / (60 * 60))
+          this.days = Math.ceil(this.time / (24 * 60 * 60))
+        }
+
       }
     },
     created() {
