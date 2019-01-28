@@ -1,5 +1,9 @@
+// the contract allows for definition of unlimited separate auctions, meant to be in one pysical location, i.e. one event
+// each bids includes reference to ipfs files, for this usecase svg files
+// bids that are paying lower than the sufficient amount are refunded, once higher bids get included
 contract DroneGraffitiAuction =
 
+  // TODO: split admins that are allowed to create slots from admins that are allowed to withdraw
   type is_admin = map(address, bool)
 
   record state =
@@ -9,28 +13,29 @@ contract DroneGraffitiAuction =
     , latest_bid_seq_id : int
     , auction_slots : list(auction_slot) }
 
+  // metadata of the physical auction environment in our usecase for paintings on a physical wall
   record auction_metadata =
     { geolocation : string
     , canvas_width : int
     , canvas_height : int }
 
   record auction_slot =
-    { id : int
-    , time_capacity : int
-    , minimum_time_per_bid : int
-    , maximum_time_per_bid : int
-    , successful_bids : list(bid)
-    , failed_bids : list(bid)
-    , start_block_height : int
-    , end_block_height : int }
+    { id : int  // sequencial id for each slot, starting from 1
+    , time_capacity : int // time is the unit to be bid off, this defined the availability for this slot
+    , minimum_time_per_bid : int // minimum time that has to be bid for
+    , maximum_time_per_bid : int // maximum time that has to be bid for
+    , successful_bids : list(bid) // all bids that are still considered successfull, can change until end_block_height is reached
+    , failed_bids : list(bid) // all bids that are considered failed, were overbid
+    , start_block_height : int // start block height from which bids can be placed in this block
+    , end_block_height : int } // end block height after which bids can no longer be placed in this block
 
   record bid =
-    { seq_id : int
-    , user : address
-    , amount : int
-    , time : int
-    , amount_per_time : int
-    , data : artwork_data }
+    { seq_id : int // sequencial id for each slot, starting from 1
+    , user : address // user address placing the bid
+    , amount : int // total amount that is payed for this bid
+    , time : int // time that is bid for (unit to be bid off)
+    , amount_per_time : int // amount that is payed per time
+    , data : artwork_data } // reference to metadata that is included in the bid
 
   record artwork_data =
     { artwork_reference : string
@@ -90,6 +95,9 @@ contract DroneGraffitiAuction =
       Some(auction_slot) => auction_slot
       None => abort("auction_slot does not exist")
 
+  // trying to place a bid
+  // multiple validity checks are done on the auction slot data and bid itself
+  // failing bids still lead to a successfull execution and will be persisted in state
   public stateful function place_bid(auction_slot_id : int,
                                      time' : int,
                                      artwork_reference' : string,
@@ -134,7 +142,7 @@ contract DroneGraffitiAuction =
     refund_new_to_low_bids(split_successful_bids_tuple)
     updated_auction_slot
 
-
+  // TODO: only let a special key withdraw, not every admin
   public stateful function admin_withdraw() =
     require(is_admin(Call.caller), "admin_withdraw caller has to be admin")
     let balance_to_withdraw = Contract.balance
@@ -144,18 +152,7 @@ contract DroneGraffitiAuction =
 
   // internal functions //
 
-  private stateful function refund_new_to_low_bids(bids_tuple : (list(bid), list(bid))) =
-    switch(bids_tuple)
-      (_, new_failed_bids) =>
-        let refund_function = (bid : bid) => Chain.spend(bid.user, bid.amount)
-        map(refund_function, new_failed_bids)
-
-  private function update_auction_slot_with_bids(auction_slot : auction_slot, bids_tuple : (list(bid), list(bid))) : auction_slot =
-    switch(bids_tuple)
-      (all_successful_bids, new_failed_bids) =>
-        let appended_failed_bids = new_failed_bids ++ auction_slot.failed_bids
-        auction_slot{ successful_bids = all_successful_bids, failed_bids = appended_failed_bids }
-
+  // processes bids for if they are still considered successful
   private function process_bids(time_capacity : int, bids_to_reprocess : list(bid)) : (list(bid), list(bid)) =
       let filter_by_capacity = (bid : bid, acc_bids) =>
         switch(acc_bids)
@@ -166,6 +163,21 @@ contract DroneGraffitiAuction =
              (sufficient, bid :: to_low)
       foldr(filter_by_capacity, ([], []), bids_to_reprocess)
 
+
+  // updates and auction slot with the bids that are updated successful or newly to low
+  private function update_auction_slot_with_bids(auction_slot : auction_slot, bids_tuple : (list(bid), list(bid))) : auction_slot =
+    switch(bids_tuple)
+      (all_successful_bids, new_failed_bids) =>
+        let appended_failed_bids = new_failed_bids ++ auction_slot.failed_bids
+        auction_slot{ successful_bids = all_successful_bids, failed_bids = appended_failed_bids }
+  // refunds all bids that are newly added to the to low paying list after processing bids
+  private stateful function refund_new_to_low_bids(bids_tuple : (list(bid), list(bid))) =
+    switch(bids_tuple)
+      (_, new_failed_bids) =>
+        let refund_function = (bid : bid) => Chain.spend(bid.user, bid.amount)
+        map(refund_function, new_failed_bids)
+
+  // comperator for bidding amount per time
   private function bid_amount_comperator(a : bid, b : bid) = a.amount_per_time > b.amount_per_time
 
   private function tuple_first(tuple) =
