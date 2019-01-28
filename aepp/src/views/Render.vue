@@ -118,7 +118,7 @@
 
   import BiggerLoader from '../components/BiggerLoader'
   import WhiteHeader from '@/components/WhiteHeader'
-  import { AeSwitch, AeIcon, AeButtonGroup, AeBackdrop, AeCard, AeButton } from '@aeternity/aepp-components'
+  import { AeBackdrop, AeButton, AeButtonGroup, AeCard, AeIcon, AeSwitch } from '@aeternity/aepp-components'
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 
@@ -148,15 +148,6 @@
       }
     },
     computed: {
-      isChanged () {
-        return Number(this.threshold) !== this.settings.threshold ||
-          Number(this.currentColor) !== this.settings.color ||
-          Number(this.hysteresisHighThreshold) !== this.settings.hysteresisHighThreshold ||
-          Number(this.centerline) !== this.settings.centerline ||
-          Number(this.blurKernel) !== this.settings.blurKernel ||
-          Number(this.binaryThreshold) !== this.settings.binaryThreshold ||
-          Number(this.dilationRadius) !== this.settings.dilationRadius
-      },
       transformedImage () {
         return this.$store.state.transformedImage
       },

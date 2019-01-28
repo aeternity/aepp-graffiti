@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full">
-    <div class="w-full h-64 flex justify-center items-center">
-      <BiggerLoader v-show="isLoading"></BiggerLoader>
+    <div v-show="isLoading" class="w-full h-64 flex justify-center items-center">
+      <BiggerLoader></BiggerLoader>
     </div>
     <div v-show="isReady" class="w-full h-full">
       <div ref="stageWrapper" class="stageWrapper" id="stageWrapper">
