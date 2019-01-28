@@ -95,12 +95,10 @@
     },
     methods: {
       quit(){
-        this.$store.dispatch('setFirstTimeOpenedFalse');
         this.$router.push('/')
       },
       next() {
         if(this.view === this.MAX_VIEW)  {
-          this.$store.dispatch('setFirstTimeOpenedFalse');
           return this.$router.push('contribute');
         }
         this.view += 1
@@ -109,6 +107,9 @@
         if(this.view === this.MIN_VIEW) return this.$router.push('home');
         this.view -= 1
       }
+    },
+    mounted() {
+      this.$store.dispatch('setFirstTimeOpenedFalse')
     }
   }
 </script>

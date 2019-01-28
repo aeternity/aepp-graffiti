@@ -43,6 +43,11 @@
         backDropVisible: false
       }
     },
+    computed: {
+      firstTimeOpened() {
+        return this.$store.state.firstTimeOpened
+      }
+    },
     methods: {
       reloadCanvas () {
         this.$refs.canvas.updateBackgroundImage()
@@ -53,7 +58,8 @@
       }
     },
     mounted () {
-      if (this.$store.state.firstTimeOpened) this.$router.push('onboarding')
+      console.log(this.firstTimeOpened)
+      if (this.firstTimeOpened) this.$router.push('onboarding')
     }
   }
 </script>

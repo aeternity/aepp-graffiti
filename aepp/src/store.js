@@ -16,7 +16,7 @@ const vuexPersist = new VuexPersist({
 
 function initialState () {
   return {
-    firstTimeOpened: false,
+    firstTimeOpened: true,
     originalImage: {
       src: null,
       width: 0,
@@ -153,7 +153,7 @@ const store = new Vuex.Store({
       commit('modifyOriginalImage', {})
     },
     setFirstTimeOpenedFalse ({ commit }) {
-      commit('modifyFirstTimeOpenedFalse', {})
+      commit('modifyFirstTimeOpenedFalse')
     },
     async transformImage ({ commit, state, dispatch }) {
 
