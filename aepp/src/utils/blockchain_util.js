@@ -50,9 +50,9 @@ const auctionSlotToObject = (object) => {
 const atomsToAe = (atoms) => atoms / 1000000000000000000;
 const aeToAtoms = (ae) => ae * 1000000000000000000;
 
-const slotIsActive = (slot, height) => slot.startBlockHeight < height && slot.endBlockHeight > height;
-const slotIsPast = (slot, height) => slot.startBlockHeight < height && slot.endBlockHeight <= height;
-const slotIsFuture = (slot, height) => slot.startBlockHeight >= height && slot.endBlockHeight > height;
+const slotIsActive = (slot, height) => slot.startBlockHeight <= height && slot.endBlockHeight > height;
+const slotIsPast = (slot, height) => slot.startBlockHeight < height;
+const slotIsFuture = (slot, height) =>  slot.endBlockHeight >= height;
 const slotCapacityUsed = (slot) => slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0);
 const slotCapacityRemaining = (slot) => slot.timeCapacity - slotCapacityUsed(slot);
 
