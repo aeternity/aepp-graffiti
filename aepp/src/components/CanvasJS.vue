@@ -1,15 +1,25 @@
 <template>
-  <div ref="stageWrapper" class="stageWrapper" id="stageWrapper">
+  <div class="w-full h-full">
+    <div class="w-full h-64 flex justify-center items-center">
+      <BiggerLoader v-show="isLoading"></BiggerLoader>
+    </div>
+    <div v-show="isReady" class="w-full h-full">
+      <div ref="stageWrapper" class="stageWrapper" id="stageWrapper">
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 
-  import Konva from 'konva';
+  import BiggerLoader from '@/components/BiggerLoader'
+  import Konva from 'konva'
+
+  const STATUS_LOADING = 1, STATUS_READY = 2
 
   export default {
     name: 'CanvasJS',
-    components: {},
+    components: { BiggerLoader },
     props: ['draggable', 'moveCallback', 'height', 'greyedOut', 'fillScale'],
     data() {
       return {
@@ -23,12 +33,19 @@
           x: -1,
           y: -1
         },
-        moveTarget: null
+        moveTarget: null,
+        currentStatus: STATUS_LOADING
       }
     },
     computed: {
       canvasSettings() {
         return this.$store.state.canvas;
+      },
+      isLoading () {
+        return this.currentStatus === STATUS_LOADING
+      },
+      isReady() {
+        return this.currentStatus === STATUS_READY
       }
     },
     methods: {
@@ -115,17 +132,22 @@
       },
 
       createImage(imageObject) {
-        let windowImage = new Image()
+        return new Promise((resolve, reject) => {
+          let windowImage = new Image()
 
-        windowImage.onload = () => {
-          this.renderImage(windowImage, imageObject)
-        }
+          windowImage.onload = () => {
+            this.renderImage(windowImage, imageObject)
+            resolve()
+          }
 
-        windowImage.onerror = (e) => {
-          console.error(e)
-        }
+          windowImage.onerror = (e) => {
+            console.error(e)
+            reject(e)
+          }
 
-        windowImage.src = imageObject.src
+          windowImage.src = imageObject.src
+        })
+
       },
 
       renderImage(windowImage, imageObject) {
@@ -318,7 +340,6 @@
         } else {
           this.moveTarget = 'overlay'
         }
-        return
       },
       onWheelEvent(konvaEvent) {
         const event = konvaEvent.evt
@@ -395,13 +416,26 @@
             x: event.clientX - offsetLeft,
             y: event.clientY - offsetTop
           }
-
         }
       },
+      async updateBackgroundImage() {
+        this.currentStatus = STATUS_LOADING
+        // ADD BACKGROUND
+        console.log("Reloading Background");
+        this.layer.clear()
+        await this.createImage({
+          src: this.canvasSettings.url + '?date=' + Math.round(Date.now()),
+          position: {x: 0, y: 0},
+          width: this.canvasSettings.width,
+          height: this.canvasSettings.height
+        })
+        this.currentStatus = STATUS_READY
+        this.stage.batchDraw()
+      }
     },
-    mounted() {
+    async mounted() {
       // SET STAGE WIDTH
-      const width = this.$refs.stageWrapper.clientWidth
+      const width = window.innerWidth
       const height = Number(this.height) ? Number(this.height) : 300
       this.stage = new Konva.Stage({
         container: 'stageWrapper',
@@ -413,13 +447,8 @@
       this.layer = new Konva.Layer()
       this.stage.add(this.layer)
 
-      // ADD BACKGROUND
-      this.createImage({
-        src: this.canvasSettings.url + '?date=' + new Date().getTime(),
-        position: {x: 0, y: 0},
-        width: this.canvasSettings.width,
-        height: this.canvasSettings.height
-      });
+      await this.updateBackgroundImage()
+
 
       if (this.greyedOut) this.addGreyedOut();
       if (this.fillScale) this.checkAndSetFillScale();

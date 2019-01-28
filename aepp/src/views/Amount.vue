@@ -77,8 +77,8 @@
           this.error = `The minimum bid for this slot is ${this.slotObject.minimumBid.toFixed(5)} AE per minute`
         }
 
-        if (this.total < 0.45) {
-          this.error = `We estimate you need at least 0.45 AE in total to cover the fees.`
+        if (this.total < 0.001) {
+          this.error = `The minimum bidding amount is 0.001 AE.`
         }
 
         if (!this.error) {
