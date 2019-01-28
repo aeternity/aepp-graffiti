@@ -180,8 +180,8 @@ const store = new Vuex.Store({
 
       if(state.droneObject === null) {
         commit('modifyPosition', {
-          x: Math.round(Math.random() * (state.canvas.width - dronePaint.paintingWidth / 10)),
-          y: Math.round(Math.random() * state.canvas.height - dronePaint.paintingHeight / 10)
+          x: Math.round(Math.random() * (state.canvas.width - ((dronePaint.paintingWidth + 1000) / 10))),
+          y: Math.round(Math.random() * (state.canvas.height - ((dronePaint.paintingHeight + 1000) / 10)))
         })
       }
 

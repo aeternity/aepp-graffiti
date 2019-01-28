@@ -10,13 +10,19 @@
         <!-- TODO Describe what the options do-->
       </p>
     </WhiteHeader>
-    <div v-show="isLoading">
+    <div v-show="isLoading" class="ae-preview-wrap flex justify-center items-center">
       <BiggerLoader></BiggerLoader>
     </div>
-    <div class="w-full p-8">
-      <div v-show="isReady">
-        <div class="w-full ae-image-preview flex justify-center items-center">
+    <div class="w-full p-8 ae-preview-wrap">
+      <div v-show="isReady" class="h-full">
+        <div v-if="transformedImage.width > 0" class="w-full h-full ae-image-preview flex justify-center items-center">
           <img ref="previewImage" :src="transformedImage.src" alt="Rendered Image"/>
+        </div>
+        <div v-else>
+          <h1 class="text-red font-mono text-center">Sorry!
+          </h1>
+          <p class="text-red mt-2 text-base">We could not create a drone flyable image from the source image and
+            settings you provided. <span class="font-bold">Try changing the settings or choose another source image.</span></p>
         </div>
       </div>
     </div>
@@ -62,7 +68,8 @@
                 <label for="binaryThreshold">Color threshold</label><span>{{binaryThreshold}}</span>
               </div>
               <div class="w-full">
-                <input id="binaryThreshold" class="w-full max-w-full" type="range" step="1" min="0" max="100" v-model="binaryThreshold"/>
+                <input id="binaryThreshold" class="w-full max-w-full" type="range" step="1" min="0" max="100"
+                       v-model="binaryThreshold"/>
               </div>
             </div>
             <div class="mb-4">
@@ -70,7 +77,8 @@
                 <label for="dilationRadius">Stroke weight</label><span>{{dilationRadius}}</span>
               </div>
               <div class="w-full">
-                <input id="dilationRadius" class="w-full max-w-full" type="range" step="1" min="1" max="20" v-model="dilationRadius"/>
+                <input id="dilationRadius" class="w-full max-w-full" type="range" step="1" min="1" max="20"
+                       v-model="dilationRadius"/>
               </div>
             </div>
           </div>
@@ -80,7 +88,8 @@
                 <label for="blurKernel">Blur Radius</label><span>{{blurKernel}}</span>
               </div>
               <div class="w-full">
-                <input id="blurKernel" class="w-full max-w-full" type="range" step="1" min="1" max="10" v-model="blurKernel"/>
+                <input id="blurKernel" class="w-full max-w-full" type="range" step="1" min="1" max="10"
+                       v-model="blurKernel"/>
               </div>
             </div>
             <div class="mb-4">
@@ -183,8 +192,8 @@
       showBackdrop () {
         this.backDropVisible = !this.backDropVisible
       },
-      closeBackdropAndUpdatePreview() {
-        this.backDropVisible = false;
+      closeBackdropAndUpdatePreview () {
+        this.backDropVisible = false
         this.$nextTick(() => this.updatePreview())
       },
       async updatePreview () {
@@ -240,5 +249,9 @@
     max-height: inherit;
     width: auto;
     height: auto;
+  }
+
+  .ae-preview-wrap {
+    height: 70vh;
   }
 </style>
