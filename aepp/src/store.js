@@ -10,7 +10,7 @@ const API_URL = 'https://ae-art-server.piwo.app'
 // const API_URL = 'http://localhost:3000';
 // const API_URL = 'http://192.168.43.131:3000';
 const vuexPersist = new VuexPersist({
-  key: 'ae-drone',
+  key: 'ae-drone-v0',
   storage: window.sessionStorage
 })
 
