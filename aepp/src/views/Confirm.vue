@@ -16,7 +16,7 @@
           </div>
           <div v-if="errorStep" class="font-mono text-lg text-red">
             <span>Oh no :(<br />Bid Failed</span>
-            <ae-button extend class="mt-8" face="round" fill="primary" @click="resetView">Try again</ae-button>
+            <ae-button extend class="mt-8" face="round" fill="primary" @click="$router.push('amount')">Try again</ae-button>
           </div>
         </div>
       </div>
@@ -156,7 +156,7 @@
         // amount: ae to contract amount
 
         const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'place_bid', {
-          args: `(${this.bid.slot}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
+          args: `(${this.bid.slotId}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
           options: { amount: Util.aeToAtoms(this.bid.amount )}
         }).catch(async e => {
           const decodedError = await this.client.contractDecodeData('string', e.returnValue).catch(e => {

@@ -9,17 +9,23 @@
         </span>
       </div>
       <div class="mt-8">
-        <ae-input type="number" label="Amount per Minute" step="0.01" placeholder="1" min="0" aemount :value="amount" @input="updateData">
+        <ae-input type="number" label="Amount per Minute" step="0.01" placeholder="1" min="0" aemount :value="amount"
+                  @input="updateData" :error="!!error">
           <template slot="header">
             <span class="text-grey">AE</span>
           </template>
           <ae-toolbar slot="footer">
             <div class="w-full flex justify-between">
               <span>{{transformedImage.dronetime}} Minutes</span>
-             <span class="bold-info">~{{total.toLocaleString('en-US')}} AE in total</span>
+              <span class="bold-info">~{{total.toLocaleString('en-US')}} AE in total</span>
             </div>
           </ae-toolbar>
         </ae-input>
+      </div>
+      <div class="pt-4 pb-4" v-if="error">
+        <span class="text-red">
+          {{error}}
+        </span>
       </div>
       <div class="w-full mt-8 flex justify-center">
         <ae-button face="round" fill="primary" @click="next" extend>Place Bid</ae-button>
@@ -29,8 +35,8 @@
 </template>
 
 <script>
-  import WhiteHeader from '@/components/WhiteHeader'
-  import { AeInput, AeToolbar, AeButton } from '@aeternity/aepp-components'
+  import WhiteHeader from '../components/WhiteHeader'
+  import { AeButton, AeInput, AeToolbar } from '@aeternity/aepp-components'
 
   export default {
     name: 'Amount',
@@ -38,12 +44,16 @@
     data () {
       return {
         amount: 0.1,
-        total: 0
+        total: 0,
+        error: null
       }
     },
     computed: {
       transformedImage () {
         return this.$store.state.transformedImage
+      },
+      slotObject () {
+        return this.$store.state.bid.slotObject
       }
     },
     methods: {
@@ -60,20 +70,35 @@
         this.$router.push('slots')
       },
       next () {
-        this.$store.dispatch('updateBidding', {
-          amount: this.total
-        })
-        this.$router.push('confirm');
+
+        this.error = null
+
+        if (this.remainingDronetime === 0 && this.total < this.slotObject.minimumBid * this.transformedImage.dronetime) {
+          this.error = `The minimum bid for this slot is ${this.slotObject.minimumBid.toFixed(5)} AE per minute`
+        }
+
+        if (this.total < 0.45) {
+          this.error = `We estimate you need at least 0.45 AE in total to cover the fees.`
+        }
+
+        if (!this.error) {
+          this.$store.dispatch('updateBidding', {
+            amount: this.total
+          })
+          this.$router.push('confirm')
+        }
+
       }
     },
-    mounted() {
+    mounted () {
+      console.log(this.slotObject)
       this.total = this.amount * this.transformedImage.dronetime
     }
   }
 </script>
 
 <style scoped>
- .bold-info {
-   font-weight: 800;
- }
+  .bold-info {
+    font-weight: 800;
+  }
 </style>

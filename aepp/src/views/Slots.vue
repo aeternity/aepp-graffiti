@@ -79,20 +79,19 @@
                 <span>
                  current minimum bid AE / Minute
                 </span>
-                  <span class="font-mono text-black text-xl" v-if="slot.successfulBids.length > 0">
-                  {{slot.minimumBid.toFixed(5)}} AE
-                </span>
-                  <span class="font-mono text-black text-xl" v-else>
-                  0 AE (No Bids)
-                </span>
+                  <span class="font-mono text-black text-xl" v-if="Number(slot.remainingDronetime) === 0">
+                    {{slot.minimumBid.toFixed(5)}} AE
+                  </span>
+                  <span class="font-mono text-black text-xl" v-else-if="slot.successfulBids.length === 0">
+                    0 AE (No Bids)
+                  </span>
+                  <div v-else-if="slot.remainingDronetime > 0">
+                    <span class="font-mono text-black text-xl" >0 AE</span>
+                    <br>
+                    <span class="font-sans text-grey-darker text-base">{{slot.remainingDronetime}} unclaimed Minutes</span>
+                  </div>
                 </div>
 
-                <ae-divider></ae-divider>
-                <div class="flex flex-col text-black text-base mt-2">
-                <span>
-                  {{slot.remainingDronetime}} of {{slot.timeCapacity}} Minutes remaining Dronetime without minimum Bid
-                </span>
-                </div>
 
                 <div v-if="slot.artworkToBig || slot.artworkToSmall">
                   <ae-divider></ae-divider>
@@ -119,21 +118,21 @@
 
 <script>
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import Util from '@/utils/blockchain_util';
+  import Util from '@/utils/blockchain_util'
   import BiggerLoader from '@/components/BiggerLoader'
   import Countdown from '@/components/Countdown'
-  import {AeButton, AeCard, AeDivider} from '@aeternity/aepp-components'
+  import { AeButton, AeCard, AeDivider } from '@aeternity/aepp-components'
   import WhiteHeader from '@/components/WhiteHeader'
   import 'swiper/dist/css/swiper.css'
 
-  import {swiper, swiperSlide} from 'vue-awesome-swiper'
+  import { swiper, swiperSlide } from 'vue-awesome-swiper'
 
-  const SHOW_LIST = 1, EMPTY_LIST = 2, LOADING = 3;
+  const SHOW_LIST = 1, EMPTY_LIST = 2, LOADING = 3
 
   export default {
     name: 'Slots',
-    components: {AeDivider, WhiteHeader, AeButton, AeCard, Countdown, BiggerLoader, swiper, swiperSlide},
-    data() {
+    components: { AeDivider, WhiteHeader, AeButton, AeCard, Countdown, BiggerLoader, swiper, swiperSlide },
+    data () {
       return {
         state: LOADING,
         bids: [],
@@ -150,73 +149,74 @@
       }
     },
     computed: {
-      isLoadingState() {
+      isLoadingState () {
         return this.state === LOADING
       },
-      isShowListState() {
+      isShowListState () {
         return this.state === SHOW_LIST
       },
-      isEmptyListState() {
+      isEmptyListState () {
         return this.state === EMPTY_LIST
       },
-      blockchainSettings() {
+      blockchainSettings () {
         return this.$store.state.blockchainSettings
       },
-      transformedImage() {
+      transformedImage () {
         return this.$store.state.transformedImage
       }
     },
     methods: {
-      slideChange() {
-        const realIndex = this.$refs.mySwiper.swiper.realIndex;
+      slideChange () {
+        const realIndex = this.$refs.mySwiper.swiper.realIndex
         this.choice = this.slots.find(slot => slot.index === realIndex).id
       },
-      async updateMyBids() {
-        const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e));
-        const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e));
+      async updateMyBids () {
+        const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
+        const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
 
-        let slotIndex = 0;
-        const slots = Util.auctionSlotListToObject(decodedAllBids);
+        let slotIndex = 0
+        const slots = Util.auctionSlotListToObject(decodedAllBids)
 
         const nextSlots = slots
           .filter(slot => Util.slotIsFuture(slot, this.height))
-          .sort((a, b) => a.startBlockHeight - b.startBlockHeight);
+          .sort((a, b) => a.startBlockHeight - b.startBlockHeight)
 
-        if (nextSlots.length) this.nextSlotAtHeight = nextSlots[0].startBlockHeight;
+        if (nextSlots.length) this.nextSlotAtHeight = nextSlots[0].startBlockHeight
 
         this.slots = slots
           .filter(slot => Util.slotIsActive(slot, this.height))
           .map(slot => {
-            slot.index = slotIndex++;
+            slot.index = slotIndex++
             slot.minimumBid = Math.min.apply(Math, slot.successfulBids.map(function (bid) {
               return bid.amountPerTime
-            }));
-            slot.minimumBid = slot.successfulBids.length === 0 ? 0 : Util.atomsToAe(slot.minimumBid);
-            slot.remainingDronetime = Util.slotCapacityRemaining(slot);
-            slot.artworkToBig = slot.maximumTimePerBid < this.transformedImage.dronetime;
-            slot.artworkToSmall = slot.minimumTimePerBid > this.transformedImage.dronetime;
+            }))
+            slot.minimumBid = slot.successfulBids.length === 0 ? 0 : Util.atomsToAe(slot.minimumBid)
+            slot.remainingDronetime = Util.slotCapacityRemaining(slot)
+            slot.artworkToBig = slot.maximumTimePerBid < this.transformedImage.dronetime
+            slot.artworkToSmall = slot.minimumTimePerBid > this.transformedImage.dronetime
             return slot
-          });
+          })
 
-        if (this.slots.length > 0) this.state = SHOW_LIST;
-        else return this.state = EMPTY_LIST;
+        if (this.slots.length > 0) this.state = SHOW_LIST
+        else return this.state = EMPTY_LIST
 
         this.choice = this.slots[0].id
       },
-      next() {
+      next () {
         this.$store.dispatch('updateBidding', {
-          slot: this.choice
-        });
+          slotId: this.choice,
+          slotObject: this.slots.find(slot => slot.id === this.choice)
+        })
         this.$router.push('amount')
       },
-      back() {
+      back () {
         this.$router.push('positioning')
       }
     },
-    created() {
+    created () {
       Aepp().then(async ae => {
-        this.client = ae;
-        this.height = await this.client.height();
+        this.client = ae
+        this.height = await this.client.height()
         await this.updateMyBids()
       })
     }

@@ -48,7 +48,8 @@ function initialState () {
     },
     droneObject: null,
     bid: {
-      slot: null,
+      slotId: null,
+      slotObject: {},
       amount: null
     },
     progressCallback: () => {},
