@@ -1,11 +1,11 @@
 const fs = require('fs');
 const path = require('path');
-const {createCanvas, Image} = require('canvas');
+const gm = require('gm');
 const blockchain = require('./blockchain.js');
 const ipfsWrapper = require('./ipfs.js');
-const Base64 = require('js-base64').Base64;
 const storage = require('./storage.js');
 const svgUtil = require('./svg_util.js');
+const svgstore = require('svgstore');
 
 const canvas = {};
 
@@ -36,50 +36,45 @@ canvas.init = async () => {
     setInterval(intervalJob, renderInterval);
 };
 
-canvas.pathLatest = "../rendered/latest.png";
+canvas.pathLatest = "../rendered/latest";
 canvas.pathByHeight = () => {
-    return `../rendered/height/${current_height}.png`;
+    return `../rendered/height/${current_height}`;
 };
 
-canvas.mergeImages = async (sources) => {
+canvas.mergePNG = (svg) => {
+    const start = new Date().getTime();
+    gm(Buffer.from(svg)).options({
+        imageMagick: true
+    }).toBuffer('PNG', (err, buffer) => {
+        if (err) console.error(err);
+        fs.writeFileSync(path.join(__dirname, canvas.pathByHeight() + ".png"), buffer);
+        fs.writeFileSync(path.join(__dirname, canvas.pathLatest) + ".png", buffer);
+    });
+    console.log('saved png', 'timing', new Date().getTime() - start, 'ms');
+};
 
-    // Load sources
-    const images = sources.map(source => new Promise((resolve, reject) => {
-        // Resolve source and image when loaded
-        const image = new Image();
-        image.onerror = () => reject(new Error('Couldn\'t load image'));
-        image.onload = () => resolve(Object.assign({}, source, {img: image}));
-        image.src = source.src;
-    }).catch(console.error));
-
-    // create canvas context
-    const tempCanvas = createCanvas(width, height);
-    const canvasContext = tempCanvas.getContext('2d');
-
-    canvasContext.fillStyle = "#ebebeb";
-    canvasContext.fillRect(0, 0, width, height);
-
-
-    // set background color similar to wall
-    canvasContext.fillStyle = "#fbfbfb";
-    canvasContext.fillRect(5, 5, width - 10, height - 10);
-
-    const loadedImages = await Promise.all(images);
-
-    // draw images to canvas
-    loadedImages.forEach(image => {
-        if (image) {
-            canvasContext.globalAlpha = image.opacity ? image.opacity : 1;
-            if (image.width > 0 && image.height > 0) {
-                canvasContext.drawImage(image.img, image.x || 0, image.y || 0, image.width, image.height);
-            } else {
-                canvasContext.drawImage(image.img, image.x || 0, image.y || 0);
-            }
+canvas.mergeSVG = (sources) => {
+    const start = new Date().getTime();
+    const svg = svgstore({
+        svgAttrs: {
+            width: width,
+            height: height,
+            viewBox: `0 0 ${width} ${height}`
         }
     });
+    const sprites = sources.reduce((acc, cur) => acc.add(cur.id, cur.svg), svg);
 
-    return tempCanvas.toBuffer('image/png');
+    const useStrings = sources.reduce((acc, cur) => acc + `<use xlink:href="#${cur.id}" width="${cur.width}" height="${cur.height}" x="${cur.x}" y="${cur.y}" />`, "");
+    const spritesString = sprites.toString();
+
+    const mergedString = spritesString.substr(0, spritesString.length - 6) + useStrings + "</svg>";
+
+    fs.writeFileSync(path.join(__dirname, canvas.pathByHeight() + ".svg"), mergedString);
+    fs.writeFileSync(path.join(__dirname, canvas.pathLatest) + ".svg", mergedString);
+    console.log('saved svg', 'timing', new Date().getTime() - start, 'ms');
+    return mergedString;
 };
+
 
 canvas.render = async () => {
 
@@ -108,12 +103,15 @@ canvas.render = async () => {
         .map(async bid => await storage.backupBid(bid.data.artworkReference, bid)))
         .catch((e) => console.warn('bid upload failed', e.message));
 
+    const startIpfs = new Date().getTime();
     // fetching files from ipfs
     const ipfsSources = await Promise.all(successfulBids.map(bid => {
         return ipfsWrapper.getFile(bid.data.artworkReference).then(filebuffer => {
             return {filebuffer: filebuffer, bid: bid};
         }).catch(console.error);
     }));
+    console.log('did fetch ipfs', 'timing', new Date().getTime() - startIpfs, 'ms');
+
 
     // filter files unable to be fetched and failing sanity checks, map to base64 encoding with coordinates included
     const transformedSources = await Promise.all(ipfsSources
@@ -129,7 +127,8 @@ canvas.render = async () => {
             });
 
             return {
-                src: 'data:image/svg+xml;base64,' + Base64.encode(svg),
+                svg: svg,
+                id: data.bid.seqId,
                 x: data.bid.data.coordinates.x * pixelsPerCentimeter,
                 y: data.bid.data.coordinates.y * pixelsPerCentimeter,
                 width,
@@ -137,9 +136,8 @@ canvas.render = async () => {
             };
         }));
 
-    const buffer = await canvas.mergeImages(transformedSources);
-    fs.writeFileSync(path.join(__dirname, canvas.pathByHeight()), buffer);
-    fs.writeFileSync(path.join(__dirname, canvas.pathLatest), buffer);
+    const svg = canvas.mergeSVG(transformedSources);
+    await canvas.mergePNG(svg);
     console.log('did merge and write', transformedSources.length, 'timing', new Date().getTime() - start, 'ms');
 };
 
