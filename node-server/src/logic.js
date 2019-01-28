@@ -35,12 +35,11 @@ logic.upload = async (req, res) => {
 };
 
 logic.ipfs = (req, res) => {
+    if (!req.params.hash) return res.sendStatus(400);
 
-    if (!req.query.hash) return res.sendStatus(400);
-
-    ipfsWrapper.getFile(req.query.hash).then((buffer) => {
+    ipfsWrapper.getFile(req.params.hash).then((buffer) => {
         res.writeHead(200, {
-            'Content-Type': 'image/svg',
+            'Content-Type': 'image/svg+xml',
             'Content-Length': buffer.length
         });
         res.end(buffer);

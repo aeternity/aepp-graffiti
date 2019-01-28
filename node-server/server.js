@@ -21,7 +21,7 @@ app.use(fileUpload({
 
 app.use('/rendered', express.static(__dirname + '/rendered'));
 
-app.get('/ipfs', logic.ipfs);
+app.get('/ipfs/:hash.svg', logic.ipfs);
 
 /* upload form-data image key */
 app.post('/upload', logic.upload);

@@ -92,7 +92,7 @@
               X:{{bid.data.coordinates.x}} Y:{{bid.data.coordinates.y}}
             </div>
             <div class="w-1/2">
-              <img :src='bid.image' v-if="bid.image" class="w-full preview-image" alt="Bidding Image">
+              <img :src='bid.url' v-if="bid.url" class="w-full preview-image" alt="Bidding Image">
             </div>
           </div>
         </div>
@@ -106,7 +106,6 @@
   import Util from '@/utils/blockchain_util';
   import Countdown from '@/components/Countdown';
   import {AeBadge, AeButton, AeIcon} from '@aeternity/aepp-components'
-  import axios from 'axios'
   import BiggerLoader from '@/components/BiggerLoader';
 
   export default {
@@ -171,13 +170,12 @@
       async showBids(slotId, state, bids) {
         this.inspectBidsLoading = true;
         this.inspectBids = null;
-        bids = await Promise.all(bids.map(async bid => {
-          let response = await axios.get(this.$store.state.apiUrl + "/ipfs?hash=" + bid.data.artworkReference);
-          bid.image = 'data:image/svg+xml;base64,' + btoa(response.data);
+        bids = bids.map(bid => {
+          bid.url = this.$store.state.apiUrl + "/ipfs/" + bid.data.artworkReference + ".svg";
           bid.amountAe = Util.atomsToAe(bid.amount);
           bid.amountPerTimeAe = Util.atomsToAe(bid.amountPerTime).toFixed(4);
           return bid;
-        }));
+        });
         this.inspectBidsLoading = false;
         this.inspectBids = {slotId: slotId, state: state, bids: bids};
       }

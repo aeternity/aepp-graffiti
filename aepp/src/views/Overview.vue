@@ -11,7 +11,7 @@
         <ae-card class="mb-4">
 
           <template slot="header">
-            <img :src='bid.image' v-if="bid.image" class="w-full bid-image" alt="Bidding Image">
+            <img :src='bid.url' v-if="bid.url" class="w-full bid-image" alt="Bidding Image">
             <div class="w-full text-center mt-4" v-else>
               <BiggerLoader></BiggerLoader>
             </div>
@@ -55,7 +55,6 @@
 
 <script>
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
-  import axios from 'axios'
   import Util from '../utils/blockchain_util'
   import BiggerLoader from "@/components/BiggerLoader";
   import WhiteHeader from "@/components/WhiteHeader";
@@ -102,11 +101,10 @@
         if (this.bids.length > 0) this.state = SHOW_LIST
         else return this.state = EMPTY_LIST
 
-        this.bids = await Promise.all(this.bids.map(async bid => {
-          let response = await axios.get(this.$store.state.apiUrl + "/ipfs?hash=" + bid.data.artworkReference);
-          bid.image = 'data:image/svg+xml;base64,' + btoa(response.data);
+        this.bids = this.bids.map( bid => {
+          bid.url = this.$store.state.apiUrl + "/ipfs/" + bid.data.artworkReference + ".svg";
           return bid;
-        }))
+        })
       }
     },
     created() {
