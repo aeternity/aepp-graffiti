@@ -423,14 +423,21 @@
         // ADD BACKGROUND
         console.log("Reloading Background");
         this.layer.clear()
-        await this.createImage({
-          src: this.canvasSettings.url + '?date=' + Math.round(Date.now()),
-          position: {x: 0, y: 0},
-          width: this.canvasSettings.width,
-          height: this.canvasSettings.height
-        })
-        this.currentStatus = STATUS_READY
-        this.stage.batchDraw()
+        try {
+          await this.createImage({
+            src: this.canvasSettings.url + '?date=' + Math.round(Date.now()),
+            position: {x: 0, y: 0},
+            width: this.canvasSettings.width,
+            height: this.canvasSettings.height
+          })
+          this.currentStatus = STATUS_READY
+          this.stage.batchDraw()
+          this.$emit('load')
+        } catch (e) {
+          this.$emit('error')
+        }
+
+
       }
     },
     async mounted() {
