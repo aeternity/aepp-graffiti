@@ -113,7 +113,7 @@ const store = new Vuex.Store({
       state.progressCallback = progressCallback
     },
     modifyBidding (state, bid) {
-      state.bid= bid
+      state.bid = bid
     },
 
     resetState (state) {
@@ -181,22 +181,32 @@ const store = new Vuex.Store({
           dilationRadius: state.settings.dilationRadius
         })
       commit('modifyDroneObject', dronePaint)
-      dispatch('applyPostRenderingChanges')
+      try {
+        await dispatch('applyPostRenderingChanges')
+      } catch (e) {
+        // Checks for too big scaling (usually due to rounding error)
+        if (e.message.includes('Scale out of bound')) {
+          await dispatch('updateScaleFactor', {
+            scaleFactor: Math.max(state.settings.scaleFactor - 1, 1) // 1 as fallback
+          })
+        } else {
+          console.error(e)
+        }
+      }
 
     },
     async applyPostRenderingChanges ({ commit, state }) {
 
       //TODO rerender image on error
 
-
       let result = state.droneObject.setPaintingPosition(state.position.x * state.canvas.pixelToMM, state.position.y * state.canvas.pixelToMM)
-      if(!result) {
-        throw Error('Position out of bound');
+      if (!result) {
+        throw Error('Position out of bound')
       }
 
       result = state.droneObject.setPaintingScale(state.settings.scaleFactor)
-      if(!result)  {
-        throw Error('Scale out of bound');
+      if (!result) {
+        throw Error('Scale out of bound')
       }
 
       state.droneObject.setPaintingColor(state.droneSettings.colors[state.settings.color])
@@ -227,9 +237,8 @@ const store = new Vuex.Store({
         return state.settings[key] !== update[key]
       })
 
-      const originalValues = {};
-      changedKeys.map(key => originalValues[key] = state.settings[key]);
-
+      const originalValues = {}
+      changedKeys.map(key => originalValues[key] = state.settings[key])
 
       // UPDATE SETTINGS ANYWAYS
       commit('modifySettings', Object.assign({}, state.settings, update))
@@ -258,8 +267,8 @@ const store = new Vuex.Store({
       }
 
     },
-    async updateScaleFactor({commit, state, dispatch } , update) {
-      const oldScale = state.settings.scaleFactor;
+    async updateScaleFactor ({ commit, state, dispatch }, update) {
+      const oldScale = { scaleFactor: state.settings.scaleFactor }
       commit('modifySettings', Object.assign({}, state.settings, update))
       try {
         await dispatch('applyPostRenderingChanges')
@@ -271,7 +280,7 @@ const store = new Vuex.Store({
     },
 
     async updatePosition ({ commit, state, dispatch }, update) {
-      const oldPosition = state.position;
+      const oldPosition = state.position
       commit('modifyPosition', Object.assign({}, state.position, update))
       try {
         await dispatch('applyPostRenderingChanges')
