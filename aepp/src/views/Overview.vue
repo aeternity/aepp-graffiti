@@ -7,8 +7,8 @@
     </div>
 
     <div class="w-full p-4" v-if="isShowListState">
-      <div v-for="bid in bids">
-        <ae-card class="mb-4" :key='Date.now()'>
+      <div v-for="bid in bids" :key='bid.seqId'>
+        <ae-card class="mb-4">
 
           <template slot="header">
             <img :src='bid.image' v-if="bid.image" class="w-full bid-image" alt="Bidding Image">

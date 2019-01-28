@@ -22,22 +22,6 @@
       </div>
     </div>
     <div v-if="isInitial">
-      <InfoLayer>
-        <h2>Bidding</h2>
-        <p class="p-4 pb-0">
-          On the bottom you can enter the AE you wish to spend per second for this image. Once you tap continue the bid will be placed and you will be forwarded to your bidding overview.
-        </p>
-        <p class="p-4 pb-0">
-          First there is the final image and its position on the wall. Then we display the time in minutes it takes to paint the image and the account you are bidding from.
-        </p>
-        <p class="p-4 pb-0">
-          On the bottom you can enter the AE you wish to spend per second for this image. Once you tap continue the bid will be placed and you will be forwarded to your bidding overview.
-        </p>
-        <p class="p-4 pb-0">
-          Your total bid should include the fee you have to pay for the smart contract to execute, so a minimum amount in required.
-        </p>
-      </InfoLayer>
-
       <div class="w-full pl-4 pr-4 flex">
         <h1 class="w-full text-center">Your Bid</h1>
       </div>
@@ -68,17 +52,16 @@
   import CanvasWithControlls from '../components/CanvasWithControlls.vue'
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
   import axios from 'axios'
-  import InfoLayer from '@/components/InfoLayer'
   import LoadingStep from '@/components/LoadingStep'
   import Util from '@/utils/blockchain_util'
-  import { AeButton, AeInput, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
+  import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
 
   const STATUS_INITIAL = 1, STATUS_LOADING = 2;
   const LOADING_DATA = 0, LOADING_IPFS = 1, LOADING_CONTRACT = 2, LOADING_FINISHED = 3;
 
   export default {
     name: 'Confirm',
-    components: { LoadingStep, InfoLayer, CanvasWithControlls,  AeInput, AeText, AeList, AeListItem, AeButton },
+    components: { LoadingStep, CanvasWithControlls,  AeText, AeList, AeListItem, AeButton },
     data () {
       return {
         pub: 'ak_QY8VNEkhj7omMUjAvfVBq2NjTDy895LBYbk7qVxQo1qT8VqfE',

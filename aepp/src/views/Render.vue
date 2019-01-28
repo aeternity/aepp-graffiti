@@ -1,7 +1,6 @@
 <template>
   <div>
-
-    <InfoLayer>
+    <WhiteHeader title="Refine Your Artwork" :back="back">
       <h2>Rendering</h2>
       <p class="p-4 pb-0">
         The rendering step shows a SVG version of the image you uploaded in the previous step. Below the preview there
@@ -10,8 +9,7 @@
       <p class="p-4 pb-0">
         <!-- TODO Describe what the options do-->
       </p>
-    </InfoLayer>
-    <WhiteHeader title="Refine Your Artwork" :back="back"></WhiteHeader>
+    </WhiteHeader>
     <div v-show="isLoading">
       <BiggerLoader></BiggerLoader>
     </div>
@@ -118,7 +116,6 @@
 
 <script>
 
-  import InfoLayer from '@/components/InfoLayer'
   import BiggerLoader from '../components/BiggerLoader'
   import WhiteHeader from '@/components/WhiteHeader'
   import { AeSwitch, AeIcon, AeButtonGroup, AeBackdrop, AeCard, AeButton } from '@aeternity/aepp-components'
@@ -135,7 +132,6 @@
       AeButton,
       WhiteHeader,
       BiggerLoader,
-      InfoLayer,
       AeSwitch
     },
     data () {

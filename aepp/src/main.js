@@ -1,6 +1,5 @@
 // import socketio from 'socket.io'
 import './main.css'
-import 'tailwindcss';
 
 /**
  * Use this if you need a general reset.
@@ -25,6 +24,7 @@ import '@aeternity/aepp-components/dist/aepp.fonts.css'
  * These are all components styles. They're scoped
  * so they won't collide with other styles.
  */
+
 import '@aeternity/aepp-components/dist/aepp.components.css'
 
 import Vue from 'vue'
@@ -62,6 +62,5 @@ console.info('about to render Vue App')
 export default new Vue({
   router: getRouter(store),
   store,
-  render: h => h(App),
-  beforeCreate () {}
+  render: h => h(App)
 }).$mount('#app')

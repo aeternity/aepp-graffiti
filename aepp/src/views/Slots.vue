@@ -1,14 +1,13 @@
 <template>
   <div>
-    <InfoLayer>
+    <WhiteHeader title="Auction Slots" :back="back">
       <h2>Slots</h2>
       <p class="p-4 pb-0">
         The bidding slots are fixed length auctions. While a slot is open, meaning the maximum block
         height is not reached, you may add your bid. Once the maximum block height is reached by the network the smart
         contract will take all top bids and send them to the drones to paint.
       </p>
-    </InfoLayer>
-    <WhiteHeader title="Auction Slots" :back="back"></WhiteHeader>
+    </WhiteHeader>
 
 
     <div class="w-full p-8 pb-6">
@@ -119,7 +118,6 @@
 </template>
 
 <script>
-  import InfoLayer from '@/components/InfoLayer'
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
   import Util from '@/utils/blockchain_util';
   import BiggerLoader from '@/components/BiggerLoader'
@@ -134,7 +132,7 @@
 
   export default {
     name: 'Slots',
-    components: {AeDivider, WhiteHeader, AeButton, AeCard, Countdown, BiggerLoader, InfoLayer, swiper, swiperSlide},
+    components: {AeDivider, WhiteHeader, AeButton, AeCard, Countdown, BiggerLoader, swiper, swiperSlide},
     data() {
       return {
         state: LOADING,

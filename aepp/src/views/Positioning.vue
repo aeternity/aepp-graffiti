@@ -1,6 +1,6 @@
 <template>
   <div>
-    <InfoLayer>
+    <WhiteHeader :back="back" title="Place Your Artwork">
       <h2>Positioning</h2>
       <p class="p-4 pb-0">
         Drag and drop the artwork to your desired position on the wall. You can pinch to zoom and drag to move.
@@ -9,8 +9,7 @@
         To adjust the size of your artwork use the scale slider down below. For more detailed positioning you can enter
         the X and Y coordinates in the in put fields below.
       </p>
-    </InfoLayer>
-    <WhiteHeader :back="back" title="Place Your Artwork"></WhiteHeader>
+    </WhiteHeader>
     <div class="w-full h-full">
       <CanvasWithControlls :height=height :draggable=true :greyed-out=true ref="canvas"></CanvasWithControlls>
     </div>
@@ -34,13 +33,12 @@
 
 <script>
   import CanvasWithControlls from '../components/CanvasWithControlls.vue'
-  import InfoLayer from '@/components/InfoLayer'
   import WhiteHeader from '@/components/WhiteHeader'
   import { AeButton } from '@aeternity/aepp-components';
 
   export default {
     name: 'Positioning',
-    components: { WhiteHeader, InfoLayer, CanvasWithControlls, AeButton },
+    components: { WhiteHeader, CanvasWithControlls, AeButton },
     data () {
       return {
         scale: 1,
