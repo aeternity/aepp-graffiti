@@ -23,11 +23,14 @@ app.use('/rendered', express.static(__dirname + '/rendered'));
 
 app.get('/ipfs/:hash.svg', logic.ipfs);
 
-/* upload form-data image key */
+// upload form-data image key
 app.post('/upload', logic.upload);
 
-/* get slots */
+// get slot export zip
 app.get('/slots/:id', logic.getSlots);
+
+// get data for teaser event
+app.get('/teaser.json', logic.teaserJson);
 
 app.use((req, res) => {
     res.sendStatus(404);

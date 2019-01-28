@@ -1,9 +1,11 @@
 const {EpochChain, EpochContract} = require('@aeternity/aepp-sdk');
-const Util = require('./blockchain_util');
+const Util = require('./util/blockchain_util');
+const TeaserUtil = require('./util/blockchain_teaser_utils');
 const blockchain = {};
 
 // can eventually be called by name in the future
 const contractAddress = 'ct_2U9MkZK9JXTUemAURfCd8BDQZcXK4Gk8Hwfqxf1ASSYNrQnhjz';
+const teaserContractAddress = 'ct_Fk3wWdC7t6Fv5eypLWThND19CGn1cBuScnGBZx6r6tG9q1DbU';
 
 let client = null;
 
@@ -27,10 +29,28 @@ blockchain.height = async () => {
 blockchain.auctionSlots = async () => {
     if (!client) await blockchain.init();
 
-    const calledAuctionSlots = await client.contractEpochCall(contractAddress, 'sophia-address', 'all_auction_slots', '()').catch(console.error);
-    const decodedAuctionSlots = await client.contractEpochDecodeData(Util.auctionSlotListType, calledAuctionSlots.out).catch(console.error);
+    const called = await client.contractEpochCall(contractAddress, 'sophia-address', 'all_auction_slots', '()').catch(console.error);
+    const decoded = await client.contractEpochDecodeData(Util.auctionSlotListType, called.out).catch(console.error);
 
-    return Util.auctionSlotListToObject(decodedAuctionSlots);
+    return Util.auctionSlotListToObject(decoded);
+};
+
+blockchain.teaserArtworks = async () => {
+    if (!client) await blockchain.init();
+
+    const called = await client.contractEpochCall(teaserContractAddress, 'sophia-address', 'all_artworks', '()').catch(console.error);
+    const decoded = await client.contractEpochDecodeData(TeaserUtil.artworkListType, called.out).catch(console.error);
+
+    return TeaserUtil.artworkListToObject(decoded);
+};
+
+blockchain.teaserGeolocation = async () => {
+    if (!client) await blockchain.init();
+
+    const called = await client.contractEpochCall(teaserContractAddress, 'sophia-address', 'get_geolocation', '()').catch(console.error);
+    const decoded = await client.contractEpochDecodeData(TeaserUtil.geolocationType, called.out).catch(console.error);
+
+    return TeaserUtil.geolocationToObject(decoded);
 };
 
 module.exports = blockchain;

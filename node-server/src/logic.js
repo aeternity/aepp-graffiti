@@ -115,4 +115,13 @@ logic.getSlots = async (req, res) => {
 
 };
 
+logic.teaserJson = async (req, res) => {
+    const artworks = await blockchain.teaserArtworks();
+    const geolocation = await blockchain.teaserGeolocation();
+    res.json({
+        geolocation: geolocation,
+        artworks: artworks
+    });
+};
+
 module.exports = logic;
