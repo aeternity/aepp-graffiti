@@ -171,7 +171,25 @@
         }
       },
       moveCanvas({xDiff, yDiff}) {
-        const {x, y} = this.stage.getPosition()
+
+        const {width, height} = this.getStageDimensions()
+        const {x, y, width: currWidth, height: currHeight} = this.layer.getClientRect()
+
+        const maxOffset = 70
+
+        // LEFT
+        if(x + xDiff + currWidth < maxOffset) xDiff = 0
+
+        // TOP
+        if(y + yDiff + currHeight < maxOffset) yDiff = 0
+
+        // RIGHT
+        if(x + xDiff > width - maxOffset) xDiff = 0
+
+        // BOTTOM
+        if(y + yDiff > height - maxOffset) yDiff = 0
+
+        //const {x, y} = this.stage.getPosition()
         this.stage.position({x: x + xDiff, y: y + yDiff})
         this.stage.batchDraw()
       },
@@ -298,7 +316,6 @@
                 xDiff: touch1.clientX - offsetLeft - this.lastPos.x,
                 yDiff: touch1.clientY - offsetTop - this.lastPos.y,
               }
-
               if (this.moveTarget === 'stage') this.moveCanvas(diff);
               else if (this.moveTarget === 'overlay') {
                 const newDiff = {
@@ -335,7 +352,7 @@
           }
         }
 
-        if (konvaEvent.target === this.stage || konvaEvent.target.attrs.id === "") {
+        if (konvaEvent.target === this.stage || !konvaEvent.target.attrs.id) {
           this.moveTarget = 'stage'
         } else {
           this.moveTarget = 'overlay'
@@ -430,6 +447,8 @@
             width: this.canvasSettings.width,
             height: this.canvasSettings.height
           })
+
+
           this.currentStatus = STATUS_READY
           this.stage.batchDraw()
           this.$emit('load')
