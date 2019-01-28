@@ -142,10 +142,6 @@ const store = new Vuex.Store({
             src: imageSource,
             type: file.type
           })
-          commit('modifyPosition', {
-            x: Math.round(Math.random() * 1000),
-            y: Math.round(Math.random() * 1000)
-          })
         } catch (e) {
           console.error(e)
         }
@@ -181,7 +177,16 @@ const store = new Vuex.Store({
           binaryThreshold: state.settings.binaryThreshold,
           dilationRadius: state.settings.dilationRadius
         })
+
+      if(state.droneObject === null) {
+        commit('modifyPosition', {
+          x: Math.round(Math.random() * (state.canvas.width - dronePaint.paintingWidth / 10)),
+          y: Math.round(Math.random() * state.canvas.height - dronePaint.paintingHeight / 10)
+        })
+      }
+
       commit('modifyDroneObject', dronePaint)
+
       try {
         await dispatch('applyPostRenderingChanges')
       } catch (e) {
