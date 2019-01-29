@@ -6,3 +6,5 @@ docker/**/*.png
 rendered/**/*.png
 docker/**/*.svg
 rendered/**/*.svg
+docker/aeternity_uat/
+docker/ipfs/

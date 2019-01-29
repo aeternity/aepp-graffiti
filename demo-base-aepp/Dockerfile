@@ -14,7 +14,7 @@ USER app
 RUN git clone -b feature/sdk-intergation https://github.com/aeternity/aepp-base.git .
 
 # adjust demo data
-RUN sed -i -e 's/localhost:9001/localhost:8085/g' src/lib/appsRegistry.js
+RUN sed -i -e 's/localhost:9001/ae-art-aepp.piwo.app/g' src/lib/appsRegistry.js
 RUN sed -i -e 's/Drone Project/Drone Graffiti/g' src/lib/appsRegistry.js
 RUN sed -i -e "s/Base æpp/Drone Graffiti Demo/g" vue.config.js
 RUN sed -i -e "s/Base æpp/Drone Graffiti Demo/g" public/default.webmanifest
@@ -32,6 +32,6 @@ RUN npm run build
 
 FROM nginx:alpine as server
 
-COPY aepp/default.conf /etc/nginx/conf.d/
+COPY default.conf /etc/nginx/conf.d/
 COPY --from=build /app/dist/ /usr/share/nginx/html/
 

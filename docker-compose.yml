@@ -2,7 +2,7 @@ version: '3'
 services:
 
   aeternity:
-    image: "aeternity/epoch:latest"
+    image: aeternity/epoch:v1.2.0
     command: "-aehttp enable_debug_endpoints true"
     volumes:
       - "./node-server/docker/epoch.yaml:/home/epoch/.epoch/epoch/epoch.yaml"
@@ -21,7 +21,7 @@ services:
       - "aeternity"
 
   ipfs:
-    image: "ipfs/go-ipfs:latest"
+    image: ipfs/go-ipfs:latest
     volumes:
       - ./node-server/docker/ipfs:/data/ipfs
     ports:
@@ -30,11 +30,15 @@ services:
       - "5001:5001"
 
   server:
-    build: node-server
+    image: dronegraffiti/server
     restart: on-failure
     environment:
       - IPFS_URL=ipfs
       - AETERNITY_URL=aeternity
+      - S3_KEY=access-key
+      - S3_SECRET=secret-key
+      - S3_REGION=bucket-name
+      - S3_BUCKET=region-code
     depends_on: 
       - "aeternity"
       - "ipfs"
@@ -56,14 +60,12 @@ services:
       - "server"
 
   base-aepp:
-    build:
-      context: .
-      dockerfile: Dockerfile.base-aepp
+    image: dronegraffiti/demo-base-aepp
     ports:
       - "8084:80"
       
   aepp:
-    build: aepp
+    image: dronegraffiti/aepp
     depends_on: 
       - "server"
       - "base-aepp"
