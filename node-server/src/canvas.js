@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const gm = require('gm');
+const svg2png = require('svg2png');
 const blockchain = require('./blockchain.js');
 const ipfsWrapper = require('./ipfs.js');
 const storage = require('./storage.js');
@@ -41,15 +41,11 @@ canvas.pathByHeight = () => {
     return `../rendered/height/${current_height}`;
 };
 
-canvas.mergePNG = (svg) => {
+canvas.mergePNG = async (svg) => {
     const start = new Date().getTime();
-    gm(Buffer.from(svg)).options({
-        imageMagick: true
-    }).toBuffer('PNG', (err, buffer) => {
-        if (err) console.error(err);
-        fs.writeFileSync(path.join(__dirname, canvas.pathByHeight() + ".png"), buffer);
-        fs.writeFileSync(path.join(__dirname, canvas.pathLatest) + ".png", buffer);
-    });
+    const buffer = await svg2png(Buffer.from(svg));
+    fs.writeFileSync(path.join(__dirname, canvas.pathByHeight() + ".png"), buffer);
+    fs.writeFileSync(path.join(__dirname, canvas.pathLatest) + ".png", buffer);
     console.log('saved png', 'timing', new Date().getTime() - start, 'ms');
 };
 

@@ -2,3 +2,7 @@ node_modules/
 .idea/
 *.iml
 package-lock.json
+docker/**/*.png
+rendered/**/*.png
+docker/**/*.svg
+rendered/**/*.svg
