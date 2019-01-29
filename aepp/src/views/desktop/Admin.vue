@@ -67,7 +67,7 @@
               Max: {{Math.max(...slot.failed.amountPerTime)}} AE/min
             </div>
             <ae-button v-if="slot.failed.bids.length" face="round" fill="primary"
-                       @click="showBids(slot.id, 'failed', slot.success.bids)">
+                       @click="showBids(slot.id, 'failed', slot.failed.bids)">
               inspect
               <ae-icon name="eye"/>
             </ae-button>
