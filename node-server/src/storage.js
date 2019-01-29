@@ -1,12 +1,11 @@
 const fs = require('fs');
 const S3 = require('aws-sdk/clients/s3');
-const config = require('../config.json');
 const path = require('path');
 
 const client = new S3({
-    accessKeyId: config.s3.accessKey,
-    secretAccessKey: config.s3.secretAccessKey,
-    region: config.s3.region
+    accessKeyId: process.env.S3_KEY,
+    secretAccessKey: process.env.S3_SECRET,
+    region: process.env.S3_REGION
 });
 
 const storage = {};
@@ -14,7 +13,7 @@ const alreadyStored = {};
 
 storage.init = () => {
     const params = {
-        Bucket: config.s3.bucketName
+        Bucket: process.env.S3_BUCKET
     };
     client.listObjects(params, function (err, data) {
         if (err) return console.error("unable to list dir:", err.stack);
@@ -57,7 +56,7 @@ const backupRemote = (remoteName, file) => {
 
         const params = {
             Body: file,
-            Bucket: config.s3.bucketName,
+            Bucket: process.env.S3_BUCKET,
             Key: remoteName
         };
 
