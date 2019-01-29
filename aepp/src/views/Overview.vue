@@ -22,7 +22,7 @@
                   Bid
                 </span>
               <span class="font-mono text-black text-lg">
-                  {{bid.amount}} AE
+                  {{bid.amount.toFixed()}} AE
                 </span>
             </div>
             <div class="flex flex-col mt-2">
@@ -56,9 +56,9 @@
 <script>
   import Aepp from 'AE_SDK_MODULES/ae/aepp'
   import Util from '../utils/blockchain_util'
-  import BiggerLoader from "@/components/BiggerLoader";
-  import WhiteHeader from "@/components/WhiteHeader";
-  import {AeCard} from '@aeternity/aepp-components';
+  import BiggerLoader from '@/components/BiggerLoader'
+  import WhiteHeader from '@/components/WhiteHeader'
+  import { AeCard } from '@aeternity/aepp-components'
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2;
 

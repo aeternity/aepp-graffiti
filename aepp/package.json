@@ -12,6 +12,7 @@
     "@aeternity/aepp-components": "https://github.com/aeternity/aepp-components.git#develop",
     "@aeternity/aepp-sdk": "https://github.com/aeternity/aepp-sdk-js#for-base-app-sdk-integration",
     "axios": "^0.18.0",
+    "bignumber.js": "^8.0.2",
     "dronetracer": "https://github.com/THE-WYE/DroneTracer",
     "jimp": "^0.6.0",
     "konva": "^2.5.1",

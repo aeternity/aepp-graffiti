@@ -46,7 +46,7 @@
           </div>
           <div class="w-1/6">
             Count: {{slot.success.bids.length}}<br>
-            Σ Amount: {{slot.success.amountSum}} AE<br>
+            Σ Amount: {{slot.success.amountSum.toFixed()}} AE<br>
             Σ Time: {{slot.success.timeSum}} min
             <div v-if="slot.success.bids.length">
               Min: {{Math.min(...slot.success.amountPerTime)}} AE/min<br>
@@ -85,7 +85,7 @@
           <div class="flex slot-row">
             <div class="w-1/2">
               Sequence: {{bid.seqId}}<br>
-              Amount: {{bid.amountAe}} AE<br>
+              Amount: {{bid.amountAe.toFixed()}} AE<br>
               Time: {{bid.time}} min<br>
               Amount/Time: {{bid.amountPerTimeAe}} AE/min<br>
               Bidder: {{bid.user}}<br>
@@ -102,11 +102,12 @@
 </template>
 
 <script>
-  import {EpochChain, EpochContract} from '@aeternity/aepp-sdk';
-  import Util from '@/utils/blockchain_util';
-  import Countdown from '@/components/Countdown';
-  import {AeBadge, AeButton, AeIcon} from '@aeternity/aepp-components'
-  import BiggerLoader from '@/components/BiggerLoader';
+  import { EpochChain, EpochContract } from '@aeternity/aepp-sdk'
+  import Util from '@/utils/blockchain_util'
+  import Countdown from '@/components/Countdown'
+  import { AeBadge, AeButton, AeIcon } from '@aeternity/aepp-components'
+  import BiggerLoader from '@/components/BiggerLoader'
+  import BigNumber from 'bignumber.js'
 
   export default {
     name: 'Canvas',
@@ -152,15 +153,15 @@
               capacityUsed: Util.slotCapacityUsed(slot) ,
               success: {
                 bids: slot.successfulBids.sort((a, b) => a.seqId - b.seqId),
-                amountSum: Util.atomsToAe(slot.successfulBids.reduce((acc, x) => Number(x.amount) + acc, 0)),
+                amountSum: Util.atomsToAe(slot.successfulBids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
                 timeSum: slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0),
-                amountPerTime: slot.successfulBids.map(x => Number(x.amountPerTime)).map(x => Util.atomsToAe(x).toFixed(4))
+                amountPerTime: slot.successfulBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4))
               },
               failed: {
                 bids: slot.failedBids.sort((a, b) => a.seqId - b.seqId),
-                amountSum: Util.atomsToAe(slot.failedBids.reduce((acc, x) => Number(x.amount) + acc, 0)),
+                amountSum: Util.atomsToAe(slot.failedBids.reduce((acc, x) => acc.plus(x.amount) + acc, new BigNumber(0))),
                 timeSum: slot.failedBids.reduce((acc, x) => Number(x.time) + acc, 0),
-                amountPerTime: slot.failedBids.map(x => Number(x.amountPerTime)).map(x => Util.atomsToAe(x).toFixed(4))
+                amountPerTime: slot.failedBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4))
               },
 
             }

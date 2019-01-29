@@ -157,7 +157,7 @@
 
         const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'place_bid', {
           args: `(${this.bid.slotId}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
-          options: { amount: Util.aeToAtoms(this.bid.amount )}
+          options: { amount: Util.aeToAtoms(this.bid.amount ).toFixed()}
         }).catch(async e => {
           const decodedError = await this.client.contractDecodeData('string', e.returnValue).catch(e => {
             console.error(e);
@@ -172,8 +172,6 @@
     },
     created () {
       Aepp().then(async ae => {
-        console.log('client: ', ae)
-        console.log(ae.Ae, ae.Chain, ae.post, ae.Tx)
         this.client = ae
         await this.next();
       })

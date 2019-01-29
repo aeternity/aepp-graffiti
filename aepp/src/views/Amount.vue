@@ -84,7 +84,7 @@
           this.error = `The minimum bidding amount is 0.001 AE.`
         }
 
-        if (this.total > this.balance) {
+        if (this.balance.lt(this.total)) {
           this.error = `Your bid total (${this.total} AE) exceeds your balance (${this.balance} AE).`
         }
 

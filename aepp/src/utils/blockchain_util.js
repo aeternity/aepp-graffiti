@@ -1,4 +1,5 @@
 const Crypto = require('@aeternity/aepp-sdk').Crypto;
+const BigNumber = require('bignumber.js');
 
 const coordinatesType = '(int, int)';
 const artworkDataType = `(string, ${coordinatesType})`;
@@ -25,9 +26,9 @@ const bidToObject = (object) => {
   return {
     seqId: object.value[0].value,
     user: Crypto.addressFromDecimal(object.value[1].value),
-    amount: object.value[2].value,
+    amount: new BigNumber(object.value[2].value),
     time: object.value[3].value,
-    amountPerTime: object.value[4].value,
+    amountPerTime: new BigNumber(object.value[4].value),
     data: artworkDataToObject(object.value[5])
   }
 };
@@ -47,12 +48,12 @@ const auctionSlotToObject = (object) => {
   }
 };
 
-const atomsToAe = (atoms) => atoms / 1000000000000000000;
-const aeToAtoms = (ae) => ae * 1000000000000000000;
+const atomsToAe = (atoms) => (new BigNumber(atoms)).dividedBy(new BigNumber(1000000000000000000));
+const aeToAtoms = (ae) => (new BigNumber(ae)).times(new BigNumber(1000000000000000000));
 
 const slotIsActive = (slot, height) => slot.startBlockHeight <= height && slot.endBlockHeight > height;
-const slotIsPast = (slot, height) => slot.startBlockHeight < height;
-const slotIsFuture = (slot, height) =>  slot.endBlockHeight >= height;
+const slotIsPast = (slot, height) => slot.endBlockHeight < height;
+const slotIsFuture = (slot, height) =>  slot.startBlockHeight >= height;
 const slotCapacityUsed = (slot) => slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0);
 const slotCapacityRemaining = (slot) => slot.timeCapacity - slotCapacityUsed(slot);
 

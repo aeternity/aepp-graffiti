@@ -1,4 +1,5 @@
 const Crypto = require('@aeternity/aepp-sdk').Crypto;
+const BigNumber = require('bignumber.js');
 
 const coordinatesType = '(int, int)';
 const artworkDataType = `(string, ${coordinatesType})`;
@@ -25,9 +26,9 @@ const bidToObject = (object) => {
     return {
         seqId: object.value[0].value,
         user: Crypto.addressFromDecimal(object.value[1].value),
-        amount: object.value[2].value,
+        amount: new BigNumber(object.value[2].value),
         time: object.value[3].value,
-        amountPerTime: object.value[4].value,
+        amountPerTime: new BigNumber(object.value[4].value),
         data: artworkDataToObject(object.value[5])
     }
 };
