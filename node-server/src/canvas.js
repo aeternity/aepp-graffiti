@@ -36,9 +36,9 @@ canvas.init = async () => {
     setInterval(intervalJob, renderInterval);
 };
 
-canvas.pathLatest = "../rendered/latest";
+canvas.pathLatest = "../data/rendered/latest";
 canvas.pathByHeight = () => {
-    return `../rendered/height/${current_height}`;
+    return `../data/rendered/height/${current_height}`;
 };
 
 canvas.mergePNG = async (svg) => {

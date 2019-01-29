@@ -72,7 +72,7 @@ const backupRemote = (remoteName, file) => {
 
 
 const backupLocal = (fileName, file) => {
-    fs.writeFileSync(path.join(__dirname, `../rendered/backup/${fileName}`), file);
+    fs.writeFileSync(path.join(__dirname, `../data/backup/${fileName}`), file);
 };
 
 module.exports = storage;

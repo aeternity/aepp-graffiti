@@ -1,12 +1,13 @@
-FROM node:10-alpine
+FROM node:10
 
-RUN apk add --no-cache --virtual .build-deps make gcc g++ python
+RUN apt update
+RUN apt install -y software-properties-common ca-certificates wget curl ssh git python build-essential
 
 WORKDIR /app
 COPY . /app
 
 RUN npm install
 
-RUN apk del .build-deps
+RUN apt purge -y software-properties-common ca-certificates wget curl ssh git python build-essential && apt autoremove -y
 
 CMD ["node", "server.js"]

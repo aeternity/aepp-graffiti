@@ -3,7 +3,6 @@ node_modules/
 .idea/**
 *.iml
 package-lock.json
-docker/aeternity_uat
-docker/ipfs
-docker/rendered
-rendered/
+data/*
+!data/backup/.empty
+!data/rendered/height/.empty

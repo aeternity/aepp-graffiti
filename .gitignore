@@ -1,8 +1,11 @@
-###
-# Folders
-###
-
 .idea/
 **/node_modules
 **/.idea
 **/*.log
+
+.docker/*
+!.docker/backup/.empty
+!.docker/rendered/height/.empty
+!.docker/aeternity_uat/.empty
+!.docker/ipfs/.empty
+
