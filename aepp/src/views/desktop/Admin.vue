@@ -159,7 +159,7 @@
               },
               failed: {
                 bids: slot.failedBids.sort((a, b) => a.seqId - b.seqId),
-                amountSum: Util.atomsToAe(slot.failedBids.reduce((acc, x) => acc.plus(x.amount) + acc, new BigNumber(0))),
+                amountSum: Util.atomsToAe(slot.failedBids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
                 timeSum: slot.failedBids.reduce((acc, x) => Number(x.time) + acc, 0),
                 amountPerTime: slot.failedBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4))
               },
