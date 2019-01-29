@@ -3,7 +3,7 @@
     <WhiteHeader title="Drone Graffiti"></WhiteHeader>
 
     <div class="w-full h-full">
-      <CanvasJS @error="showErrorOverlay" :height="height" :draggable=true :fill-scale=true ref="canvas"></CanvasJS>
+      <CanvasJS @error="showConnectionError" :height="height" :draggable=true :fill-scale=true ref="canvas"></CanvasJS>
     </div>
     <div @click="$router.push('contribute')" class="absolute pin-b pin-r p-8 ">
       <ae-icon name="plus" fill="primary" face="round"
@@ -13,15 +13,15 @@
       <ae-icon name="reload" fill="primary" face="round"
                class="ae-icon-size shadow"></ae-icon>
     </div>
-    <ae-backdrop class="p-6" v-show="backDropVisible">
+    <ae-backdrop class="p-6" v-show="error">
       <ae-card>
         <div class="w-full">
           <h1 class="font-mono text-red text-center pt-4">ERROR</h1>
           <p class="text-base text-red pt-4 text-center">
-            Could not connect to our server. Please make sure you are online.
+            {{error}}
           </p>
           <div class="flex justify-center mt-6">
-            <ae-button fill="primary" face="round" @click="$router.go()">Retry</ae-button>
+            <ae-button fill="primary" face="round" @click="errorClick">{{errorCTA}}</ae-button>
           </div>
         </div>
       </ae-card>
@@ -33,6 +33,7 @@
   import CanvasJS from '@/components/CanvasJS.vue'
   import WhiteHeader from '@/components/WhiteHeader'
   import { AeBackdrop, AeButton, AeCard, AeIcon } from '@aeternity/aepp-components/'
+  import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
 
   export default {
     name: 'Home',
@@ -40,11 +41,14 @@
     data () {
       return {
         height: window.innerHeight - 64,
-        backDropVisible: false
+        errorClick: () => {},
+        error: null,
+        errorCTA: null,
+        ignoreErrors: true
       }
     },
     computed: {
-      firstTimeOpened() {
+      firstTimeOpened () {
         return this.$store.state.firstTimeOpened
       }
     },
@@ -52,14 +56,40 @@
       reloadCanvas () {
         this.$refs.canvas.updateBackgroundImage()
       },
-      showErrorOverlay () {
-        console.log('ERR')
-        this.backDropVisible = true
+      showConnectionError () {
+        // ALREADY SHOWED AN ERROR?
+        if(this.error || this.ignoreErrors) return
+
+        // SET ERROR
+        this.error = 'Could not connect to our server. Please make sure you are online.'
+        this.errorCTA = 'Retry'
+        this.errorClick = this.$router.go
+      },
+      showBaseAppError () {
+        // ALREADY SHOWED AN ERROR?
+        if(this.error || this.ignoreErrors) return
+
+        // SET ERROR
+        this.error = 'Could not connect to your wallet. Please make sure you run this application inside the base app.'
+        this.errorCTA = 'Go to Base Aepp'
+        this.errorClick = () => {
+          window.location.href = 'https://ae-base-aepp.piwo.app/'
+        }
       }
     },
-    mounted () {
-      console.log(this.firstTimeOpened)
-      if (this.firstTimeOpened) this.$router.push('onboarding')
+    async mounted () {
+      if (this.firstTimeOpened) return this.$router.push('onboarding')
+      try {
+        if(window.parent !== window) {
+          const client = await Aepp()
+          console.log(await client.post('hello'))
+        } else {
+          this.showBaseAppError();
+        }
+      } catch (e) {
+        console.error(e)
+        this.showBaseAppError();
+      }
     }
   }
 </script>
