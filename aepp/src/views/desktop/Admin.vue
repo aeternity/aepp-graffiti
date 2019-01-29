@@ -60,7 +60,7 @@
           </div>
           <div class="w-1/6">
             Count: {{slot.failed.bids.length}}<br>
-            Σ Amount: {{slot.failed.amountSum}} AE<br>
+            Σ Amount: {{slot.failed.amountSum.toFixed()}} AE<br>
             Σ Time: {{slot.failed.timeSum}} min
             <div v-if="slot.failed.bids.length">
               Min: {{Math.min(...slot.failed.amountPerTime)}} AE/min<br>
