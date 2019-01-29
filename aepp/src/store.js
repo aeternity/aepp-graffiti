@@ -119,9 +119,18 @@ const store = new Vuex.Store({
 
     resetState (state) {
       // acquire initial state
+
+      const conserve = {
+        firstTimeOpened: state.firstTimeOpened
+      }
+
       const s = initialState()
       Object.keys(s).forEach(key => {
         state[key] = s[key]
+      })
+
+      Object.keys(conserve).forEach(key => {
+        state[key] = conserve[key]
       })
     }
   },
@@ -179,10 +188,18 @@ const store = new Vuex.Store({
         })
 
       if(state.droneObject === null) {
-        commit('modifyPosition', {
-          x: Math.round(Math.random() * (state.canvas.width - ((dronePaint.paintingWidth + 1000) / 10))),
-          y: Math.round(Math.random() * (state.canvas.height - ((dronePaint.paintingHeight + 1000) / 10)))
-        })
+        try {
+          await dispatch('updatePosition', {
+            x: Math.round(Math.random() * (state.canvas.width - ((dronePaint.paintingWidth + 1000) / 10))),
+            y: Math.round(Math.random() * (state.canvas.height - ((dronePaint.paintingHeight + 1000) / 10)))
+          })
+        } catch (e) {
+          await dispatch('updatePosition', {
+            x: 0,
+            y: 0
+          })
+        }
+
       }
 
       commit('modifyDroneObject', dronePaint)

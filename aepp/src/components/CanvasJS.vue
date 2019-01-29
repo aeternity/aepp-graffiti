@@ -189,6 +189,7 @@
         // BOTTOM
         if(y + yDiff > height - maxOffset) yDiff = 0
 
+
         //const {x, y} = this.stage.getPosition()
         this.stage.position({x: x + xDiff, y: y + yDiff})
         this.stage.batchDraw()

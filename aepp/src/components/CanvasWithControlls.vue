@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-full">
-    <CanvasJS @positionUpdate="updateVisualPosition" :height=height ref="canvas" :draggable=draggable :greyed-out=greyedOut></CanvasJS>
+    <CanvasJS @load="moveToInitialView" @positionUpdate="updateVisualPosition" :height=height ref="canvas" :draggable=draggable :greyed-out=greyedOut></CanvasJS>
   </div>
 </template>
 
@@ -72,6 +72,20 @@
           width: this.transformedImage.width,
           height: this.transformedImage.height
         })
+      },
+      moveToInitialView() {
+        const canvasSize = this.$refs.canvas.getStageDimensions()
+
+        this.moveCanvas(
+          -1 * this.position.x + canvasSize.width / 2 - this.transformedImage.width / 2,
+          -1 * this.position.y + canvasSize.height / 2 - this.transformedImage.height / 2,
+        )
+
+        if (this.transformedImage.width > this.transformedImage.height) {
+          this.$refs.canvas.setStageScale(canvasSize.width / (this.transformedImage.width + 400))
+        } else {
+          this.$refs.canvas.setStageScale(canvasSize.height / (this.transformedImage.height + 400))
+        }
       }
     },
     mounted () {
@@ -82,20 +96,6 @@
         width: this.transformedImage.width,
         height: this.transformedImage.height
       })
-
-      const canvasSize = this.$refs.canvas.getStageDimensions()
-
-      this.moveCanvas(
-        -1 * this.position.x + canvasSize.width / 2 - this.transformedImage.width / 2,
-        -1 * this.position.y + canvasSize.height / 2 - this.transformedImage.height / 2,
-      )
-
-      if (this.transformedImage.width > this.transformedImage.height) {
-        this.$refs.canvas.setStageScale(canvasSize.width / (this.transformedImage.width + 100))
-      } else {
-        this.$refs.canvas.setStageScale(canvasSize.height / (this.transformedImage.height + 100))
-      }
-
     }
   }
 </script>
