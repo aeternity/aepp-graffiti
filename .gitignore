@@ -3,9 +3,9 @@
 **/.idea
 **/*.log
 
-.docker/*
-!.docker/backup/.empty
-!.docker/rendered/height/.empty
-!.docker/aeternity_uat/.empty
-!.docker/ipfs/.empty
+.docker/
+!*/.docker/backup/.empty
+!*/.docker/rendered/height/.empty
+!*/.docker/aeternity_uat/.empty
+!*/.docker/ipfs/.empty
 
