@@ -37,6 +37,8 @@
 <script>
   import WhiteHeader from '../components/WhiteHeader'
   import { AeButton, AeInput, AeToolbar } from '@aeternity/aepp-components'
+  import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
+  import Utils from '../utils/blockchain_util'
 
   export default {
     name: 'Amount',
@@ -45,7 +47,8 @@
       return {
         amount: 0.1,
         total: 0,
-        error: null
+        error: null,
+        balance: null
       }
     },
     computed: {
@@ -81,6 +84,10 @@
           this.error = `The minimum bidding amount is 0.001 AE.`
         }
 
+        if (this.total > this.balance) {
+          this.error = `Your bid total (${this.total} AE) exceeds your balance (${this.balance} AE).`
+        }
+
         if (!this.error) {
           this.$store.dispatch('updateBidding', {
             amount: this.total
@@ -90,9 +97,17 @@
 
       }
     },
-    mounted () {
+    async mounted () {
       console.log(this.slotObject)
       this.total = this.amount * this.transformedImage.dronetime
+      this.client = await Aepp()
+      try {
+        const pub = await this.client.address()
+        this.balance = Utils.atomsToAe(await this.client.balance(pub, {format:false}))
+      } catch (e) {
+        console.error(e)
+        this.balance = 0
+      }
     }
   }
 </script>
