@@ -119,8 +119,11 @@ logic.teaserJson = async (req, res) => {
     const artworks = await blockchain.teaserArtworks();
     const geolocation = await blockchain.teaserGeolocation();
     res.json({
-        geolocation: geolocation,
-        artworks: artworks
+        contractAddress: blockchain.teaserContractAddress,
+        contractData: {
+            geolocation: geolocation,
+            artworks: artworks
+        }
     });
 };
 

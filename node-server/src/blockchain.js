@@ -54,4 +54,6 @@ blockchain.teaserGeolocation = async () => {
     return TeaserUtil.geolocationToObject(decoded);
 };
 
+blockchain.teaserContractAddress = teaserContractAddress;
+
 module.exports = blockchain;
