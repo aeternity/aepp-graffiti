@@ -72,3 +72,27 @@ services:
       - "base-aepp"
     ports:
       - "8085:80"
+      
+  matomo:
+    image: crazymax/matomo:latest
+    container_name: matomo
+    volumes:
+      - "./.docker/tracking/matomo:/data"
+    depends_on:
+      - matomo_database
+    ports:
+      - "8000:8000"
+
+  matomo_database:
+    image: mariadb:latest
+    container_name: matomo_db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=matomo_db
+      - MYSQL_USER=matomo
+      - MYSQL_PASSWORD=matomo
+    volumes:
+      - './.docker/tracking/mysql:/var/lib/mysql'
+
