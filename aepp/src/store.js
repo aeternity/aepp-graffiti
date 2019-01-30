@@ -6,7 +6,7 @@ import DroneTracer from '../node_modules/dronetracer/src/DroneTracer/main.js'
 
 Vue.use(Vuex)
 
-const API_URL = 'https://backend.dronegraffiti.piwo.app'
+const API_URL = 'https://backend.dronegraffiti.com'
 // const API_URL = 'http://localhost:3000';
 // const API_URL = 'http://192.168.43.131:3000';
 const vuexPersist = new VuexPersist({
