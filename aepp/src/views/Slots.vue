@@ -63,7 +63,7 @@
             <ae-card>
               <div class="flex flex-col relative w-full">
                 <div>
-                  <h2 class="text-black">Slot {{slot.id}} ({{slot.successfulBids.length}} Bids)</h2>
+                  <h2 class="text-black">Slot {{slot.id}} ({{slot.successfulBids.length + slot.failedBids.length}} Bids)</h2>
                 </div>
                 <div class="flex flex-col text-black text-base mt-2">
                 <span>
@@ -79,17 +79,14 @@
                 <span>
                  current minimum bid AE / Minute
                 </span>
-                  <span class="font-mono text-black text-xl" v-if="Number(slot.remainingDronetime) === 0">
-                    {{slot.minimumBid.toFixed(5)}} AE
-                  </span>
-                  <span class="font-mono text-black text-xl" v-else-if="slot.successfulBids.length === 0">
+
+                  <span class="font-mono text-black text-xl" v-if="slot.successfulBids.length === 0">
                     0 AE (No Bids)
                   </span>
-                  <div v-else-if="slot.remainingDronetime > 0">
-                    <span class="font-mono text-black text-xl" >0 AE</span>
-                    <br>
-                    <span class="font-sans text-grey-darker text-base">{{slot.remainingDronetime}} unclaimed Minutes</span>
-                  </div>
+                  <span class="font-mono text-black text-xl" v-else>
+                    {{slot.minimumBid.toFixed(5)}} AE
+                  </span>
+                    <span v-if="slot.remainingDronetime > 0" class="font-sans text-grey-darker text-base">{{slot.remainingDronetime}} unclaimed Minutes</span>
                 </div>
 
 
@@ -184,7 +181,7 @@
         if (nextSlots.length) this.nextSlotAtHeight = nextSlots[0].startBlockHeight
 
         this.slots = slots
-          .filter(slot => Util.slotIsActive(slot, this.height))
+          //.filter(slot => Util.slotIsActive(slot, this.height))
           .map(slot => {
             slot.index = slotIndex++
             slot.minimumBid = Math.min.apply(Math, slot.successfulBids.map(function (bid) {
