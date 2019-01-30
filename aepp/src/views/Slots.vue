@@ -181,7 +181,7 @@
         if (nextSlots.length) this.nextSlotAtHeight = nextSlots[0].startBlockHeight
 
         this.slots = slots
-          //.filter(slot => Util.slotIsActive(slot, this.height))
+          .filter(slot => Util.slotIsActive(slot, this.height))
           .map(slot => {
             slot.index = slotIndex++
             slot.minimumBid = Math.min.apply(Math, slot.successfulBids.map(function (bid) {
