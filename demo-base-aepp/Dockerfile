@@ -21,7 +21,7 @@ RUN sed -i -e "s/Base æpp/Drone Graffiti Demo/g" public/default.webmanifest
 RUN sed -i -e "s/Base æpp/Drone Graffiti Demo/g" public/index.html
 RUN sed -i -e '/Roma-net/d' src/lib/networksRegistry.js
 RUN sed -i -e '/Edgenet/d' src/lib/networksRegistry.js
-RUN sed -i -e "s/sdk-testnet.aepps.com/testnet.dronegrafitti.piwo.app/g" src/lib/networksRegistry.js
+RUN sed -i -e "s/sdk-testnet.aepps.com/testnet.dronegraffiti.piwo.app/g" src/lib/networksRegistry.js
 RUN sed -i -e "s/Testnet/Art Testnet/g" src/lib/networksRegistry.js
 
 # add demo seed

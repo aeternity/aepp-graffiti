@@ -163,13 +163,13 @@ contract DroneGraffitiAuction =
              (sufficient, bid :: to_low)
       foldr(filter_by_capacity, ([], []), bids_to_reprocess)
 
-
   // updates and auction slot with the bids that are updated successful or newly to low
   private function update_auction_slot_with_bids(auction_slot : auction_slot, bids_tuple : (list(bid), list(bid))) : auction_slot =
     switch(bids_tuple)
       (all_successful_bids, new_failed_bids) =>
         let appended_failed_bids = new_failed_bids ++ auction_slot.failed_bids
         auction_slot{ successful_bids = all_successful_bids, failed_bids = appended_failed_bids }
+
   // refunds all bids that are newly added to the to low paying list after processing bids
   private stateful function refund_new_to_low_bids(bids_tuple : (list(bid), list(bid))) =
     switch(bids_tuple)
