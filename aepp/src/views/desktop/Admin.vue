@@ -126,8 +126,8 @@
     methods: {
       async loadData() {
         const client = await EpochChain.compose(EpochContract)({
-          url: `https://ae-art-testnet.piwo.app`,
-          internalUrl: `https://ae-art-testnet.piwo.app`,
+          url: `https://testnet.dronegraffiti.piwo.app`,
+          internalUrl: `https://testnet.dronegraffiti.piwo.app`,
         }).catch(console.error);
 
         this.height = await client.height();

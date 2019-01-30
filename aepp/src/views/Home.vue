@@ -73,7 +73,7 @@
         this.error = 'Could not connect to your wallet. Please make sure you run this application inside the base app.'
         this.errorCTA = 'Go to Base Aepp'
         this.errorClick = () => {
-          window.location.href = 'https://ae-base-aepp.piwo.app/'
+          window.location.href = 'https://base-aepp.dronegraffiti.piwo.app/'
         }
       }
     },
