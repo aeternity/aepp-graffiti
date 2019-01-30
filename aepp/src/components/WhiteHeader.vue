@@ -39,7 +39,7 @@
       <ae-card>
         <div class="flex justify-center items-center flex-col text-grey-darkest pt-4">
           <slot></slot>
-          <ae-button fill="primary" class="mt-8" face="round">
+          <ae-button fill="primary" class="mt-8" face="round" @click.native.self="showBackdrop">
             Close
           </ae-button>
         </div>
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-  import { AeIcon, AeDropdown, AeButton, AeBackdrop, AeCard } from '@aeternity/aepp-components'
+  import { AeBackdrop, AeButton, AeCard, AeDropdown, AeIcon } from '@aeternity/aepp-components'
 
   export default {
     name: 'WhiteHeader',
