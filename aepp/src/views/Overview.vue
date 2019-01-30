@@ -17,13 +17,23 @@
             </div>
           </template>
           <div class="w-full">
-            <div class="flex flex-col mt-2">
+            <div class="flex flex-row justify-between">
+              <div class="flex flex-col mt-2">
                 <span>
-                  Bid
+                  Amount
                 </span>
-              <span class="font-mono text-black text-lg">
-                  {{bid.amount.toFixed()}} AE
+                <span class="font-mono text-black text-lg">
+                  {{bid.amount.toFixed(2)}} AE
                 </span>
+              </div>
+              <div class="flex flex-col mt-2">
+                <span>
+                  Slot
+                </span>
+                <span class="font-mono text-right text-black text-lg">
+                  {{bid.slotId}}
+                </span>
+              </div>
             </div>
             <div class="flex flex-col mt-2">
                 <span>
@@ -35,11 +45,14 @@
             </div>
             <div class="flex flex-col mt-2">
                 <span>
-                  Current Status
+                  Status
                 </span>
               <span class="font-mono text-black text-lg">
-                  Successful
-                </span>
+                  <span v-if="bid.successful">Successful</span>
+                  <span v-if="!bid.successful">Failed</span>
+                  <span v-if="bid.finished && !bid.successful"><br> (Minimum bid: {{bid.minimumAmount}} AE / Min)</span>
+                  <span v-if="!bid.finished"> (Pending)</span>
+              </span>
             </div>
           </div>
         </ae-card>
@@ -60,12 +73,12 @@
   import WhiteHeader from '@/components/WhiteHeader'
   import { AeCard } from '@aeternity/aepp-components'
 
-  const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2;
+  const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2
 
   export default {
     name: 'Overview',
-    components: {BiggerLoader, AeCard, WhiteHeader},
-    data() {
+    components: { BiggerLoader, AeCard, WhiteHeader },
+    data () {
       return {
         bids: [],
         state: INITAL_STATE,
@@ -73,45 +86,63 @@
       }
     },
     computed: {
-      blockchainSettings() {
+      blockchainSettings () {
         return this.$store.state.blockchainSettings
       },
-      isInitialState() {
+      isInitialState () {
         return this.state === INITAL_STATE
       },
-      isShowListState() {
+      isShowListState () {
         return this.state === SHOW_LIST
       },
-      isEmptyListState() {
+      isEmptyListState () {
         return this.state === EMPTY_LIST
       }
     },
     methods: {
-      async updateMyBids() {
+      async updateMyBids () {
         const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
-
+        const height = await this.client.height()
         const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
         this.bids = Util.auctionSlotListToObject(decodedAllBids).map(slot => {
-          return slot.successfulBids.filter(bid => bid.user === this.address).map(bid => {
+          let allBids = []
+
+          allBids = allBids.concat(slot.successfulBids.filter(bid => bid.user === this.address).map(bid => {
+            bid.successful = true
+            return bid
+          }))
+
+          allBids = allBids.concat(slot.failedBids.filter(bid => bid.user === this.address).map(bid => {
+            bid.successful = false
+            return bid
+          }))
+
+          allBids = allBids.map(bid => {
             bid.amount = Util.atomsToAe(bid.amount)
+            bid.finished = Util.slotIsPast(slot, height)
+            bid.slotId = slot.id
+            bid.minimumAmount = Math.min(...slot.successfulBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4)))
             return bid
           })
+
+          console.log(allBids)
+          return allBids
         }).flat().sort((a, b) => b.seqId - a.seqId)
 
         if (this.bids.length > 0) this.state = SHOW_LIST
         else return this.state = EMPTY_LIST
 
-        this.bids = this.bids.map( bid => {
-          bid.url = this.$store.state.apiUrl + "/ipfs/" + bid.data.artworkReference + ".svg";
-          return bid;
+        this.bids = this.bids.map(bid => {
+          bid.url = this.$store.state.apiUrl + '/ipfs/' + bid.data.artworkReference + '.svg'
+          return bid
         })
       }
     },
-    created() {
+    created () {
       Aepp().then(async ae => {
         this.client = ae
         this.address = await this.client.address()
-        await this.updateMyBids();
+        await this.updateMyBids()
       })
     }
   }
