@@ -83,6 +83,8 @@
         if(window.parent !== window) {
           const client = await Aepp()
           console.log(await client.post('hello'))
+          const addr = await client.address()
+          this.$matomo.setUserId(addr);
         } else {
           this.showBaseAppError();
         }

@@ -71,7 +71,7 @@ Vue.use(VueMatomo, {
 
   // Require consent before sending tracking information to matomo
   // Default: false
-  requireConsent: true,
+  requireConsent: false,
 
   // Whether to track the initial page view
   // Default: true
