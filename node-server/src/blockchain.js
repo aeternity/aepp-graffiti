@@ -9,13 +9,13 @@ const teaserContractAddress = 'ct_Fk3wWdC7t6Fv5eypLWThND19CGn1cBuScnGBZx6r6tG9q1
 
 let client = null;
 
-const aeternityUrl = process.env.AETERNITY_URL || 'localhost:3013';
-const aeternityInternalUrl = process.env.AETERNITY_URL || 'localhost:3113';
+const aeternityUrl = process.env.AETERNITY_URL || 'http://localhost:3013';
+const aeternityInternalUrl = process.env.AETERNITY_URL || 'http://localhost:3113';
 
 blockchain.init = async () => {
     client = await EpochChain.compose(EpochContract)({
-        url: `http://${aeternityUrl}`,
-        internalUrl: `http://${aeternityInternalUrl}`,
+        url: aeternityUrl,
+        internalUrl: aeternityInternalUrl,
     }).catch(console.error);
 
     console.log('initialized aeternity sdk');

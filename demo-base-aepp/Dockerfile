@@ -14,14 +14,14 @@ USER app
 RUN git clone -b feature/sdk-intergation https://github.com/aeternity/aepp-base.git .
 
 # adjust demo data
-RUN sed -i -e 's/localhost:9001/aepp.dronegraffiti.piwo.app/g' src/lib/appsRegistry.js
+RUN sed -i -e 's/localhost:9001/aepp.dronegraffiti.com/g' src/lib/appsRegistry.js
 RUN sed -i -e 's/Drone Project/Drone Graffiti/g' src/lib/appsRegistry.js
 RUN sed -i -e "s/Base æpp/Drone Graffiti Demo/g" vue.config.js
 RUN sed -i -e "s/Base æpp/Drone Graffiti Demo/g" public/default.webmanifest
 RUN sed -i -e "s/Base æpp/Drone Graffiti Demo/g" public/index.html
 RUN sed -i -e '/Roma-net/d' src/lib/networksRegistry.js
 RUN sed -i -e '/Edgenet/d' src/lib/networksRegistry.js
-RUN sed -i -e "s/sdk-testnet.aepps.com/testnet.dronegraffiti.piwo.app/g" src/lib/networksRegistry.js
+RUN sed -i -e "s/sdk-testnet.aepps.com/testnet.dronegraffiti.com/g" src/lib/networksRegistry.js
 RUN sed -i -e "s/Testnet/Art Testnet/g" src/lib/networksRegistry.js
 
 # add demo seed
