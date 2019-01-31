@@ -126,6 +126,12 @@
           this.currentLoadingStep = LOADING_CONTRACT
           try {
             await this.runBid()
+            try {
+              this.$matomo.trackEvent('Conversion', 'Finished', 'Success', this.bid.amount)
+            } catch (e) {
+              console.error('Tracking failed')
+              console.error(e)
+            }
             this.currentLoadingStep = LOADING_FINISHED
             this.$store.dispatch('resetState')
           } catch (e) {

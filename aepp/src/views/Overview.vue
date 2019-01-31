@@ -126,7 +126,6 @@
             return bid
           })
 
-          console.log(allBids)
           return allBids
         }).flat().sort((a, b) => b.seqId - a.seqId)
 

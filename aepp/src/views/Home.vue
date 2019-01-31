@@ -84,7 +84,12 @@
           const client = await Aepp()
           console.log(await client.post('hello'))
           const addr = await client.address()
-          this.$matomo.setUserId(addr);
+          try {
+            this.$matomo.setUserId(addr)
+          } catch (e) {
+            console.error('Tracking failed')
+            console.error(e)
+          }
         } else {
           this.showBaseAppError();
         }
