@@ -108,6 +108,7 @@
   import { AeBadge, AeButton, AeIcon } from '@aeternity/aepp-components'
   import BiggerLoader from '@/components/BiggerLoader'
   import BigNumber from 'bignumber.js'
+  import config from '@/config'
 
   export default {
     name: 'Canvas',
@@ -123,6 +124,11 @@
         inspectBids: null
       }
     },
+    computed: {
+      blockchainSettings () {
+        return config.blockchainSettings
+      }
+    },
     methods: {
       async loadData() {
         const client = await EpochChain.compose(EpochContract)({
@@ -132,14 +138,14 @@
 
         this.height = await client.height();
 
-        const called = await client.contractEpochCall(this.$store.state.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()', '').catch(console.error);
+        const called = await client.contractEpochCall(this.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()', '').catch(console.error);
         const decoded = await client.contractEpochDecodeData(Util.auctionSlotListType, called.out).catch(console.error);
         this.slots = Util.auctionSlotListToObject(decoded)
           .sort((a, b) => a.endBlockHeight - b.endBlockHeight)
           .map(slot => {
             return {
               id: slot.id,
-              downloadLink: `${this.$store.state.apiUrl}/slots/${slot.id}`,
+              downloadLink: `${config.apiUrl}/slots/${slot.id}`,
               timing: {
                 past: Util.slotIsPast(slot, this.height),
                 active: Util.slotIsActive(slot, this.height),
@@ -172,7 +178,7 @@
         this.inspectBidsLoading = true;
         this.inspectBids = null;
         bids = bids.map(bid => {
-          bid.url = this.$store.state.apiUrl + "/ipfs/" + bid.data.artworkReference + ".svg";
+          bid.url = config.apiUrl + "/ipfs/" + bid.data.artworkReference + ".svg";
           bid.amountAe = Util.atomsToAe(bid.amount);
           bid.amountPerTimeAe = Util.atomsToAe(bid.amountPerTime).toFixed(4);
           return bid;

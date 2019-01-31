@@ -55,6 +55,7 @@
   import LoadingStep from '@/components/LoadingStep'
   import Util from '@/utils/blockchain_util'
   import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
+  import config from '@/config'
 
   const STATUS_INITIAL = 1, STATUS_LOADING = 2;
   const LOADING_DATA = 0, LOADING_IPFS = 1, LOADING_CONTRACT = 2, LOADING_FINISHED = 3;
@@ -81,7 +82,7 @@
         return this.$store.state.position
       },
       blockchainSettings () {
-        return this.$store.state.blockchainSettings
+        return config.blockchainSettings
       },
       isInitial() {
         return this.currentStatus === STATUS_INITIAL
@@ -116,7 +117,7 @@
 
           this.currentLoadingStep = LOADING_IPFS
           try {
-            const response = await axios.post(`${this.$store.state.apiUrl}/upload`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
+            const response = await axios.post(`${config.apiUrl}/upload`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
             this.ipfsAddr = response.data.hash
           } catch (e) {
             this.errorStep = LOADING_IPFS

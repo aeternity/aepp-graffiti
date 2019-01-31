@@ -3,12 +3,10 @@ import Vue from 'vue'
 import VuexPersist from 'vuex-persist'
 import Jimp from 'jimp/es'
 import DroneTracer from '../node_modules/dronetracer/src/DroneTracer/main.js'
+import config from '@/config'
 
 Vue.use(Vuex)
 
-const API_URL = 'https://backend.dronegraffiti.com'
-// const API_URL = 'http://localhost:3000';
-// const API_URL = 'http://192.168.43.131:3000';
 const vuexPersist = new VuexPersist({
   key: 'ae-drone-v0',
   storage: window.sessionStorage
@@ -52,35 +50,7 @@ function initialState () {
       slotObject: {},
       amount: null
     },
-    progressCallback: () => {},
-
-    // HARDCODED SETTINGS
-    imageSettings: {
-      max: { width: 1000, height: 1000 },
-      min: { width: 400, height: 300 }
-    },
-    canvas: {
-      url: API_URL + '/rendered/latest.png',
-      width: 3300,
-      height: 5000,
-      pixelToMM: 10, // Pixel * pixelToMM = mm
-    },
-    droneSettings: {
-      wallId: 'MX19-001',
-      gpsLocation: [0, 0],
-      wallSize: [33000, 50000],   // in mm
-      canvasSize: [33000, 50000], // mm
-      canvasPosition: [0, 0], // mm (origin = [bottom left])
-      colors: ['#000000', '#eb340f', '#0f71eb'], // default [#000]
-      droneResolution: 200,       // min distance drone can move, in mm
-      dronePrecisionError: 150,   // error margin, mm
-      droneFlyingSpeed: 0.3,  // average drone flying speed [m/s],
-      minimumImageSize: [10, 10]
-    },
-    blockchainSettings: {
-      contractAddress: 'ct_2U9MkZK9JXTUemAURfCd8BDQZcXK4Gk8Hwfqxf1ASSYNrQnhjz'
-    },
-    apiUrl: API_URL
+    progressCallback: () => {}
   }
 }
 
@@ -135,7 +105,7 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    uploadImage ({ state, commit }, file) {
+    uploadImage ({ commit }, file) {
 
       const fReader = new FileReader()
 
@@ -143,7 +113,7 @@ const store = new Vuex.Store({
         try {
           const image = await Jimp.read(fReader.result)
 
-          image.scaleToFit(state.imageSettings.min.width, state.imageSettings.min.height)
+          image.scaleToFit(config.imageSettings.min.width, config.imageSettings.min.height)
 
           const imageSource = await image.getBase64Async(file.type)
 
@@ -174,7 +144,7 @@ const store = new Vuex.Store({
         dronetime: 0
       }))
 
-      const tracer = new DroneTracer(state.droneSettings)
+      const tracer = new DroneTracer(config.droneSettings)
 
       const dronePaint = await tracer.transform(state.originalImage.src, (p) => {
           state.progressCallback(p)
@@ -190,8 +160,8 @@ const store = new Vuex.Store({
       if(state.droneObject === null) {
         try {
           await dispatch('updatePosition', {
-            x: Math.round(Math.random() * (state.canvas.width - ((dronePaint.paintingWidth + 1000) / 10))),
-            y: Math.round(Math.random() * (state.canvas.height - ((dronePaint.paintingHeight + 1000) / 10)))
+            x: Math.round(Math.random() * (config.canvas.width - ((dronePaint.paintingWidth + 1000) / 10))),
+            y: Math.round(Math.random() * (config.canvas.height - ((dronePaint.paintingHeight + 1000) / 10)))
           })
         } catch (e) {
           await dispatch('updatePosition', {
@@ -222,7 +192,7 @@ const store = new Vuex.Store({
 
       //TODO rerender image on error
 
-      let result = state.droneObject.setPaintingPosition(state.position.x * state.canvas.pixelToMM, state.position.y * state.canvas.pixelToMM)
+      let result = state.droneObject.setPaintingPosition(state.position.x * config.canvas.pixelToMM, state.position.y * config.canvas.pixelToMM)
       if (!result) {
         throw Error('Position out of bound')
       }
@@ -232,7 +202,7 @@ const store = new Vuex.Store({
         throw Error('Scale out of bound')
       }
 
-      state.droneObject.setPaintingColor(state.droneSettings.colors[state.settings.color])
+      state.droneObject.setPaintingColor(config.droneSettings.colors[state.settings.color])
 
       let image = {}
 

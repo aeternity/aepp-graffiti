@@ -72,6 +72,7 @@
   import BiggerLoader from '@/components/BiggerLoader'
   import WhiteHeader from '@/components/WhiteHeader'
   import { AeCard } from '@aeternity/aepp-components'
+  import config from '@/config'
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2
 
@@ -87,7 +88,7 @@
     },
     computed: {
       blockchainSettings () {
-        return this.$store.state.blockchainSettings
+        return config.blockchainSettings
       },
       isInitialState () {
         return this.state === INITAL_STATE
@@ -133,7 +134,7 @@
         else return this.state = EMPTY_LIST
 
         this.bids = this.bids.map(bid => {
-          bid.url = this.$store.state.apiUrl + '/ipfs/' + bid.data.artworkReference + '.svg'
+          bid.url = config.apiUrl + '/ipfs/' + bid.data.artworkReference + '.svg'
           return bid
         })
       }

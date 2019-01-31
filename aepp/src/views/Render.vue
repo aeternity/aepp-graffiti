@@ -128,6 +128,7 @@
   import BiggerLoader from '../components/BiggerLoader'
   import WhiteHeader from '@/components/WhiteHeader'
   import { AeBackdrop, AeButton, AeButtonGroup, AeCard, AeIcon, AeSwitch } from '@aeternity/aepp-components'
+  import config from '@/config'
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 
@@ -167,7 +168,7 @@
         return this.$store.state.settings
       },
       droneSettings () {
-        return this.$store.state.droneSettings
+        return config.droneSettings
       },
       showIllustration () {
         return this.centerline

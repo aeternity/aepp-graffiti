@@ -14,6 +14,7 @@
 
   import BiggerLoader from '@/components/BiggerLoader'
   import Konva from 'konva'
+  import config from '@/config'
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 
@@ -39,7 +40,7 @@
     },
     computed: {
       canvasSettings() {
-        return this.$store.state.canvas;
+        return config.canvas;
       },
       isLoading () {
         return this.currentStatus === STATUS_LOADING

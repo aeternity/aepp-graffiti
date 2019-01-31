@@ -121,6 +121,7 @@
   import { AeButton, AeCard, AeDivider } from '@aeternity/aepp-components'
   import WhiteHeader from '@/components/WhiteHeader'
   import 'swiper/dist/css/swiper.css'
+  import config from '@/config'
 
   import { swiper, swiperSlide } from 'vue-awesome-swiper'
 
@@ -156,7 +157,7 @@
         return this.state === EMPTY_LIST
       },
       blockchainSettings () {
-        return this.$store.state.blockchainSettings
+        return config.blockchainSettings
       },
       transformedImage () {
         return this.$store.state.transformedImage

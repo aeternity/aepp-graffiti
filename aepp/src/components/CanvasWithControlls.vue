@@ -6,6 +6,7 @@
 
 <script>
   import CanvasJS from './CanvasJS.vue'
+  import config from '@/config'
 
   export default {
     name: 'CanvasWithControlls',
@@ -41,13 +42,13 @@
         return this.$store.state.settings
       },
       canvasSettings () {
-        return this.$store.state.canvas
+        return config.canvas
       },
     },
     methods: {
       updateVisualPosition ({ x, y }) {
         this.x = Math.round(x)
-        this.y = Math.round(y)
+        this.y = Math.round(y) // eslint-disable-line
       },
       moveCanvas (xDiff, yDiff) {
         this.$refs.canvas.moveCanvas({ xDiff, yDiff })
