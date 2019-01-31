@@ -34,6 +34,8 @@
   import WhiteHeader from '@/components/WhiteHeader'
   import { AeBackdrop, AeButton, AeCard, AeIcon } from '@aeternity/aepp-components/'
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
+  import Util from '@/utils/blockchain_util'
+  import axios from 'axios'
 
   export default {
     name: 'Home',
@@ -83,9 +85,14 @@
         if(window.parent !== window) {
           const client = await Aepp()
           console.log(await client.post('hello'))
-          const addr = await client.address()
+          const address = await client.address()
+          const balance = await client.balance(address, {format: false}).then(Util.atomsToAe).catch(() => 0);
+          console.log('balance', balance);
+          if (balance <= 5) {
+            await axios.post(`https://testnet.faucet.aepps.com/account/${address}`, {}, {headers: {'content-type': 'application/x-www-form-urlencoded'}})
+          }
           try {
-            this.$matomo.setUserId(addr)
+            this.$matomo.setUserId(address)
           } catch (e) {
             console.error('Tracking failed')
             console.error(e)
