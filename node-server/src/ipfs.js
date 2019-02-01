@@ -20,11 +20,11 @@ ipfsWrap.writeFile = (buffer) => {
 // TODO abort if file can't be found
 ipfsWrap.getFile = async (hash) => {
     if(!node) ipfsWrap.init();
-    try {
-        const data = await node.cat(hash);
+    const data = await node.cat(hash);
+    if(data.length > 0) {
         return Buffer.from(data);
-    } catch (e) {
-        console.error('ipfs cat', e.message, hash);
+    } else {
+        throw Error(`IPFS: ${hash} not found`);
     }
 };
 

@@ -4,6 +4,8 @@ const JSZip = require('jszip');
 const logic = {};
 const storage = require('./storage.js');
 const svgUtil = require('./svg_util.js');
+const fs = require('fs');
+const path = require('path');
 
 logic.upload = async (req, res) => {
     if (Object.keys(req.files).length === 0) {
@@ -34,17 +36,51 @@ logic.upload = async (req, res) => {
     }
 };
 
-logic.ipfs = (req, res) => {
+logic.ipfs = async (req, res) => {
     if (!req.params.hash) return res.sendStatus(400);
+    const hash = req.params.hash;
 
-    ipfsWrapper.getFile(req.params.hash).then((buffer) => {
+    // FIRST GET LOCAL
+    if (fs.existsSync(path.join(__dirname, `../data/backup/${hash}.svg`))) {
+        try {
+            const buffer = fs.readFileSync(path.join(__dirname, `../data/backup/${hash}.svg`));
+            res.writeHead(200, {
+                'Content-Type': 'image/svg+xml',
+                'Content-Length': buffer.length
+            });
+            return res.end(buffer);
+        } catch (e) {
+            console.warn(e.message)
+        }
+    }
+
+    // THEN GET S3
+    try {
+        const buffer = await storage.retrieveSVG(hash);
         res.writeHead(200, {
             'Content-Type': 'image/svg+xml',
             'Content-Length': buffer.length
         });
-        res.end(buffer);
+        return res.end(buffer);
+    } catch (e) {
+        console.warn(e.message);
+    }
 
-    }).catch(e => res.send(e.message));
+    // THEN GET IPFS
+    try {
+        const buffer = await ipfsWrapper.getFile(req.params.hash);
+        res.writeHead(200, {
+            'Content-Type': 'image/svg+xml',
+            'Content-Length': buffer.length
+        });
+        return res.end(buffer);
+    } catch (e) {
+        console.warn(e.message)
+    }
+
+    // THEN FAIL
+    res.sendStatus(404);
+
 };
 
 logic.getSlots = async (req, res) => {

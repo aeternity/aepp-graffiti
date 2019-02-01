@@ -51,6 +51,19 @@ storage.backupBid = async (ipfsHash, bid) => {
     }
 };
 
+storage.retrieveSVG = (ipfsHash) => {
+    return new Promise((resolve, reject) => {
+        const params = {
+            Bucket: process.env.S3_BUCKET,
+            Key: `${ipfsHash}.svg`
+        };
+        client.getObject(params, function (err, data) {
+            if (err) return reject(`S3: file ${ipfsHash}.svg not found`);
+            return resolve(data.Body);
+        });
+    })
+};
+
 const backupRemote = (remoteName, file) => {
     return new Promise(function (resolve, reject) {
 
