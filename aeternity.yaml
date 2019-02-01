@@ -13,3 +13,5 @@ chain:
 http:
   internal:
     listen_address: "0.0.0.0"
+    debug_endpoints: true
+    

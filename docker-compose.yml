@@ -2,7 +2,7 @@ version: '3'
 services:
 
   aeternity:
-    image: aeternity/epoch:v1.2.0
+    image: aeternity/epoch:v1.4.0
     command: "-aehttp enable_debug_endpoints true"
     volumes:
       - "./aeternity.yaml:/home/epoch/.epoch/epoch/epoch.yaml"
