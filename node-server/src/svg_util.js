@@ -30,42 +30,51 @@ const getSVGDimensions = (svgString) => {
     }
 };
 
-
-const sanityCheck = data => {
+const sanityCheckFileOnly = (data, id) => {
     const sanityFails = {};
 
+    if (!data.filebuffer) {
+        sanityFails[id] = 'Could not fetch file';
+        console.error(id + ': Could not fetch file');
+
+        return {checkPassed: false, data: data, dataFails: sanityFails, result: null}
+    }
+
+    const svgString = data.filebuffer.toString('utf8');
+    const result = convert.xml2js(svgString, {compact: true});
+
+    let height = String(result.svg._attributes.height);
+    let width = String(result.svg._attributes.width);
+
+    const re = /([\d.]+)mm/;
+
+    if (!height.includes('mm') || !height.match(re)[1]) {
+        sanityFails[id] = 'Height not recognized';
+        console.error(id + ': Height not recognized');
+
+        data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));
+        return {checkPassed: false, data: data, dataFails: sanityFails, result: result}
+    }
+    if (!width.includes('mm') || !width.match(re)[1]) {
+        sanityFails[id] = 'Width not recognized';
+        console.error(id + ': Width not recognized');
+
+        data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));
+        return {checkPassed: false, data: data, dataFails: sanityFails, result: result}
+    }
+
+    return {checkPassed: true, data: data, dataFails: sanityFails, result: result}
+};
+
+const sanityCheck = (dataToCheck) => {
     try {
         // SANITY CHECK
 
-        if (!data.filebuffer) {
-            sanityFails[data.bid.seqId] = 'Could not fetch file';
-            console.error(data.bid.seqId + ': Could not fetch file');
-
-            return {checkPassed: false, data: data, dataFails: sanityFails}
-        }
-
-        const svgString = data.filebuffer.toString('utf8');
-        const result = convert.xml2js(svgString, {compact: true});
-
-        let height = String(result.svg._attributes.height);
-        let width = String(result.svg._attributes.width);
-
-        const re = /([\d.]+)mm/;
-
-        if (!height.includes('mm') || !height.match(re)[1]) {
-            sanityFails[data.bid.seqId] = 'Height not recognized';
-            console.error(data.bid.seqId + ': Height not recognized');
-
-            data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));
-            return {checkPassed: false, data: data, dataFails: sanityFails}
-        }
-        if (!width.includes('mm') || !width.match(re)[1]) {
-            sanityFails[data.bid.seqId] = 'Width not recognized';
-            console.error(data.bid.seqId + ': Width not recognized');
-
-            data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));
-            return {checkPassed: false, data: data, dataFails: sanityFails}
-        }
+        const checkedFile = sanityCheckFileOnly(dataToCheck, dataToCheck.bid.seqId);
+        const data = checkedFile.data;
+        const sanityFails = checkedFile.dataFails;
+        const result = checkedFile.result;
+        if (!checkedFile.checkPassed) return {checkPassed: checkedFile.checkPassed, data: data, dataFails: sanityFails};
 
         let origin = String(result.svg._attributes['wallCanvas:origin']);
         if (!origin) {
@@ -88,10 +97,16 @@ const sanityCheck = data => {
         data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));
         return {checkPassed: true, data: data, dataFails: sanityFails}
     } catch (e) {
-        console.error(data.bid.seqId + ': Sanity Check failed');
+        console.error(dataToCheck.bid.seqId + ': Sanity Check failed');
+        console.error(e);
+
+        const sanityFails = {};
+        sanityFails[dataToCheck.bid.seqId] = 'Sanity Check failed: ' + e.message;
+        return {checkPassed: false, data: data, dataFails: sanityFails}
+
     }
 };
 
 module.exports = {
-    getSVGDimensions, sanityCheck
+    getSVGDimensions, sanityCheckFileOnly, sanityCheck
 };

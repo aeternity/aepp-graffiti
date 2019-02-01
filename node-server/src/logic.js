@@ -16,9 +16,17 @@ logic.upload = async (req, res) => {
 
     const file = req.files.image;
     const mime = file.mimetype;
-    if (mime.split('/')[0] !== 'image') {
+    console.log(mime);
+    if (mime !== 'image/svg+xml') {
         return res.status(422).json({
-            error: 'File needs to be an image.',
+            error: 'File needs to be image/svg+xml.',
+        });
+    }
+
+    const sanityCheck = await svgUtil.sanityCheckFileOnly({filebuffer: file.data}, 'upload');
+    if(!sanityCheck.checkPassed) {
+        return res.status(422).json({
+            error: sanityCheck.dataFails.upload,
         });
     }
 
