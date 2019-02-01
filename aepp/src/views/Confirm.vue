@@ -166,7 +166,7 @@
         }
 
         // write the ArrayBuffer to a blob, and you're done
-        return new Blob([ab], { type: 'image/svg' })
+        return new Blob([ab], { type: 'image/svg+xml' })
       },
       async runBid () {
         // args: hash, x, y, time
