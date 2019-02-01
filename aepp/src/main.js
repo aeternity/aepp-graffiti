@@ -14,6 +14,9 @@ import store from './store'
 import VueKonva from 'vue-konva'
 import VueMatomo from 'vue-matomo'
 import config from '@/config.js'
+import secret from '@/secret'
+import * as Sentry from '@sentry/browser'
+
 /**
  * Documentation of the new components are here.
  *
@@ -40,6 +43,12 @@ import config from '@/config.js'
  * These are all components styles. They're scoped
  * so they won't collide with other styles.
  */
+
+
+Sentry.init({
+  dsn: secret.sentryDSN,
+  integrations: [new Sentry.Integrations.Vue({ Vue })]
+})
 
 Vue.use(VueRouter)
 
