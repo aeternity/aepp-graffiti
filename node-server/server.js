@@ -5,7 +5,8 @@ const app = express();
 const logic = require('./src/logic');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const storage = require('./src/storage.js');
+const storage = require('./src/storage');
+const health = require('./src/health');
 
 app.use(bodyParser.json());
 app.use(cors({
@@ -31,6 +32,13 @@ app.get('/slots/:id', logic.getSlots);
 
 // get data for teaser event
 app.get('/teaser.json', logic.teaserJson);
+
+app.get('/health/ipfsNode', health.ipfsNode);
+app.get('/health/blockchainNode', health.blockchainNode);
+app.get('/health/teaserFiles', health.teaserIPFSFiles);
+app.get('/health/teaserContract', health.teaserSmartContract);
+app.get('/health/testFiles', health.normalIPFSFiles);
+app.get('/health/testContract', health.normalSmartContract);
 
 app.use((req, res) => {
     res.sendStatus(404);

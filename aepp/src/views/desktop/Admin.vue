@@ -1,89 +1,110 @@
 <template>
   <div>
-    <bigger-loader v-if="loading"/>
-    <div v-if="!loading">
-      <h2>current height</h2><br>
-      <pre>{{height}}</pre>
-      <br>
-      <h2>slots</h2><br>
-      <div class="flex slot-row">
-        <div class="w-1/6">Slot Id</div>
-        <div class="w-1/6">Time Capacity</div>
-        <div class="w-1/6">Bid Time Bounds</div>
-        <div class="w-1/6">Block Height Bounds</div>
-        <div class="w-1/6">Successful Bids</div>
-        <div class="w-1/6">Failed Bids</div>
+    <WhiteHeader title="Admin Interface"></WhiteHeader>
+
+    <div class="p-8">
+      <h1 class="mt-4 mb-2">health check</h1>
+      <div class="my-1" v-for="(value, key) in health" :key="key">
+        {{key}}:
+        <ae-loader v-if="value === null"></ae-loader>
+        <ae-icon name="check" v-if="value === true"></ae-icon>
+        <span v-if="value === false" class="text-red font-bold">HEALTHCHECK FAILED</span>
       </div>
-      <div v-for="slot in slots" :key="slot.id">
-        <div class="flex slot-row">
-          <div class="w-1/6">
-            {{slot.id}}
-            <ae-badge v-if="slot.timing.active" class="active-badge">active</ae-badge>
-            <ae-badge v-if="slot.timing.past">past</ae-badge>
-            <ae-badge v-if="slot.timing.future">future</ae-badge>
-            <br>
-            <ae-button v-if="slot.timing.past" face="round" fill="primary">
-              <a :href="slot.downloadLink">
-                export
-                <ae-icon name="save"/>
-              </a>
-            </ae-button>
-          </div>
-          <div class="w-1/6">{{slot.capacityUsed}} min used of {{slot.timeCapacity}} min</div>
-          <div class="w-1/6">
-            Minimum Time: {{slot.minimumTimePerBid}} min<br>
-            Maximum Time: {{slot.maximumTimePerBid}} min
-          </div>
-          <div class="w-1/6">
-            Start height {{slot.startBlockHeight}}<br>
-            est.
-            <Countdown :initialTime="(slot.startBlockHeight - height) * avgBlockTime"></Countdown>
-            <br>
-            <br>
-            End height&nbsp;&nbsp;{{slot.endBlockHeight}}<br>
-            est.
-            <Countdown :initialTime="(slot.endBlockHeight - height) * avgBlockTime"></Countdown>
-          </div>
-          <div class="w-1/6">
-            Count: {{slot.success.bids.length}}<br>
-            Σ Amount: {{slot.success.amountSum.toFixed()}} AE<br>
-            Σ Time: {{slot.success.timeSum}} min
-            <div v-if="slot.success.bids.length">
-              Min: {{Math.min(...slot.success.amountPerTime)}} AE/min<br>
-              Max: {{Math.max(...slot.success.amountPerTime)}} AE/min
+      <h1 class="mt-4 mb-2">current height</h1>
+      <bigger-loader v-if="!height"/>
+      <div class="font-mono text-xl" v-else>{{height}}</div>
+
+      <h1 class="mt-4 mb-2">slots</h1>
+      <bigger-loader v-if="loading"/>
+      <div v-if="!loading">
+        <div class="flex-row p-2 border-t border-grey-light hidden md:flex">
+          <div class="flex-1">Slot Id</div>
+          <div class="flex-1">Time Capacity</div>
+          <div class="flex-1">Bid Time Bounds</div>
+          <div class="flex-1">Block Height Bounds</div>
+          <div class="flex-1">Successful Bids</div>
+          <div class="flex-1">Failed Bids</div>
+        </div>
+        <div v-for="slot in slots" :key="slot.id">
+          <div class="flex flex-col p-2 border-t border-grey-light md:flex-row">
+            <div class="flex-1">
+              <div class="font-bold block md:hidden mt-3 mb-1">Slot</div>
+              {{slot.id}}
+              <ae-badge v-if="slot.timing.active" class="active-badge">active</ae-badge>
+              <ae-badge v-if="slot.timing.past">past</ae-badge>
+              <ae-badge v-if="slot.timing.future">future</ae-badge>
+              <br>
+              <ae-button v-if="slot.timing.past" face="round" fill="primary">
+                <a :href="slot.downloadLink">
+                  export
+                  <ae-icon name="save"/>
+                </a>
+              </ae-button>
             </div>
-            <ae-button v-if="slot.success.bids.length" face="round" fill="primary"
-                       @click="showBids(slot.id, 'successful', slot.success.bids)">
-              inspect
-              <ae-icon name="eye"/>
-            </ae-button>
-          </div>
-          <div class="w-1/6">
-            Count: {{slot.failed.bids.length}}<br>
-            Σ Amount: {{slot.failed.amountSum.toFixed()}} AE<br>
-            Σ Time: {{slot.failed.timeSum}} min
-            <div v-if="slot.failed.bids.length">
-              Min: {{Math.min(...slot.failed.amountPerTime)}} AE/min<br>
-              Max: {{Math.max(...slot.failed.amountPerTime)}} AE/min
+            <div class="flex-1">
+              <div class="font-bold block md:hidden mt-3 mb-1">Time Capacity</div>
+              {{slot.capacityUsed}} min used of {{slot.timeCapacity}} min
             </div>
-            <ae-button v-if="slot.failed.bids.length" face="round" fill="primary"
-                       @click="showBids(slot.id, 'failed', slot.failed.bids)">
-              inspect
-              <ae-icon name="eye"/>
-            </ae-button>
+            <div class="flex-1">
+              <div class="font-bold block md:hidden mt-3 mb-1">Bid Time Bounds</div>
+              Minimum Time: {{slot.minimumTimePerBid}} min<br>
+              Maximum Time: {{slot.maximumTimePerBid}} min
+            </div>
+            <div class="flex-1">
+              <div class="font-bold block md:hidden mt-3 mb-1">Block Height Bounds</div>
+              Start height {{slot.startBlockHeight}}<br>
+              est.
+              <Countdown :initialTime="(slot.startBlockHeight - height) * avgBlockTime"></Countdown>
+              <br>
+              <br>
+              End height&nbsp;&nbsp;{{slot.endBlockHeight}}<br>
+              est.
+              <Countdown :initialTime="(slot.endBlockHeight - height) * avgBlockTime"></Countdown>
+            </div>
+            <div class="flex-1">
+              <div class="font-bold block md:hidden mt-3 mb-1">Successful Bids</div>
+              Count: {{slot.success.bids.length}}<br>
+              Σ Amount: {{slot.success.amountSum.toFixed()}} AE<br>
+              Σ Time: {{slot.success.timeSum}} min
+              <div v-if="slot.success.bids.length">
+                Min: {{Math.min(...slot.success.amountPerTime)}} AE/min<br>
+                Max: {{Math.max(...slot.success.amountPerTime)}} AE/min
+              </div>
+              <ae-button v-if="slot.success.bids.length" face="round" fill="primary"
+                         @click="showBids(slot.id, 'successful', slot.success.bids)">
+                inspect
+                <ae-icon name="eye"/>
+              </ae-button>
+            </div>
+            <div class="flex-1">
+              <div class="font-bold block md:hidden mt-3 mb-1">Failed Bids</div>
+              Count: {{slot.failed.bids.length}}<br>
+              Σ Amount: {{slot.failed.amountSum.toFixed()}} AE<br>
+              Σ Time: {{slot.failed.timeSum}} min
+              <div v-if="slot.failed.bids.length">
+                Min: {{Math.min(...slot.failed.amountPerTime)}} AE/min<br>
+                Max: {{Math.max(...slot.failed.amountPerTime)}} AE/min
+              </div>
+              <ae-button v-if="slot.failed.bids.length" face="round" fill="primary"
+                         @click="showBids(slot.id, 'failed', slot.failed.bids)">
+                inspect
+                <ae-icon name="eye"/>
+              </ae-button>
+            </div>
           </div>
         </div>
       </div>
+
       <bigger-loader v-if="inspectBidsLoading"/>
-      <div v-if="this.inspectBids">
-        <h2>{{this.inspectBids.state}} bids Slot {{this.inspectBids.slotId}}</h2><br>
-        <div class="flex slot-row">
-          <div class="w-1/2">Data</div>
-          <div class="w-1/2">Preview</div>
+      <div v-if="inspectBids">
+        <h2>{{inspectBids.state}} bids Slot {{inspectBids.slotId}}</h2><br>
+        <div class="flex-row p-2 border-t border-grey-light hidden md:flex">
+          <div class="flex-1">Data</div>
+          <div class="flex-1">Preview</div>
         </div>
-        <div v-for="bid in this.inspectBids.bids" :key="bid.seqId">
-          <div class="flex slot-row">
-            <div class="w-1/2">
+        <div v-for="bid in inspectBids.bids" :key="bid.seqId">
+          <div class="flex flex-col md:flex-row p-2 border-t border-grey-light">
+            <div class="flex-1">
               Sequence: {{bid.seqId}}<br>
               Amount: {{bid.amountAe.toFixed()}} AE<br>
               Time: {{bid.time}} min<br>
@@ -91,7 +112,7 @@
               Bidder: {{bid.user}}<br>
               X:{{bid.data.coordinates.x}} Y:{{bid.data.coordinates.y}}
             </div>
-            <div class="w-1/2">
+            <div class="flex-1">
               <img :src='bid.url' v-if="bid.url" class="w-full preview-image" alt="Bidding Image">
             </div>
           </div>
@@ -105,15 +126,17 @@
   import { EpochChain, EpochContract } from '@aeternity/aepp-sdk'
   import Util from '@/utils/blockchain_util'
   import Countdown from '@/components/Countdown'
-  import { AeBadge, AeButton, AeIcon } from '@aeternity/aepp-components'
+  import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components'
   import BiggerLoader from '@/components/BiggerLoader'
   import BigNumber from 'bignumber.js'
   import config from '@/config'
+  import WhiteHeader from '@/components/WhiteHeader'
+  import axios from 'axios'
 
   export default {
-    name: 'Canvas',
-    components: {BiggerLoader, AeBadge, AeButton, AeIcon, Countdown},
-    data() {
+    name: 'Admin',
+    components: { AeLoader, WhiteHeader, BiggerLoader, AeBadge, AeButton, AeIcon, Countdown },
+    data () {
       return {
         slots: [],
         height: 0,
@@ -121,25 +144,52 @@
         loading: true,
         interval: null,
         inspectBidsLoading: false,
-        inspectBids: null
+        inspectBids: null,
+        health: {
+          ipfsNode: null,
+          blockchainNode: null,
+          teaserFiles: null,
+          teaserContract: null,
+          testFiles: null,
+          testContract: null
+        }
       }
     },
     computed: {
       blockchainSettings () {
         return config.blockchainSettings
+      },
+      apiURL () {
+        return config.apiUrl
       }
     },
     methods: {
-      async loadData() {
+      runHealthChecks () {
+        this.health = {
+          ipfsNode: null,
+          blockchainNode: null,
+          teaserFiles: null,
+          teaserContract: null,
+          testFiles: null,
+          testContract: null
+        };
+        axios.get(`${this.apiURL}/health/ipfsNode`).then(() => this.health.ipfsNode = true).catch(() => {this.health.ipfsNode = false})
+        axios.get(`${this.apiURL}/health/blockchainNode`).then(() => this.health.blockchainNode = true).catch(() => this.health.blockchainNode = false)
+        axios.get(`${this.apiURL}/health/teaserFiles`).then(() => this.health.teaserFiles = true).catch(() => this.health.teaserFiles = false)
+        axios.get(`${this.apiURL}/health/teaserContract`).then(() => this.health.teaserContract = true).catch(() => this.health.teaserContract = false)
+        axios.get(`${this.apiURL}/health/testFiles`).then(() => this.health.testFiles = true).catch(() => this.health.testFiles = false)
+        axios.get(`${this.apiURL}/health/testContract`).then(() => this.health.testContract = true).catch(() => this.health.testContract = false)
+      },
+      async loadData () {
         const client = await EpochChain.compose(EpochContract)({
           url: `https://testnet.dronegraffiti.com`,
           internalUrl: `https://testnet.dronegraffiti.com`,
-        }).catch(console.error);
+        }).catch(console.error)
 
-        this.height = await client.height();
+        this.height = await client.height()
 
-        const called = await client.contractEpochCall(this.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()', '').catch(console.error);
-        const decoded = await client.contractEpochDecodeData(Util.auctionSlotListType, called.out).catch(console.error);
+        const called = await client.contractEpochCall(this.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()', '').catch(console.error)
+        const decoded = await client.contractEpochDecodeData(Util.auctionSlotListType, called.out).catch(console.error)
         this.slots = Util.auctionSlotListToObject(decoded)
           .sort((a, b) => a.endBlockHeight - b.endBlockHeight)
           .map(slot => {
@@ -156,7 +206,7 @@
               maximumTimePerBid: slot.maximumTimePerBid,
               startBlockHeight: slot.startBlockHeight,
               endBlockHeight: slot.endBlockHeight,
-              capacityUsed: Util.slotCapacityUsed(slot) ,
+              capacityUsed: Util.slotCapacityUsed(slot),
               success: {
                 bids: slot.successfulBids.sort((a, b) => a.seqId - b.seqId),
                 amountSum: Util.atomsToAe(slot.successfulBids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
@@ -171,27 +221,31 @@
               },
 
             }
-          });
-        this.loading = false;
+          })
+        this.loading = false
       },
-      async showBids(slotId, state, bids) {
-        this.inspectBidsLoading = true;
-        this.inspectBids = null;
+      async showBids (slotId, state, bids) {
+        this.inspectBidsLoading = true
+        this.inspectBids = null
         bids = bids.map(bid => {
-          bid.url = config.apiUrl + "/ipfs/" + bid.data.artworkReference + ".svg";
-          bid.amountAe = Util.atomsToAe(bid.amount);
-          bid.amountPerTimeAe = Util.atomsToAe(bid.amountPerTime).toFixed(4);
-          return bid;
-        });
-        this.inspectBidsLoading = false;
-        this.inspectBids = {slotId: slotId, state: state, bids: bids};
+          bid.url = config.apiUrl + '/ipfs/' + bid.data.artworkReference + '.svg'
+          bid.amountAe = Util.atomsToAe(bid.amount)
+          bid.amountPerTimeAe = Util.atomsToAe(bid.amountPerTime).toFixed(4)
+          return bid
+        })
+        this.inspectBidsLoading = false
+        this.inspectBids = { slotId: slotId, state: state, bids: bids }
       }
     },
-    created() {
-      this.loadData();
-      this.interval = setInterval(this.loadData, 30000);
+    created () {
+      this.runHealthChecks()
+      this.loadData()
+      this.interval = setInterval(() => {
+        this.loadData()
+        this.runHealthChecks()
+      }, 30000)
     },
-    beforeDestroy() {
+    beforeDestroy () {
       clearInterval(this.interval)
     }
   }
@@ -203,11 +257,6 @@
   a {
     color: $color-neutral-maximum;
     text-decoration: none;
-  }
-
-  .slot-row {
-    padding: 10px;
-    border-top: 1px solid lightgray;
   }
 
   .active-badge {
