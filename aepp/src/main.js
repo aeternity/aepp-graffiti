@@ -43,16 +43,12 @@ import config from '@/config.js'
 
 Vue.use(VueRouter)
 
-const router = getRouter(store);
-
-Vue.use(Components)
 Vue.use(VueKonva)
-Vue.use(VueMeta)
 
 Vue.use(VueMatomo, {
   // Configure your matomo server and site by providing
-  host: 'http://localhost:8000',
-  siteId: 1,
+  host: config.matomo.url,
+  siteId: config.matomo.siteId,
 
   // Changes the default .js and .php endpoint's filename
   // Default: 'piwik'

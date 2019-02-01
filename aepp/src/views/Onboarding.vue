@@ -79,7 +79,7 @@
       },
       next() {
         if(this.view === this.MAX_VIEW)  {
-          return this.$router.push('contribute');
+          return this.$router.push('/');
         }
         this.view += 1
       }
