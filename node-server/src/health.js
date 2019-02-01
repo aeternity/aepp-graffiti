@@ -54,7 +54,7 @@ health.teaserSmartContract = async (req, res) => {
 health.normalIPFSFiles = async (req, res) => {
     try {
         const slots = await blockchain.auctionSlots();
-        const bids = slots.map(slot => slot.successfulBids.concat(slot.failedBids)).flat();
+        const bids = slots.map(slot => slot.successfulBids.concat(slot.failedBids)).reduce((acc, val) => acc.concat(val), []);
         const results = await Promise.all(bids.map(bid=> {
             return ipfs.checkFileExists(bid.data.artworkReference)
         }));
