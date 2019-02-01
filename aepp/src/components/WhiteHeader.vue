@@ -26,6 +26,11 @@
             Main Screen
           </ae-button>
         </li>
+        <li>
+          <ae-button @click="giveFeedback">
+            Give Feedback
+          </ae-button>
+        </li>
         <li v-if="hasDefaultSlot">
           <ae-button @click="showBackdrop">
             Help
@@ -51,6 +56,7 @@
 
 <script>
   import { AeBackdrop, AeButton, AeCard, AeDropdown, AeIcon } from '@aeternity/aepp-components'
+  import config from '@/config'
 
   export default {
     name: 'WhiteHeader',
@@ -72,6 +78,9 @@
     computed: {
       hasDefaultSlot () {
         return !!this.$slots.default
+      },
+      feedbackUrl() {
+        return config.feedbackUrl
       }
     },
     methods: {
@@ -80,6 +89,9 @@
       },
       showBackdrop () {
         this.backDropVisible = !this.backDropVisible
+      },
+      giveFeedback() {
+        window.location.href = this.feedbackUrl
       }
     }
   }

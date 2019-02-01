@@ -33,5 +33,6 @@ export default {
   matomo: {
     url: 'https://matomo.dronegraffiti.com',
     siteId: 1,
-  }
+  },
+  feedbackUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSczuV1bCU_GGdQR_Xwb7URpSoVOD0eg7Q9I9DmYKTvPFclorQ/viewform?hl=en'
 }
