@@ -203,8 +203,8 @@
       },
 
       checkAndSetFillScale() {
-        const container = document.querySelector('#stageWrapper');
-        const containerWidth = container.offsetWidth;
+        if(!this.$refs.stageWrapper) return;
+        const containerWidth = this.$refs.stageWrapper.offsetWidth;
         const smallerThanContainerScale = 0.95;
         const scale = (containerWidth / this.canvasSettings.width) * smallerThanContainerScale;
         this.checkAndSetScale(scale);
