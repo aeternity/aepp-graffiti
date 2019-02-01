@@ -67,7 +67,7 @@
 </template>
 
 <script>
-  import Aepp from 'AE_SDK_MODULES/ae/aepp'
+  import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
   import Util from '../utils/blockchain_util'
   import BiggerLoader from '@/components/BiggerLoader'
   import WhiteHeader from '@/components/WhiteHeader'

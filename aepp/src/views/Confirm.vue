@@ -50,7 +50,7 @@
 <script>
   // TODO switch to mono-l typeface if available
   import CanvasWithControlls from '../components/CanvasWithControlls.vue'
-  import Aepp from 'AE_SDK_MODULES/ae/aepp'
+  import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
   import axios from 'axios'
   import LoadingStep from '@/components/LoadingStep'
   import Util from '@/utils/blockchain_util'

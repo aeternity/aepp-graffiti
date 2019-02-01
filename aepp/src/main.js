@@ -9,17 +9,18 @@ import '@aeternity/aepp-components/dist/aepp.components.css'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App.vue'
-import getRouter from './router'
+import router from './router'
 import store from './store'
 import VueKonva from 'vue-konva'
-import VueMeta from 'vue-meta'
 import VueMatomo from 'vue-matomo'
+import config from '@/config.js'
 /**
  * Documentation of the new components are here.
  *
  * http://aeternity.com/aepp-components/
  */
-import Components from '@aeternity/aepp-components'
+//import Components from '@aeternity/aepp-components'
+//Vue.use(Components)
 
 /**
  * Use this if you need a general reset.
