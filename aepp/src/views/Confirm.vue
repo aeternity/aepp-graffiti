@@ -60,6 +60,7 @@
   import Util from '@/utils/blockchain_util'
   import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
   import config from '@/config'
+  import bugsnagClient from '@/utils/bugsnag'
 
   const STATUS_INITIAL = 1, STATUS_LOADING = 2;
   const LOADING_DATA = 0, LOADING_IPFS = 1, LOADING_CONTRACT = 2, LOADING_FINISHED = 3;
@@ -129,7 +130,9 @@
             const response = await axios.post(`${config.apiUrl}/upload`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
             this.ipfsAddr = response.data.hash
           } catch (e) {
-            this.errorStep = LOADING_IPFS
+            bugsnagClient.notify(e)
+            console.error(e)
+            return this.errorStep = LOADING_IPFS
           }
 
           this.currentLoadingStep = LOADING_CONTRACT
@@ -144,10 +147,13 @@
             this.currentLoadingStep = LOADING_FINISHED
             this.$store.dispatch('resetState')
           } catch (e) {
-            this.errorStep = LOADING_CONTRACT
+            bugsnagClient.notify(e)
+            console.error(e)
+            return this.errorStep = LOADING_CONTRACT
           }
 
         } catch (e) {
+          bugsnagClient.notify(e)
           this.errorStep = LOADING_DATA
           console.error(e)
         }
