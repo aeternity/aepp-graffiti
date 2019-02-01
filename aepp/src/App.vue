@@ -13,25 +13,11 @@
 
   import { AeMain } from '@aeternity/aepp-components'
 
-
   export default {
     name: 'app',
     components: { AeMain },
-
-    //TODO there has to be a better solution than this
-    metaInfo: {
-      meta: [
-        { name: 'viewport', content: 'initial-scale=1.0,width=device-width,user-scalable=0' }
-      ]
-    },
-
-    data () {
-      return {
-        goToRoute: ''
-      }
-    },
-    created() {
-      console.log(this.$route.path)
+    updated() {
+      this.$matomo.setDocumentTitle(document.title)
     }
   }
 </script>

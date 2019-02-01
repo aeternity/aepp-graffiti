@@ -11,74 +11,81 @@ import Canvas from './views/desktop/Canvas'
 import Admin from './views/desktop/Admin'
 import Amount from './views/Amount'
 
-export default () => {
-  const routes = [
-    {
-      path: '/',
-      name: 'home',
-      component: Home,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/contribute',
-      name: 'contribute',
-      component: Contribute,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/render',
-      name: 'render',
-      component: Render,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/positioning',
-      name: 'positioning',
-      component: Positioning,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/confirm',
-      name: 'confirm',
-      component: Confirm,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/overview',
-      name: 'overview',
-      component: Overview,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/onboarding',
-      name: 'onboarding',
-      component: Onboarding,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/slots',
-      name: 'slots',
-      component: Slots,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/amount',
-      name: 'amount',
-      component: Amount,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/desktop/canvas',
-      name: 'canvas',
-      component: Canvas,
-      props: route => ({ query: route.query })
-    },
-    {
-      path: '/desktop/admin',
-      name: 'admin',
-      component: Admin,
-      props: route => ({ query: route.query })
-    }
-  ]
-  return new Router({mode: 'history', routes: routes})
-}
+const routes = [
+  {
+    path: '/',
+    name: 'home',
+    component: Home,
+    meta: { title: `Home` },
+  },
+  {
+    path: '/contribute',
+    name: 'contribute',
+    component: Contribute,
+    meta: { title: `Contribute` },
+  },
+  {
+    path: '/render',
+    name: 'render',
+    component: Render,
+    meta: { title: `Render` },
+  },
+  {
+    path: '/positioning',
+    name: 'positioning',
+    component: Positioning,
+    meta: { title: `Positioning` },
+  },
+  {
+    path: '/confirm',
+    name: 'confirm',
+    component: Confirm,
+    meta: { title: `Confirm` },
+  },
+  {
+    path: '/overview',
+    name: 'overview',
+    component: Overview,
+    meta: { title: `Overview` },
+  },
+  {
+    path: '/onboarding',
+    name: 'onboarding',
+    component: Onboarding,
+    meta: { title: `Onboarding` },
+  },
+  {
+    path: '/slots',
+    name: 'slots',
+    component: Slots,
+    meta: { title: `Slots` },
+  },
+  {
+    path: '/amount',
+    name: 'amount',
+    component: Amount,
+    meta: { title: `Amount` },
+  },
+  {
+    path: '/desktop/canvas',
+    name: 'canvas',
+    component: Canvas,
+    meta: { title: `Canvas` },
+  },
+  {
+    path: '/desktop/admin',
+    name: 'admin',
+    component: Admin,
+    meta: { title: `Admin` },
+  }
+]
+
+const router = new Router({ mode: 'history', routes: routes })
+
+router.beforeEach((to, from, next) => {
+  document.title = `${to.meta.title} - Drone Aepp`
+  document.querySelector('meta[name=viewport]').content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+  next()
+})
+
+export default router;
