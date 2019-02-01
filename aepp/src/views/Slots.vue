@@ -107,7 +107,7 @@
         </swiper-slide>
       </swiper>
       <div class="w-full mt-6 flex justify-center">
-        <ae-button class="ae-max-width" face="round" fill="primary" @click="next" extend>Bid on this slot</ae-button>
+        <ae-button class="ae-max-width" face="round" fill="primary" @click="next" extend>Bid in this slot</ae-button>
       </div>
     </div>
   </div>

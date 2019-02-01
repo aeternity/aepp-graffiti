@@ -15,10 +15,7 @@
 
   export default {
     name: 'app',
-    components: { AeMain },
-    updated() {
-      this.$matomo.setDocumentTitle(document.title)
-    }
+    components: { AeMain }
   }
 </script>
 
