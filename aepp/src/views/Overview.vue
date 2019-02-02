@@ -58,7 +58,7 @@
                   <span v-if="bid.successful">Successful</span>
                   <span v-if="!bid.successful">Failed</span>
                   <span v-if="bid.finished && !bid.successful"><br> (Minimum bid: {{bid.minimumAmount}} AE / Min)</span>
-                  <span v-if="!bid.finished"> (Pending)</span>
+                  <span v-if="!bid.finished && bid.successful"> (Pending)</span>
               </span>
             </div>
           </div>
