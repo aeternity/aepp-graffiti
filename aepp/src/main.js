@@ -14,6 +14,7 @@ import store from './store'
 import VueKonva from 'vue-konva'
 import VueMatomo from 'vue-matomo'
 import config from '@/config.js'
+import '@babel/polyfill'
 
 /**
  * Documentation of the new components are here.
