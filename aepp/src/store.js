@@ -105,25 +105,26 @@ const store = new Vuex.Store({
     }
   },
   actions: {
+
     uploadImage ({ commit }, file) {
 
       const fReader = new FileReader()
 
       fReader.onload = async () => {
-        try {
-          const image = await Jimp.read(fReader.result)
+        const image = await Jimp.read(fReader.result)
 
-          image.scaleToFit(config.imageSettings.min.width, config.imageSettings.min.height)
+        image.scaleToFit(config.imageSettings.min.width, config.imageSettings.min.height)
 
-          const imageSource = await image.getBase64Async(file.type)
+        const imageSource = await image.getBase64Async(file.type)
 
-          commit('modifyOriginalImage', {
-            src: imageSource,
-            type: file.type
-          })
-        } catch (e) {
-          console.error(e)
-        }
+        commit('modifyOriginalImage', {
+          src: imageSource,
+          type: file.type
+        })
+      }
+
+      fReader.onerror = (e) => {
+        throw Error(e.message)
       }
 
       fReader.readAsDataURL(file)

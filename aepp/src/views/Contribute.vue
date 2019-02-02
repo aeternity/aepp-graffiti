@@ -67,9 +67,9 @@
 
 <script>
 
-  import BiggerLoader from "../components/BiggerLoader";
+  import BiggerLoader from '../components/BiggerLoader'
   import WhiteHeader from '@/components/WhiteHeader'
-  import { AeList, AeListItem, AeButton, AeText } from '@aeternity/aepp-components'
+  import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
 
   const STATUS_INITIAL = 0, STATUS_LOADING = 1, STATUS_SUCCESS = 2, STATUS_ERROR = 3
 
@@ -136,13 +136,17 @@
           this.error = 'Please upload a JPEG or PNG image'
           return
         }
-
-        this.$store.dispatch(`uploadImage`, file)
+        try {
+          this.$store.dispatch('uploadImage', file)
+        } catch (e) {
+          this.currentStatus = STATUS_ERROR
+          this.error = e.message
+        }
 
       },
       imageLoad () {
         this.currentStatus = STATUS_SUCCESS
-        this.$store.dispatch(`updateOriginalImage`, {
+        this.$store.dispatch('updateOriginalImage', {
           width: this.$refs.image.naturalWidth,
           height: this.$refs.image.naturalHeight
         })

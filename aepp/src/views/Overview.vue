@@ -105,7 +105,11 @@
         const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
         const height = await this.client.height()
         const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
-        this.bids = Util.auctionSlotListToObject(decodedAllBids).map(slot => {
+        const slots = Util.auctionSlotListToObject(decodedAllBids)
+
+        if (slots.length === 0) return this.state = EMPTY_LIST
+
+        const allBids = slots.map(slot => {
           let allBids = []
 
           allBids = allBids.concat(slot.successfulBids.filter(bid => bid.user === this.address).map(bid => {
@@ -123,19 +127,18 @@
             bid.finished = Util.slotIsPast(slot, height)
             bid.slotId = slot.id
             bid.minimumAmount = Math.min(...slot.successfulBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4)))
+            bid.url = config.apiUrl + '/ipfs/' + bid.data.artworkReference + '.svg'
             return bid
           })
-
           return allBids
-        }).flat().sort((a, b) => b.seqId - a.seqId)
+        })
+
+        if(allBids.length === 0) return this.state = EMPTY_LIST
+
+        this.bids = allBids.flat().sort((a, b) => b.seqId - a.seqId)
 
         if (this.bids.length > 0) this.state = SHOW_LIST
         else return this.state = EMPTY_LIST
-
-        this.bids = this.bids.map(bid => {
-          bid.url = config.apiUrl + '/ipfs/' + bid.data.artworkReference + '.svg'
-          return bid
-        })
       }
     },
     created () {
