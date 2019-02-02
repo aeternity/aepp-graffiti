@@ -15,6 +15,7 @@
   import BiggerLoader from '@/components/BiggerLoader'
   import Konva from 'konva'
   import config from '@/config'
+  import bugsnagClient from '@/utils/bugsnag'
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 
@@ -115,12 +116,14 @@
             this.overlayLayer.draw()
           } catch (e) {
             console.error(e)
+            bugsnagClient.notify(e)
           }
 
         }
 
         windowImage.onerror = (e) => {
           console.error(e)
+          bugsnagClient.notify(e)
         }
 
         windowImage.src = src

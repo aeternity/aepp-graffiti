@@ -3,6 +3,10 @@
     <WhiteHeader title="Admin Interface"></WhiteHeader>
 
     <div class="p-8">
+      <div v-if="error">
+        <h1 class="mt-4 mb-2">error</h1>
+        <div class="font-mono text-red text-xl">{{error}}</div>
+      </div>
       <h1 class="mt-4 mb-2">health check</h1>
       <div class="my-1" v-for="(value, key) in health" :key="key">
         {{key}}:
@@ -132,6 +136,7 @@
   import config from '@/config'
   import WhiteHeader from '@/components/WhiteHeader'
   import axios from 'axios'
+  import bugsnagClient from '@/utils/bugsnag'
 
   export default {
     name: 'Admin',
@@ -152,7 +157,8 @@
           teaserContract: null,
           testFiles: null,
           testContract: null
-        }
+        },
+        error: null
       }
     },
     computed: {
@@ -181,48 +187,53 @@
         axios.get(`${this.apiURL}/health/testContract`).then(() => this.health.testContract = true).catch(() => this.health.testContract = false)
       },
       async loadData () {
-        const client = await EpochChain.compose(EpochContract)({
-          url: `https://testnet.dronegraffiti.com`,
-          internalUrl: `https://testnet.dronegraffiti.com`,
-        }).catch(console.error)
-
-        this.height = await client.height()
-
-        const called = await client.contractEpochCall(this.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()', '').catch(console.error)
-        const decoded = await client.contractEpochDecodeData(Util.auctionSlotListType, called.out).catch(console.error)
-        this.slots = Util.auctionSlotListToObject(decoded)
-          .sort((a, b) => a.endBlockHeight - b.endBlockHeight)
-          .map(slot => {
-            return {
-              id: slot.id,
-              downloadLink: `${config.apiUrl}/slots/${slot.id}`,
-              timing: {
-                past: Util.slotIsPast(slot, this.height),
-                active: Util.slotIsActive(slot, this.height),
-                future: Util.slotIsFuture(slot, this.height)
-              },
-              timeCapacity: slot.timeCapacity,
-              minimumTimePerBid: slot.minimumTimePerBid,
-              maximumTimePerBid: slot.maximumTimePerBid,
-              startBlockHeight: slot.startBlockHeight,
-              endBlockHeight: slot.endBlockHeight,
-              capacityUsed: Util.slotCapacityUsed(slot),
-              success: {
-                bids: slot.successfulBids.sort((a, b) => a.seqId - b.seqId),
-                amountSum: Util.atomsToAe(slot.successfulBids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
-                timeSum: slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0),
-                amountPerTime: slot.successfulBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4))
-              },
-              failed: {
-                bids: slot.failedBids.sort((a, b) => a.seqId - b.seqId),
-                amountSum: Util.atomsToAe(slot.failedBids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
-                timeSum: slot.failedBids.reduce((acc, x) => Number(x.time) + acc, 0),
-                amountPerTime: slot.failedBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4))
-              },
-
-            }
+        try {
+          const client = await EpochChain.compose(EpochContract)({
+            url: `https://testnet.dronegraffiti.com`,
+            internalUrl: `https://testnet.dronegraffiti.com`,
           })
-        this.loading = false
+
+          this.height = await client.height()
+
+          const called = await client.contractEpochCall(this.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()', '')
+          const decoded = await client.contractEpochDecodeData(Util.auctionSlotListType, called.out)
+          this.slots = Util.auctionSlotListToObject(decoded)
+            .sort((a, b) => a.endBlockHeight - b.endBlockHeight)
+            .map(slot => {
+              return {
+                id: slot.id,
+                downloadLink: `${config.apiUrl}/slots/${slot.id}`,
+                timing: {
+                  past: Util.slotIsPast(slot, this.height),
+                  active: Util.slotIsActive(slot, this.height),
+                  future: Util.slotIsFuture(slot, this.height)
+                },
+                timeCapacity: slot.timeCapacity,
+                minimumTimePerBid: slot.minimumTimePerBid,
+                maximumTimePerBid: slot.maximumTimePerBid,
+                startBlockHeight: slot.startBlockHeight,
+                endBlockHeight: slot.endBlockHeight,
+                capacityUsed: Util.slotCapacityUsed(slot),
+                success: {
+                  bids: slot.successfulBids.sort((a, b) => a.seqId - b.seqId),
+                  amountSum: Util.atomsToAe(slot.successfulBids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
+                  timeSum: slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0),
+                  amountPerTime: slot.successfulBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4))
+                },
+                failed: {
+                  bids: slot.failedBids.sort((a, b) => a.seqId - b.seqId),
+                  amountSum: Util.atomsToAe(slot.failedBids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
+                  timeSum: slot.failedBids.reduce((acc, x) => Number(x.time) + acc, 0),
+                  amountPerTime: slot.failedBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4))
+                },
+
+              }
+            })
+          this.loading = false
+        } catch (e) {
+          bugsnagClient.notify(e)
+          this.error = e.message
+        }
       },
       async showBids (slotId, state, bids) {
         this.inspectBidsLoading = true

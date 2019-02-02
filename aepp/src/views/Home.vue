@@ -36,6 +36,7 @@
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
   import Util from '@/utils/blockchain_util'
   import axios from 'axios'
+  import bugsnagClient from '@/utils/bugsnag'
 
   export default {
     name: 'Home',
@@ -93,6 +94,7 @@
           }
           try {
             this.$matomo.setUserId(address)
+            bugsnagClient.user = { address }
           } catch (e) {
             console.error('Tracking failed')
             console.error(e)

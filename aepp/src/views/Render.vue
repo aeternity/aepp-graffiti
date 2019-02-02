@@ -218,6 +218,7 @@
         const progress100 = Math.round(progress * 100)
         if (this.progress !== progress100) {
           console.log('UPDATING', progress100)
+          this.progress = progress100
         }
       }
     },

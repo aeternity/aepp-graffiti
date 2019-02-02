@@ -4,6 +4,7 @@ import VuexPersist from 'vuex-persist'
 import Jimp from 'jimp/es'
 import DroneTracer from '../node_modules/dronetracer/src/DroneTracer/main.js'
 import config from '@/config'
+import bugsnagClient from '@/utils/bugsnag'
 
 Vue.use(Vuex)
 
@@ -191,7 +192,9 @@ const store = new Vuex.Store({
             y: Math.max(state.settings.scaleFactor - 100, 0) // 0 as fallback
           })
         } else {
+          bugsnagClient.notify(e)
           console.error(e)
+
         }
       }
 

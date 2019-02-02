@@ -177,20 +177,20 @@
       async runBid () {
         // args: hash, x, y, time
         // amount: ae to contract amount
-
-        const calledBid = await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'place_bid', {
-          args: `(${this.bid.slotId}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
-          options: { amount: Util.aeToAtoms(this.bid.amount ).toFixed()}
-        }).catch(async e => {
+        try {
+          await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'place_bid', {
+            args: `(${this.bid.slotId}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
+            options: { amount: Util.aeToAtoms(this.bid.amount ).toFixed()}
+          })
+        } catch(e) {
           const decodedError = await this.client.contractDecodeData('string', e.returnValue).catch(e => {
             console.error(e);
             throw Error('Could not decode error data');
           })
           console.log('decodedError', decodedError)
+          bugsnagClient.notify(decodedError)
           throw Error(JSON.stringify(decodedError))
-        })
-
-        console.log('calledBid', calledBid)
+        }
       }
     },
     created () {

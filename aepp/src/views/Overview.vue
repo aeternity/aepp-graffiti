@@ -6,6 +6,13 @@
       <BiggerLoader></BiggerLoader>
     </div>
 
+    <div class="w-full p-4 text-center" v-if="isErrorState">
+      <h1 class="text-center mt-3">Error</h1>
+      <div class="w-full text-center font-mono text-xl text-red mt-2">
+        {{error}}
+      </div>
+      </div>
+
     <div class="w-full p-4" v-if="isShowListState">
       <div v-for="bid in bids" :key='bid.seqId'>
         <ae-card class="mb-4">
@@ -73,8 +80,9 @@
   import WhiteHeader from '@/components/WhiteHeader'
   import { AeCard } from '@aeternity/aepp-components'
   import config from '@/config'
+  import bugsnagClient from '@/utils/bugsnag'
 
-  const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2
+  const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2, ERROR_STATE = 3
 
   export default {
     name: 'Overview',
@@ -83,7 +91,8 @@
       return {
         bids: [],
         state: INITAL_STATE,
-        address: null
+        address: null,
+        error: null
       }
     },
     computed: {
@@ -98,47 +107,73 @@
       },
       isEmptyListState () {
         return this.state === EMPTY_LIST
+      },
+      isErrorState() {
+        return this.state === ERROR_STATE
       }
     },
     methods: {
       async updateMyBids () {
-        const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
-        const height = await this.client.height()
-        const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
-        const slots = Util.auctionSlotListToObject(decodedAllBids)
+        try {
+          const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
 
-        if (slots.length === 0) return this.state = EMPTY_LIST
+          if(!calledAllBids) {
+            this.error = 'Could not retrieve data from contract. Are you online?'
+            bugsnagClient.notify('calledAllBids is undefined')
+            return this.state = ERROR_STATE
+          }
 
-        const allBids = slots.map(slot => {
-          let allBids = []
+          const height = await this.client.height()
 
-          allBids = allBids.concat(slot.successfulBids.filter(bid => bid.user === this.address).map(bid => {
-            bid.successful = true
-            return bid
-          }))
+          const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
 
-          allBids = allBids.concat(slot.failedBids.filter(bid => bid.user === this.address).map(bid => {
-            bid.successful = false
-            return bid
-          }))
+          if(!decodedAllBids) {
+            this.error = 'Could not decode data from contract.'
+            bugsnagClient.notify('decodedAllBids is undefined')
+            return this.state = ERROR_STATE
+          }
 
-          allBids = allBids.map(bid => {
-            bid.amount = Util.atomsToAe(bid.amount)
-            bid.finished = Util.slotIsPast(slot, height)
-            bid.slotId = slot.id
-            bid.minimumAmount = Math.min(...slot.successfulBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4)))
-            bid.url = config.apiUrl + '/ipfs/' + bid.data.artworkReference + '.svg'
-            return bid
+          const slots = Util.auctionSlotListToObject(decodedAllBids)
+
+          if (slots.length === 0) return this.state = EMPTY_LIST
+
+          const allBids = slots.map(slot => {
+            let allBids = []
+
+            allBids = allBids.concat(slot.successfulBids.filter(bid => bid.user === this.address).map(bid => {
+              bid.successful = true
+              return bid
+            }))
+
+            allBids = allBids.concat(slot.failedBids.filter(bid => bid.user === this.address).map(bid => {
+              bid.successful = false
+              return bid
+            }))
+
+            allBids = allBids.map(bid => {
+              bid.amount = Util.atomsToAe(bid.amount)
+              bid.finished = Util.slotIsPast(slot, height)
+              bid.slotId = slot.id
+              bid.minimumAmount = Math.min(...slot.successfulBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4)))
+              bid.url = config.apiUrl + '/ipfs/' + bid.data.artworkReference + '.svg'
+              return bid
+            })
+            return allBids
           })
-          return allBids
-        })
 
-        if(allBids.length === 0) return this.state = EMPTY_LIST
+          if(allBids.length === 0) return this.state = EMPTY_LIST
 
-        this.bids = allBids.flat().sort((a, b) => b.seqId - a.seqId)
+          this.bids = allBids.flat().sort((a, b) => b.seqId - a.seqId)
 
-        if (this.bids.length > 0) this.state = SHOW_LIST
-        else return this.state = EMPTY_LIST
+          if (this.bids.length > 0) this.state = SHOW_LIST
+          else return this.state = EMPTY_LIST
+        } catch (e) {
+          this.error = e.message
+          console.error(e)
+          this.state = ERROR_STATE
+          bugsnagClient.notify(e)
+        }
+
       }
     },
     created () {

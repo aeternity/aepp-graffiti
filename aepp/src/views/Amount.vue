@@ -38,7 +38,8 @@
   import WhiteHeader from '../components/WhiteHeader'
   import { AeButton, AeInput, AeToolbar } from '@aeternity/aepp-components'
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import Utils from '../utils/blockchain_util'
+  import Utils from '@/utils/blockchain_util'
+  import bugsnagClient from '@/utils/bugsnag'
 
   export default {
     name: 'Amount',
@@ -98,14 +99,14 @@
       }
     },
     async mounted () {
-      console.log(this.slotObject)
-      this.total = this.amount * this.transformedImage.dronetime
-      this.client = await Aepp()
       try {
+        this.total = this.amount * this.transformedImage.dronetime
+        this.client = await Aepp()
         const pub = await this.client.address()
         this.balance = Utils.atomsToAe(await this.client.balance(pub, {format:false}))
       } catch (e) {
         console.error(e)
+        bugsnagClient.notify(e)
         this.balance = 0
       }
     }
