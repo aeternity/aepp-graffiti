@@ -1,7 +1,5 @@
 <template>
   <div>
-    <WhiteHeader title="Admin Interface"></WhiteHeader>
-
     <div class="p-8">
       <div v-if="error">
         <h1 class="mt-4 mb-2">error</h1>
@@ -134,13 +132,12 @@
   import BiggerLoader from '@/components/BiggerLoader'
   import BigNumber from 'bignumber.js'
   import config from '@/config'
-  import WhiteHeader from '@/components/WhiteHeader'
   import axios from 'axios'
   import bugsnagClient from '@/utils/bugsnag'
 
   export default {
     name: 'Admin',
-    components: { AeLoader, WhiteHeader, BiggerLoader, AeBadge, AeButton, AeIcon, Countdown },
+    components: { AeLoader, BiggerLoader, AeBadge, AeButton, AeIcon, Countdown },
     data () {
       return {
         slots: [],

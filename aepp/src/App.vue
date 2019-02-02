@@ -31,7 +31,7 @@
       }
     },
     created() {
-      if(window.parent === window && !this.ignoreErrors) {
+      if(window.parent === window && !this.ignoreErrors && !this.$route.path.includes('desktop')) {
         // SET ERROR
         this.error = 'Could not connect to your wallet. Please make sure you run this application inside the base aepp.'
         this.errorCTA = 'Go to Base Aepp'
