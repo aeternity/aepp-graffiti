@@ -163,7 +163,7 @@
 
           if(allBids.length === 0) return this.state = EMPTY_LIST
 
-          this.bids = allBids.flat().sort((a, b) => b.seqId - a.seqId)
+          this.bids = allBids.reduce((acc, val) => acc.concat(val), []).sort((a, b) => b.seqId - a.seqId)
 
           if (this.bids.length > 0) this.state = SHOW_LIST
           else return this.state = EMPTY_LIST
