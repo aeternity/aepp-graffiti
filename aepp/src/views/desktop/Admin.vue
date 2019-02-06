@@ -5,13 +5,45 @@
         <h1 class="mt-4 mb-2">error</h1>
         <div class="font-mono text-red text-xl">{{error}}</div>
       </div>
-      <h1 class="mt-4 mb-2">health check</h1>
-      <div class="my-1" v-for="(value, key) in health" :key="key">
-        {{key}}:
-        <ae-loader v-if="value === null"></ae-loader>
-        <ae-icon name="check" v-if="value === true"></ae-icon>
-        <span v-if="value === false" class="text-red font-bold">HEALTHCHECK FAILED</span>
+      <div class="flex flex-col md:flex-row">
+        <div>
+          <h1 class="mt-4 mb-2">health check</h1>
+          <div class="my-1" v-for="(value, key) in health" :key="key">
+            {{key}}:
+            <ae-loader v-if="value === null"></ae-loader>
+            <ae-icon name="check" v-if="value === true"></ae-icon>
+            <span v-if="value === false" class="text-red font-bold">HEALTHCHECK FAILED</span>
+          </div>
+        </div>
+        <div class="md:ml-8 md:pl-8 md:border-l">
+          <h1 class="mt-4 mb-2">ts to block</h1>
+          <div>
+            <div class="flex flex-row">
+              <div class="flex flex-col mb-4">
+                <label for="date" class="font-mono">Date</label>
+                <input class="input" id="date" v-model="date" type="date"/>
+              </div>
+
+              <div class="flex flex-col mb-4">
+                <label for="time" class="font-mono">Time</label>
+                <input class="input" id="time" v-model="time" type="time"/>
+              </div>
+
+              <div class="flex flex-col mb-4">
+                <label for="zone" class="font-mono">Timezone</label>
+                <input class="input" id="zone" v-model="timezone" type="number"
+                       placeholder="+ 0"/>
+              </div>
+            </div>
+
+            <div class="flex flex-col mb-4">
+              <label class="font-mono">Result Block</label>
+              <div class="text-xl font-mono">{{block}}</div>
+            </div>
+          </div>
+        </div>
       </div>
+
       <h1 class="mt-4 mb-2">current height</h1>
       <bigger-loader v-if="!height"/>
       <div class="font-mono text-xl" v-else>{{height}}</div>
@@ -125,10 +157,10 @@
 </template>
 
 <script>
-  import { EpochChain, EpochContract } from '@aeternity/aepp-sdk'
+  import {EpochChain, EpochContract} from '@aeternity/aepp-sdk'
   import Util from '@/utils/blockchain_util'
   import Countdown from '@/components/Countdown'
-  import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components'
+  import {AeBadge, AeButton, AeIcon, AeLoader} from '@aeternity/aepp-components'
   import BiggerLoader from '@/components/BiggerLoader'
   import BigNumber from 'bignumber.js'
   import config from '@/config'
@@ -137,8 +169,8 @@
 
   export default {
     name: 'Admin',
-    components: { AeLoader, BiggerLoader, AeBadge, AeButton, AeIcon, Countdown },
-    data () {
+    components: {AeLoader, BiggerLoader, AeBadge, AeButton, AeIcon, Countdown},
+    data() {
       return {
         slots: [],
         height: 0,
@@ -147,6 +179,10 @@
         interval: null,
         inspectBidsLoading: false,
         inspectBids: null,
+        date: null,
+        time: null,
+        timezone: null,
+        resultBlock: null,
         health: {
           ipfsNode: null,
           blockchainNode: null,
@@ -159,15 +195,26 @@
       }
     },
     computed: {
-      blockchainSettings () {
+      blockchainSettings() {
         return config.blockchainSettings
       },
-      apiURL () {
+      apiURL() {
         return config.apiUrl
+      },
+      timeZoneString() {
+        if (!this.timezone || this.timezone === 0) return '';
+        return this.timezone > 0 ? 'GMT +' + this.timezone : 'GMT ' + this.timezone
+      },
+      block() {
+        const target = Date.parse(`${this.date || ' '} ${this.time || ' '} ${this.timeZoneString || ' '}`);
+        const current = Date.now();
+        const diff = target - current;
+        const goalBlock = parseInt(this.height + diff / 180000);
+        return Number.isNaN(goalBlock) ? 0 : goalBlock;
       }
     },
     methods: {
-      runHealthChecks () {
+      runHealthChecks() {
         this.health = {
           ipfsNode: null,
           blockchainNode: null,
@@ -176,14 +223,16 @@
           testFiles: null,
           testContract: null
         };
-        axios.get(`${this.apiURL}/health/ipfsNode`).then(() => this.health.ipfsNode = true).catch(() => {this.health.ipfsNode = false})
+        axios.get(`${this.apiURL}/health/ipfsNode`).then(() => this.health.ipfsNode = true).catch(() => {
+          this.health.ipfsNode = false
+        })
         axios.get(`${this.apiURL}/health/blockchainNode`).then(() => this.health.blockchainNode = true).catch(() => this.health.blockchainNode = false)
         axios.get(`${this.apiURL}/health/teaserFiles`).then(() => this.health.teaserFiles = true).catch(() => this.health.teaserFiles = false)
         axios.get(`${this.apiURL}/health/teaserContract`).then(() => this.health.teaserContract = true).catch(() => this.health.teaserContract = false)
         axios.get(`${this.apiURL}/health/testFiles`).then(() => this.health.testFiles = true).catch(() => this.health.testFiles = false)
         axios.get(`${this.apiURL}/health/testContract`).then(() => this.health.testContract = true).catch(() => this.health.testContract = false)
       },
-      async loadData () {
+      async loadData() {
         try {
           const client = await EpochChain.compose(EpochContract)({
             url: `https://testnet.dronegraffiti.com`,
@@ -232,7 +281,7 @@
           this.error = e.message
         }
       },
-      async showBids (slotId, state, bids) {
+      async showBids(slotId, state, bids) {
         this.inspectBidsLoading = true
         this.inspectBids = null
         bids = bids.map(bid => {
@@ -242,10 +291,10 @@
           return bid
         })
         this.inspectBidsLoading = false
-        this.inspectBids = { slotId: slotId, state: state, bids: bids }
+        this.inspectBids = {slotId: slotId, state: state, bids: bids}
       }
     },
-    created () {
+    created() {
       this.runHealthChecks()
       this.loadData()
       this.interval = setInterval(() => {
@@ -253,7 +302,7 @@
         this.runHealthChecks()
       }, 30000)
     },
-    beforeDestroy () {
+    beforeDestroy() {
       clearInterval(this.interval)
     }
   }
@@ -278,5 +327,11 @@
 
   .preview-image {
     max-height: 300px;
+  }
+
+  .input {
+    height: 50px;
+    display: block;
+    @apply border-b p-2 font-mono text-xl max-w-xs;
   }
 </style>
