@@ -88,12 +88,12 @@
               <div class="font-bold block md:hidden mt-3 mb-1">Block Height Bounds</div>
               Start height {{slot.startBlockHeight}}<br>
               est.
-              <Countdown :initialTime="(slot.startBlockHeight - height) * avgBlockTime"></Countdown>
+              <span>{{blockToDate(slot.startBlockHeight)}}</span>
               <br>
               <br>
               End height&nbsp;&nbsp;{{slot.endBlockHeight}}<br>
               est.
-              <Countdown :initialTime="(slot.endBlockHeight - height) * avgBlockTime"></Countdown>
+              <span>{{blockToDate(slot.endBlockHeight)}}</span>
             </div>
             <div class="flex-1">
               <div class="font-bold block md:hidden mt-3 mb-1">Successful Bids</div>
@@ -159,7 +159,6 @@
 <script>
   import {EpochChain, EpochContract} from '@aeternity/aepp-sdk'
   import Util from '@/utils/blockchain_util'
-  import Countdown from '@/components/Countdown'
   import {AeBadge, AeButton, AeIcon, AeLoader} from '@aeternity/aepp-components'
   import BiggerLoader from '@/components/BiggerLoader'
   import BigNumber from 'bignumber.js'
@@ -169,7 +168,7 @@
 
   export default {
     name: 'Admin',
-    components: {AeLoader, BiggerLoader, AeBadge, AeButton, AeIcon, Countdown},
+    components: {AeLoader, BiggerLoader, AeBadge, AeButton, AeIcon},
     data() {
       return {
         slots: [],
@@ -214,6 +213,18 @@
       }
     },
     methods: {
+      blockToDate(goalBlock) {
+        const diff = goalBlock - this.height;
+        return new Date(diff * 180000 + Date.now()).toLocaleString([],
+          {
+            day: '2-digit',
+            month: '2-digit',
+            year: '2-digit',
+            hour: '2-digit',
+            minute:'2-digit',
+            timeZoneName: 'short'
+          });
+      },
       runHealthChecks() {
         this.health = {
           ipfsNode: null,
