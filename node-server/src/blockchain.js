@@ -4,7 +4,7 @@ const TeaserUtil = require('./util/blockchain_teaser_utils');
 const blockchain = {};
 
 // can eventually be called by name in the future
-const contractAddress = 'ct_2U9MkZK9JXTUemAURfCd8BDQZcXK4Gk8Hwfqxf1ASSYNrQnhjz';
+const contractAddress = 'ct_Lx1ppN3iEMyjEPLmJpda7iJwVQxhokmD8bUic9g1Z63tdGuSc';
 const teaserContractAddress = 'ct_Fk3wWdC7t6Fv5eypLWThND19CGn1cBuScnGBZx6r6tG9q1DbU';
 
 let client = null;
