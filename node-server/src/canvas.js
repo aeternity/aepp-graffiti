@@ -55,7 +55,8 @@ canvas.mergeSVG = (sources) => {
         svgAttrs: {
             width: width,
             height: height,
-            viewBox: `0 0 ${width} ${height}`
+            viewBox: `0 0 ${width} ${height}`,
+            style: 'background-color: #ffffff;'
         }
     });
     const sprites = sources.reduce((acc, cur) => acc.add(cur.id, cur.svg), svg);
