@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full">
+  <div class="w-full h-full bg-grey-lighter">
     <div v-show="isLoading" class="w-full h-64 flex justify-center items-center">
       <BiggerLoader></BiggerLoader>
     </div>
