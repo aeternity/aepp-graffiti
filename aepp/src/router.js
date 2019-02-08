@@ -9,6 +9,7 @@ import Onboarding from './views/Onboarding'
 import Slots from './views/Slots'
 import Canvas from './views/desktop/Canvas'
 import Admin from './views/desktop/Admin'
+import Teaser from './views/desktop/Teaser'
 import Amount from './views/Amount'
 
 const routes = [
@@ -77,6 +78,12 @@ const routes = [
     name: 'admin',
     component: Admin,
     meta: { title: `Admin` },
+  },
+  {
+    path: '/desktop/teaser',
+    name: 'teaser',
+    component: Teaser,
+    meta: { title: `Teaser` },
   }
 ]
 
