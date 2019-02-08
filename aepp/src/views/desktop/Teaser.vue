@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>Drone Graffiti Teaser</h1>
+    <a target="_blank" :href="`https://www.google.com/maps/search/${geolocation}`">{{geolocation}}</a><br/>
     <div v-for="teaser in teaserData">
       <a target="_blank"
          :href="`https://testnet.explorer.aepps.com/#/tx/${teaser.transaction}`">{{teaser.transaction}}</a><br/>
@@ -22,7 +23,7 @@
         mainnetUrl: "https://sdk-testnet.aepps.com",
 
         // TODO: real contract hash
-        teaserContractAddress: "ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt", //"ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr",
+        teaserContractAddress: "ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr", //"ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr",
 
         // TODO: teaserData from contract
         teaserData: [{
@@ -31,6 +32,8 @@
           artworkReference: "QmUXh2fDRJu5PP8wWvtU55VPCeruzFJpbBqWPFBPAKKEXh",
           transaction: null
         }],
+
+        geolocation: null
       }
     },
     computed: {},
@@ -44,6 +47,17 @@
         const called = await client.contractEpochCall(this.teaserContractAddress, 'sophia-address', 'all_artworks', '()', '')
         const decoded = await client.contractEpochDecodeData(TeaserUtil.artworkListType, called.out)
         return TeaserUtil.artworkListToObject(decoded);
+      },
+
+      async teaserContractGeolocation() {
+        const client = await EpochChain.compose(EpochContract)({
+          url: `https://sdk-mainnet.aepps.com`,
+          internalUrl: `https://sdk-mainnet.aepps.com`,
+        })
+
+        const called = await client.contractEpochCall(this.teaserContractAddress, 'sophia-address', 'get_geolocation', '()', '')
+        const decoded = await client.contractEpochDecodeData(TeaserUtil.geolocationType, called.out)
+        return TeaserUtil.geolocationToObject(decoded);
       },
 
       async transactionHash(height) {
@@ -62,10 +76,13 @@
     },
     async created() {
       //this.teaserData = await this.teaserContractData();
+
       this.teaserData = await Promise.all(this.teaserData.map(async teaser => {
         teaser.transaction = await this.transactionHash(teaser.updatedAt);
         return teaser;
       }))
+
+      this.geolocation = await this.teaserContractGeolocation();
     }
   }
 </script>
