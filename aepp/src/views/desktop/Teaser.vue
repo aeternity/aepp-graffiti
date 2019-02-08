@@ -10,6 +10,8 @@
 
 <script>
   import axios from 'axios'
+  import TeaserUtil from '@/utils/blockchain_teaser_utils'
+  import {EpochChain, EpochContract} from '@aeternity/aepp-sdk'
 
   export default {
     name: 'Admin',
@@ -20,7 +22,7 @@
         mainnetUrl: "https://sdk-testnet.aepps.com",
 
         // TODO: real contract hash
-        teaserContract: "ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt",
+        teaserContractAddress: "ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt", //"ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr",
 
         // TODO: teaserData from contract
         teaserData: [{
@@ -33,6 +35,17 @@
     },
     computed: {},
     methods: {
+      async teaserContractData() {
+        const client = await EpochChain.compose(EpochContract)({
+          url: `https://sdk-mainnet.aepps.com`,
+          internalUrl: `https://sdk-mainnet.aepps.com`,
+        })
+
+        const called = await client.contractEpochCall(this.teaserContractAddress, 'sophia-address', 'all_artworks', '()', '')
+        const decoded = await client.contractEpochDecodeData(TeaserUtil.artworkListType, called.out)
+        return TeaserUtil.artworkListToObject(decoded);
+      },
+
       async transactionHash(height) {
         const block = await axios.get(`${this.mainnetUrl}/v2/generations/height/${height}`)
           .then(x => x.data);
@@ -43,11 +56,12 @@
         );
         return microblocks
           .reduce((acc, val) => acc.concat(val.transactions), [])
-          .filter(t => t.tx.contract_id && t.tx.contract_id === this.teaserContract)
+          .filter(t => t.tx.contract_id && t.tx.contract_id === this.teaserContractAddress)
           .map(t => t.hash)[0];
       }
     },
     async created() {
+      //this.teaserData = await this.teaserContractData();
       this.teaserData = await Promise.all(this.teaserData.map(async teaser => {
         teaser.transaction = await this.transactionHash(teaser.updatedAt);
         return teaser;
