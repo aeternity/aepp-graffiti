@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-full">
-    <CanvasJS @load="moveToInitialView" @positionUpdate="updateVisualPosition" :height=height ref="canvas" :draggable=draggable :greyed-out=greyedOut></CanvasJS>
+    <CanvasJS :fillScale="true" @positionUpdate="updateVisualPosition" :height=height ref="canvas" :draggable=draggable :greyed-out=greyedOut></CanvasJS>
   </div>
 </template>
 
@@ -73,24 +73,9 @@
           width: this.transformedImage.width,
           height: this.transformedImage.height
         })
-      },
-      moveToInitialView() {
-        const canvasSize = this.$refs.canvas.getStageDimensions()
-
-        this.moveCanvas(
-          -1 * this.position.x + canvasSize.width / 2 - this.transformedImage.width / 2,
-          -1 * this.position.y + canvasSize.height / 2 - this.transformedImage.height / 2,
-        )
-
-        if (this.transformedImage.width > this.transformedImage.height) {
-          this.$refs.canvas.setStageScale(canvasSize.width / (this.transformedImage.width + 400))
-        } else {
-          this.$refs.canvas.setStageScale(canvasSize.height / (this.transformedImage.height + 400))
-        }
       }
     },
     mounted () {
-
       this.$refs.canvas.addOverlayImage({
         src: this.transformedImage.src,
         position: this.position,
