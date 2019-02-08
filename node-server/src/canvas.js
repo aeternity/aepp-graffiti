@@ -20,7 +20,7 @@ const height = canvasCentimeterHeight * pixelsPerCentimeter;
 
 let current_height = 0;
 
-canvas.latestSeqId = 0;
+canvas.latestSeqId = -1;
 
 intervalJob = async () => {
     current_height = await blockchain.height().catch(console.error);
@@ -55,13 +55,23 @@ canvas.mergeSVG = (sources) => {
         svgAttrs: {
             width: width,
             height: height,
-            viewBox: `0 0 ${width} ${height}`,
-            style: 'background-color: #ffffff;'
+            viewBox: `0 0 ${width} ${height}`
         }
     });
-    const sprites = sources.reduce((acc, cur) => acc.add(cur.id, cur.svg), svg);
 
-    const useStrings = sources.reduce((acc, cur) => acc + `<use xlink:href="#${cur.id}" width="${cur.width}" height="${cur.height}" x="${cur.x}" y="${cur.y}" />`, "");
+    const rect = {
+        id: 0,
+        width: width,
+        height: height,
+        x: 0,
+        y: 0,
+        svg: `<svg><rect width="${width}" height="${height}" style="fill:white;stroke-width:20;stroke:#777777" /></svg>`
+    };
+    const sourcesWithBorder = [rect].concat(sources);
+
+    const sprites = sourcesWithBorder.reduce((acc, cur) => acc.add(cur.id, cur.svg), svg);
+
+    const useStrings = sourcesWithBorder.reduce((acc, cur) => acc + `<use xlink:href="#${cur.id}" width="${cur.width}" height="${cur.height}" x="${cur.x}" y="${cur.y}" />`, "");
     const spritesString = sprites.toString();
 
     const mergedString = spritesString.substr(0, spritesString.length - 6) + useStrings + "</svg>";
@@ -84,8 +94,7 @@ canvas.render = async () => {
         .map(slot => slot.successfulBids.sort((a, b) => a.seqId - b.seqId)) // sort bids in slot ascending
         .reduce((acc, val) => acc.concat(val), []); // flatten inner arrays
 
-    const latestSeqId = Math.max(...successfulBids.map(x => x.seqId));
-    console.log(latestSeqId);
+    const latestSeqId = Math.max(...successfulBids.map(x => x.seqId).concat([0]));
 
     if (canvas.latestSeqId === latestSeqId) {
         console.log('will not rerender, latest seqId', latestSeqId, 'timing', new Date().getTime() - start, 'ms');
