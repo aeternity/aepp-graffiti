@@ -22,7 +22,7 @@
   export default {
     name: 'CanvasJS',
     components: { BiggerLoader },
-    props: ['draggable', 'moveCallback', 'height', 'greyedOut', 'fillScale'],
+    props: ['draggable', 'moveCallback', 'height', 'greyedOut', 'fillScale', 'smallBackground'],
     data() {
       return {
         stage: null,
@@ -447,7 +447,7 @@
         this.layer.clear()
         try {
           await this.createImage({
-            src: this.canvasSettings.url + '?date=' + Math.round(Date.now()),
+            src: (this.smallBackground ? this.canvasSettings.urlSmall : this.canvasSettings.url) + '?date=' + Math.round(Date.now()),
             position: {x: 0, y: 0},
             width: this.canvasSettings.width,
             height: this.canvasSettings.height

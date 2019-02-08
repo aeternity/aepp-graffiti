@@ -10,6 +10,7 @@ export default {
   },
   canvas: {
     url: API_URL + '/rendered/latest.png',
+    urlSmall: API_URL + '/rendered/latest_small.png',
     width: 3300,
     height: 5000,
     pixelToMM: 10, // Pixel * pixelToMM = mm

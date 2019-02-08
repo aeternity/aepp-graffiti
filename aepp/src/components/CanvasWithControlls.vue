@@ -1,6 +1,14 @@
 <template>
   <div class="w-full h-full">
-    <CanvasJS :fillScale="true" @positionUpdate="updateVisualPosition" :height=height ref="canvas" :draggable=draggable :greyed-out=greyedOut></CanvasJS>
+    <CanvasJS
+      :fillScale="true"
+      @positionUpdate="updateVisualPosition"
+      :height=height
+      ref="canvas"
+      :draggable=draggable
+      :greyed-out=greyedOut
+      :smallBackground="true"
+    ></CanvasJS>
   </div>
 </template>
 

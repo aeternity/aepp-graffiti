@@ -22,7 +22,6 @@
           <div @click="plus" class="rounded-full w-12 h-12 ae-color-secondary flex justify-center items-center">
             <span class="text-2xl text-white">+</span>
           </div>
-
         </div>
         <ae-button face="round" fill="primary" @click="next">Place Art</ae-button>
       </div>
