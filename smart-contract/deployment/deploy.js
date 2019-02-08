@@ -9,30 +9,10 @@ const deploy = async (network, privateKey) => {
     let result = await deployer.deploy("./contracts/DroneGraffitiAuction.aes");
 
     /*
-    let [contract, client] = await deployer.deploy("./contracts/DroneGraffitiAuction.aes", gasLimit, '("0.000000,-0.000000", 3300, 5000)');
+    let contract = await deployer.deploy("./contracts/DroneGraffitiAuction.aes", gasLimit, '("0.000000,-0.000000", 3300, 5000)');
 
     await contract.call('add_auction_slot', {
-        args: `(1000, ${(await client.height()) + 1}, 2, 1, 500)`,
-        options: {amount: 0}
-    }).catch(console.error);
-
-    await contract.call('add_auction_slot', {
-        args: `(1000, ${(await client.height()) + 1}, 10, 1, 500)`,
-        options: {amount: 0}
-    }).catch(console.error);
-
-    await contract.call('add_auction_slot', {
-        args: `(1000, ${(await client.height()) + 10}, 100, 1, 500)`,
-        options: {amount: 0}
-    }).catch(console.error);
-
-    await contract.call('add_auction_slot', {
-        args: `(1000, ${(await client.height()) + 100}, 1000, 1, 500)`,
-        options: {amount: 0}
-    }).catch(console.error);
-
-    await contract.call('add_auction_slot', {
-        args: `(1000, ${(await client.height()) + 1000}, 1000, 1, 500)`,
+        args: `(1000, 0, 2, 1, 500)`,
         options: {amount: 0}
     }).catch(console.error);
 

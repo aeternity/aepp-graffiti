@@ -19,7 +19,7 @@ const init = async () => {
 
     const contract = await deploy(client);
     const contractAddress = contract.address;
-    //const contractAddress = "ct_2NHu5ra1puDr2RmuwJbfM3YNycsdq6B2P2UmVYZhKmr8mywmcP";
+    //const contractAddress = "ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr";
 
     //await addArtwork(contractAddress, client, 1, 200, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd");
     //await addArtwork(contractAddress, client, 2, 200, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd");
@@ -32,8 +32,8 @@ const deploy = async (client) => {
     const compiledContract = await client.contractCompile(contractSource, {gas: config.gas}).catch(console.error);
 
     const deployPromise = compiledContract.deploy({
-        //initState: '("19.421802,-99.158284")',
-        initState: '("0.000000,-0.000000")',
+        initState: '("19.421802,-99.158284")',
+        //initState: '("0.000000,-0.000000")',
         options: {
             ttl: config.ttl,
             amount: 0

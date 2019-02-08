@@ -27,7 +27,7 @@ export default {
     minimumImageSize: [10, 10]
   },
   blockchainSettings: {
-    contractAddress: 'ct_Lx1ppN3iEMyjEPLmJpda7iJwVQxhokmD8bUic9g1Z63tdGuSc'
+    contractAddress: 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt'
   },
   apiUrl: API_URL,
   matomo: {
