@@ -22,7 +22,8 @@
           <h1 class="text-red font-mono text-center">Sorry!
           </h1>
           <p class="text-red mt-2 text-base">We could not create a drone flyable image from the source image and
-            settings you provided. <span class="font-bold">Try changing the settings or choose another source image.</span></p>
+            settings you provided. <span
+              class="font-bold">Try changing the settings or choose another source image.</span></p>
         </div>
       </div>
     </div>
@@ -32,21 +33,11 @@
           <div class="text-center">
             <h3 class="text-black p-4">Edit Art</h3>
           </div>
-
-          <div class="flex flex-row mb-4">
-            <ae-switch
-              class="w-full"
-              @input="updateValue"
-              name="example"
-              :choices="[
-                    { label: 'Photo', value: 'photo' },
-                    { label: 'Illustration', value: 'illustration' },
-                  ]"
-              :default="this.centerline ? 'illustration' : 'photo'"
-            ></ae-switch>
-          </div>
-          <div>
-            <div class="flex flex-row justify-around items-center mb-6 mt-2">
+          <div class="flex flex-row justify-around items-center mb-6 mt-2">
+            <div class="flex w-full justify-between text-black mb-2">
+              <label>Color</label>
+            </div>
+            <div class="w-full flex flex-row">
               <template v-for="(color, index) in droneSettings.colors">
                 <div :key="color" @click="changeColor(index)" class="w-full flex justify-center">
                   <div v-if="currentColor === index" :style="{backgroundColor: color}"
@@ -60,32 +51,49 @@
               </template>
             </div>
           </div>
+          <div class="flex flex-row mb-4">
+            <div class="flex w-full justify-between text-black mb-2">
+              <label>Type</label>
+            </div>
+            <div class="w-full">
+              <ae-switch
+                class="w-full"
+                @input="updateValue"
+                name="example"
+                :choices="[
+                    { label: 'Photo', value: 'photo' },
+                    { label: 'Illustration', value: 'illustration' },
+                  ]"
+                :default="this.centerline ? 'illustration' : 'photo'"
+              ></ae-switch>
+            </div>
+          </div>
           <div>
           </div>
           <div v-if="showIllustration">
             <div class="mb-4">
               <div class="flex w-full justify-between text-black mb-2">
-                <label for="binaryThreshold">Color threshold</label><span>{{binaryThreshold}}</span>
-              </div>
-              <div class="w-full">
-                <input id="binaryThreshold" class="w-full max-w-full" type="range" step="1" min="0" max="100"
-                       v-model="binaryThreshold"/>
-              </div>
-            </div>
-            <div class="mb-4">
-              <div class="flex w-full justify-between text-black mb-2">
-                <label for="dilationRadius">Stroke weight</label><span>{{dilationRadius}}</span>
+                <label for="dilationRadius">Line Smoothing</label>
               </div>
               <div class="w-full">
                 <input id="dilationRadius" class="w-full max-w-full" type="range" step="1" min="1" max="20"
                        v-model="dilationRadius"/>
               </div>
             </div>
+            <div class="mb-4">
+              <div class="flex w-full justify-between text-black mb-2">
+                <label for="binaryThreshold">Details</label>
+              </div>
+              <div class="w-full">
+                <input id="binaryThreshold" class="w-full max-w-full" type="range" step="1" min="0" max="100"
+                       v-model="binaryThreshold"/>
+              </div>
+            </div>
           </div>
           <div v-else>
             <div class="mb-4">
               <div class="flex w-full justify-between text-black mb-2">
-                <label for="blurKernel">Blur Radius</label><span>{{blurKernel}}</span>
+                <label for="blurKernel">Line Smoothing</label>
               </div>
               <div class="w-full">
                 <input id="blurKernel" class="w-full max-w-full" type="range" step="1" min="1" max="10"
@@ -94,7 +102,7 @@
             </div>
             <div class="mb-4">
               <div class="flex w-full justify-between text-black mb-2">
-                <label for="hysteresisHighThreshold">Threshold</label><span>{{hysteresisHighThreshold}}</span>
+                <label for="hysteresisHighThreshold">Details</label>
               </div>
               <div class="w-full">
                 <input id="hysteresisHighThreshold" class="w-full max-w-full" type="range" step="1" min="1" max="100"
@@ -127,7 +135,7 @@
 
   import BiggerLoader from '../components/BiggerLoader'
   import WhiteHeader from '@/components/WhiteHeader'
-  import { AeBackdrop, AeButton, AeButtonGroup, AeCard, AeIcon, AeSwitch } from '@aeternity/aepp-components'
+  import {AeBackdrop, AeButton, AeButtonGroup, AeCard, AeIcon, AeSwitch} from '@aeternity/aepp-components'
   import config from '@/config'
 
   const STATUS_LOADING = 1, STATUS_READY = 2
@@ -144,7 +152,7 @@
       BiggerLoader,
       AeSwitch
     },
-    data () {
+    data() {
       return {
         hysteresisHighThreshold: 50,
         currentColor: 0,
@@ -158,46 +166,46 @@
       }
     },
     computed: {
-      transformedImage () {
+      transformedImage() {
         return this.$store.state.transformedImage
       },
-      originalImage () {
+      originalImage() {
         return this.$store.state.originalImage
       },
-      settings () {
+      settings() {
         return this.$store.state.settings
       },
-      droneSettings () {
+      droneSettings() {
         return config.droneSettings
       },
-      showIllustration () {
+      showIllustration() {
         return this.centerline
       },
-      isLoading () {
+      isLoading() {
         return this.status === STATUS_LOADING
       },
-      isReady () {
+      isReady() {
         return this.status === STATUS_READY
       }
     },
     methods: {
-      back () {
+      back() {
         this.$router.push('contribute')
       },
-      submit () {
+      submit() {
         this.$router.push('positioning')
       },
-      updateValue (val) {
+      updateValue(val) {
         this.centerline = (val !== 'photo')
       },
-      showBackdrop () {
+      showBackdrop() {
         this.backDropVisible = !this.backDropVisible
       },
-      closeBackdropAndUpdatePreview () {
+      closeBackdropAndUpdatePreview() {
         this.backDropVisible = false
-        this.$nextTick(() => this.updatePreview())
+        setTimeout(this.updatePreview, 0);
       },
-      async updatePreview () {
+      async updatePreview() {
         this.status = STATUS_LOADING
         console.log('loading')
         await this.$store.dispatch(`updateSettings`, {
@@ -211,10 +219,10 @@
         })
         this.status = STATUS_READY
       },
-      changeColor (index) {
+      changeColor(index) {
         this.currentColor = index
       },
-      progressCallback (progress) {
+      progressCallback(progress) {
         const progress100 = Math.round(progress * 100)
         if (this.progress !== progress100) {
           console.log('UPDATING', progress100)
@@ -222,7 +230,7 @@
         }
       }
     },
-    created () {
+    created() {
       this.threshold = this.settings.threshold
       this.currentColor = this.settings.color
       this.hysteresisHighThreshold = this.settings.hysteresisHighThreshold
@@ -232,11 +240,11 @@
       this.dilationRadius = this.settings.dilationRadius
       this.$store.dispatch('registerProgressCallback', this.progressCallback)
     },
-    async mounted () {
+    async mounted() {
       await this.$store.dispatch(`transformImage`)
       this.status = STATUS_READY
     },
-    beforeDestroy () {
+    beforeDestroy() {
       this.$store.dispatch('removeProgressCallback')
     }
   }
