@@ -15,6 +15,7 @@ const renderInterval = 10000;
 const canvasCentimeterWidth = 33 * 100;
 const canvasCentimeterHeight = 50 * 100;
 const pixelsPerCentimeter = 1;
+const smallerScale = 0.2;
 const width = canvasCentimeterWidth * pixelsPerCentimeter;
 const height = canvasCentimeterHeight * pixelsPerCentimeter;
 
@@ -47,6 +48,16 @@ canvas.mergePNG = async (svg) => {
     fs.writeFileSync(path.join(__dirname, canvas.pathByHeight() + ".png"), buffer);
     fs.writeFileSync(path.join(__dirname, canvas.pathLatest) + ".png", buffer);
     console.log('saved png', 'timing', new Date().getTime() - start, 'ms');
+
+    const startSmall = new Date().getTime();
+    const bufferSmall = await svg2png(Buffer.from(svg), {
+        width: canvasCentimeterWidth * smallerScale,
+        height: canvasCentimeterHeight * smallerScale
+    });
+    fs.writeFileSync(path.join(__dirname, canvas.pathByHeight() + "_small.png"), bufferSmall);
+    fs.writeFileSync(path.join(__dirname, canvas.pathLatest) + "_small.png", bufferSmall);
+    console.log('saved smaller png', 'timing', new Date().getTime() - startSmall, 'ms');
+
 };
 
 canvas.mergeSVG = (sources) => {
