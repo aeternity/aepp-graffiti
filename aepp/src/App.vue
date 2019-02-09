@@ -45,7 +45,7 @@
 
 <style scoped>
   .min-h-screen {
-    min-height: 100vh;
+    min-height: 100vh;  
     padding-bottom: 0;
   }
 </style>

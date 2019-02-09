@@ -1,22 +1,106 @@
 <template>
-  <div>
-    <h1>Drone Graffiti Teaser</h1>
-    <a target="_blank" :href="`https://www.google.com/maps/search/${geolocation}`">{{geolocation}}</a><br/>
-    <div v-for="teaser in teaserData">
-      <a target="_blank"
-         :href="`https://testnet.explorer.aepps.com/#/tx/${teaser.transaction}`">{{teaser.transaction}}</a><br/>
+  <div class="flex flex-col items-center">
+    <div class="pt-8 px-2 max-w-desktop">
+      <div class="w-full p-8">
+        <img src="../../assets/0_DGP_lockup_black_1.svg">
+      </div>
+      <div class="flex flex-row mt-2 mb-8">
+        <a target="_blank" :href="`https://www.google.com/maps/search/${geolocation}`">{{geolocation}}</a><br/>
+    <div v-for="teaser in finishedTeaser" :key="teaser.id" class="w-full">
+          <ae-card class="w-full">
+            <div>
+              <h1 class="w-full text-center pt-8 pb-4 text-grey-darker">{{teaser.title}}</h1>
+              <div class="w-full text-center font-mono text-xl mb-6">
+                {{teaser.transaction}}
+              </div>
+              <div class="flex flex-row">
+                <img class="flex-1" :src="teaser.svg">
+                <div class="flex-1 flex flex-col">
+                  <div class="field">
+                    <div class="text-grey">Block</div>
+                    <div class="font-mono text-xl">{{teaser.block && teaser.block.key_block.height}}</div>
+                  </div>
+                  <div class="field">
+                    <div class="text-grey">Date</div>
+                    <div class="font-mono text-xl">
+                      {{teaser.block && new Date(teaser.block.key_block.time).toLocaleString()}}
+                    </div>
+                  </div>
+                  <div class="field">
+                    <div class="text-grey">IPFS Hash</div>
+                    <div class="font-mono text-xl">
+                      <a target="_blank"
+                         :href="`https://gateway.ipfs.io/ipfs/${teaser.artworkReference}`"
+                         class="text-grey-dark">
+                        {{teaser.artworkReference}}
+                      </a>
+                    </div>
+                  </div>
+                  <div class="mt-auto field flex justify-end w-full">
+                    <ae-button fill="primary" face="round" @click="openTransaction(teaser.transaction)">
+                      See Transaction on the Blockchain
+                    </ae-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ae-card>
+        </div>
+        <div v-for="teaser in loadingTeaser" :key="teaser.id" class="w-full">
+          <ae-card class="w-full">
+            <div class="flex w-full justify-center py-8">
+              <BiggerLoader></BiggerLoader>
+            </div>
+          </ae-card>
+        </div>
+      </div>
+      <!--
+      <div class="bg-purple my-8">
+        <div>
+          <h1 class="font-mono">Aeternity Network</h1>
+        </div>
+        <div class="flex flex-col my-2">
+          <div class="flex flex-row">
+            <div class="field">
+              <div class="text-grey">Latest Block</div>
+              <div class="font-mono text-xl">{{height}}</div>
+            </div>
+            <div class="field">
+              <div class="text-grey">Date</div>
+              <div class="font-mono text-xl">
+                {{currentBlock && new Date(currentBlock.key_block.time).toLocaleString()}}
+              </div>
+            </div>
+            <div class="field">
+              <div class="text-grey">Micro Blocks</div>
+              <div class="font-mono text-xl">
+                {{currentBlock && currentBlock.micro_blocks.length}}
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="text-grey">Mined By</div>
+            <div class="font-mono text-xl">
+              {{currentBlock && currentBlock.key_block.beneficiary}}
+            </div>
+          </div>
+        </div>
+      </div>-->
     </div>
   </div>
 </template>
 
 <script>
   import axios from 'axios'
+  import {AeCard, AeButton} from "@aeternity/aepp-components";
+  import BiggerLoader from "../../components/BiggerLoader";
   import TeaserUtil from '@/utils/blockchain_teaser_utils'
   import {EpochChain, EpochContract} from '@aeternity/aepp-sdk'
 
   export default {
-    name: 'Admin',
-    components: {},
+    name: 'Teaser',
+    components: {BiggerLoader, AeButton, AeCard},
     data() {
       return {
         // TODO change to mainnet as well as in href
@@ -32,12 +116,24 @@
           artworkReference: "QmUXh2fDRJu5PP8wWvtU55VPCeruzFJpbBqWPFBPAKKEXh",
           transaction: null
         }],
-
+        height: null,
+        currentBlock: null,
         geolocation: null
       }
     },
-    computed: {},
+    computed: {
+      finishedTeaser() {
+        return this.teaserData.filter(t => t && !!t.svg)
+      },
+      loadingTeaser() {
+        return this.teaserData.filter(t => t && !t.svg)
+      },
+    },
     methods: {
+      async getBlock(height) {
+        return await axios.get(`${this.mainnetUrl}/v2/generations/height/${height}`)
+          .then(x => x.data);
+      },
       async teaserContractData() {
         const client = await EpochChain.compose(EpochContract)({
           url: `https://sdk-mainnet.aepps.com`,
@@ -61,8 +157,7 @@
       },
 
       async transactionHash(height) {
-        const block = await axios.get(`${this.mainnetUrl}/v2/generations/height/${height}`)
-          .then(x => x.data);
+        const block = await this.getBlock(height);
         const microblocks = await Promise.all(
           block.micro_blocks
             .map(microblock => axios.get(`${this.mainnetUrl}/v2/micro-blocks/hash/${microblock}/transactions`)
@@ -72,13 +167,26 @@
           .reduce((acc, val) => acc.concat(val.transactions), [])
           .filter(t => t.tx.contract_id && t.tx.contract_id === this.teaserContractAddress)
           .map(t => t.hash)[0];
+      },
+      async getHeight() {
+        return await axios.get(`${this.mainnetUrl}/v2/key-blocks/current/height`)
+          .then(x => x.data.height)
+      },
+      openTransaction(id) {
+        window.open(`https://testnet.explorer.aepps.com/#/tx/${id}`)
       }
     },
     async created() {
+      this.height = await this.getHeight();
+      this.currentBlock = await this.getBlock(this.height);
       //this.teaserData = await this.teaserContractData();
 
       this.teaserData = await Promise.all(this.teaserData.map(async teaser => {
         teaser.transaction = await this.transactionHash(teaser.updatedAt);
+        teaser.block = await this.getBlock(teaser.updatedAt);
+        const rawSVG = await axios.get(`https://backend.dronegraffiti.com/ipfs/${teaser.artworkReference}.svg`).then(x => x.data);
+        teaser.title = rawSVG.match(/<title>(.*)<\/title>/)[1];
+        teaser.svg = `data:image/svg+xml;base64,${btoa(rawSVG)}`;
         return teaser;
       }))
 
@@ -88,5 +196,21 @@
 </script>
 
 <style lang="scss" scoped>
+  .bg-purple {
+    background: #311b58;
+    -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, .11);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, .11);
+    border-radius: 10px;
+    color: #fff;
+    padding: 50px;
+  }
 
+  .max-w-desktop {
+    max-width: 1000px;
+    width: 100%;
+  }
+
+  .field {
+    padding: 1em 0;
+  }
 </style>
