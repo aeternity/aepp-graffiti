@@ -30,7 +30,7 @@
                 {{teaser.transaction}}
               </div>
               <div class="flex flex-row">
-                <img class="flex-1" alt="artwork" :src="teaser.svg">
+                <img class="flex-1 teaser-image" alt="artwork" :src="teaser.svg">
                 <div class="flex-1 flex flex-col">
                   <div class="field">
                     <div class="text-grey">Block</div>
@@ -226,5 +226,12 @@
 
   .field {
     padding: 1em 0;
+  }
+
+  .teaser-image {
+    width: auto;
+    max-width: 50%;
+    height: auto;
+    max-height: 400px;
   }
 </style>
