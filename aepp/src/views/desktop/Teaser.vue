@@ -8,7 +8,7 @@
         <ae-card class="w-full">
           <div class="flex flex-col py-4 items-center w-full">
             <h1 class="text-grey-darker">Smart Contract</h1>
-            <div class="font-mono text-xl mt-4">{{teaserContractAddress}}</div>
+            <div class="font-mono text-xl mt-4 max-w-full break-words text-center">{{teaserContractAddress}}</div>
             <div class="font-mono text-xl mt-4">{{geolocation}}</div>
             <ae-button
               @click="openLocation" face="round" fill="primary" class="mt-4" v-if="geolocation">
@@ -24,13 +24,13 @@
       <div class="flex flex-row mt-2 mb-8">
         <div v-for="teaser in finishedTeaser" :key="teaser.id" class="w-full">
           <ae-card class="w-full">
-            <div>
-              <h1 class="w-full text-center pt-8 pb-4 text-grey-darker">{{teaser.title}}</h1>
-              <div class="w-full text-center font-mono text-xl mb-6">
+            <div class="max-w-full">
+              <h1 class="w-full text-center pt-8 pb-4 text-grey-darker leading-tight">{{teaser.title}}</h1>
+              <div class="w-full text-center font-mono text-xl mb-6 break-words">
                 {{teaser.transaction}}
               </div>
-              <div class="flex flex-row">
-                <img class="flex-1 teaser-image" alt="artwork" :src="teaser.svg">
+              <div class="flex flex-col md:flex-row">
+                <img class="flex-1 teaser-image max-w-full md:max-w-1/2" alt="artwork" :src="teaser.svg">
                 <div class="flex-1 flex flex-col">
                   <div class="field">
                     <div class="text-grey">Block</div>
@@ -51,7 +51,7 @@
                     <div class="font-mono text-xl">
                       <a target="_blank"
                          :href="`https://gateway.ipfs.io/ipfs/${teaser.artworkReference}`"
-                         class="text-grey-dark">
+                         class="text-grey-dark break-words">
                         {{teaser.artworkReference}}
                       </a>
                     </div>
@@ -230,7 +230,6 @@
 
   .teaser-image {
     width: auto;
-    max-width: 50%;
     height: auto;
     max-height: 400px;
   }
