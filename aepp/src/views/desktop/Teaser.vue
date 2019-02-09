@@ -2,11 +2,27 @@
   <div class="flex flex-col items-center">
     <div class="pt-8 px-2 max-w-desktop">
       <div class="w-full p-8">
-        <img src="../../assets/0_DGP_lockup_black_1.svg">
+        <img alt="drone graffiti logo" src="../../assets/0_DGP_lockup_black_1.svg">
+      </div>
+      <div class="my-4">
+        <ae-card class="w-full">
+          <div class="flex flex-col py-4 items-center w-full">
+            <h1 class="text-grey-darker">Smart Contract</h1>
+            <div class="font-mono text-xl mt-4">{{teaserContractAddress}}</div>
+            <div class="font-mono text-xl mt-4">{{geolocation}}</div>
+            <ae-button
+              @click="openLocation" face="round" fill="primary" class="mt-4" v-if="geolocation">
+              Show location on google maps
+            </ae-button>
+            <ae-loader v-else></ae-loader>
+          </div>
+        </ae-card>
+      </div>
+      <div v-if="teaserData.length === 0">
+        <BiggerLoader></BiggerLoader>
       </div>
       <div class="flex flex-row mt-2 mb-8">
-        <a target="_blank" :href="`https://www.google.com/maps/search/${geolocation}`">{{geolocation}}</a><br/>
-    <div v-for="teaser in finishedTeaser" :key="teaser.id" class="w-full">
+        <div v-for="teaser in finishedTeaser" :key="teaser.id" class="w-full">
           <ae-card class="w-full">
             <div>
               <h1 class="w-full text-center pt-8 pb-4 text-grey-darker">{{teaser.title}}</h1>
@@ -14,11 +30,15 @@
                 {{teaser.transaction}}
               </div>
               <div class="flex flex-row">
-                <img class="flex-1" :src="teaser.svg">
+                <img class="flex-1" alt="artwork" :src="teaser.svg">
                 <div class="flex-1 flex flex-col">
                   <div class="field">
                     <div class="text-grey">Block</div>
-                    <div class="font-mono text-xl">{{teaser.block && teaser.block.key_block.height}}</div>
+                    <div class="font-mono text-xl">
+                      <a target="_blank" class="text-grey-dark" :href="`https://explorer.aepps.com/#/generation/${teaser.block.key_block.height}`">
+                        {{teaser.block && teaser.block.key_block.height}}
+                      </a>
+                    </div>
                   </div>
                   <div class="field">
                     <div class="text-grey">Date</div>
@@ -36,7 +56,7 @@
                       </a>
                     </div>
                   </div>
-                  <div class="mt-auto field flex justify-end w-full">
+                  <div class="field flex w-full">
                     <ae-button fill="primary" face="round" @click="openTransaction(teaser.transaction)">
                       See Transaction on the Blockchain
                     </ae-button>
@@ -97,25 +117,16 @@
   import BiggerLoader from "../../components/BiggerLoader";
   import TeaserUtil from '@/utils/blockchain_teaser_utils'
   import {EpochChain, EpochContract} from '@aeternity/aepp-sdk'
+  import AeLoader from "@aeternity/aepp-components/src/components/aeLoader/aeLoader";
 
   export default {
     name: 'Teaser',
-    components: {BiggerLoader, AeButton, AeCard},
+    components: {AeLoader, BiggerLoader, AeButton, AeCard},
     data() {
       return {
-        // TODO change to mainnet as well as in href
-        mainnetUrl: "https://sdk-testnet.aepps.com",
-
-        // TODO: real contract hash
-        teaserContractAddress: "ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr", //"ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr",
-
-        // TODO: teaserData from contract
-        teaserData: [{
-          id: 1,
-          updatedAt: 34955,
-          artworkReference: "QmUXh2fDRJu5PP8wWvtU55VPCeruzFJpbBqWPFBPAKKEXh",
-          transaction: null
-        }],
+        mainnetUrl: "https://sdk-mainnet.aepps.com",
+        teaserContractAddress: "ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr",
+        teaserData: [],
         height: null,
         currentBlock: null,
         geolocation: null
@@ -136,8 +147,8 @@
       },
       async teaserContractData() {
         const client = await EpochChain.compose(EpochContract)({
-          url: `https://sdk-mainnet.aepps.com`,
-          internalUrl: `https://sdk-mainnet.aepps.com`,
+          url: this.mainnetUrl,
+          internalUrl: this.mainnetUrl,
         })
 
         const called = await client.contractEpochCall(this.teaserContractAddress, 'sophia-address', 'all_artworks', '()', '')
@@ -147,8 +158,8 @@
 
       async teaserContractGeolocation() {
         const client = await EpochChain.compose(EpochContract)({
-          url: `https://sdk-mainnet.aepps.com`,
-          internalUrl: `https://sdk-mainnet.aepps.com`,
+          url: this.mainnetUrl,
+          internalUrl: this.mainnetUrl,
         })
 
         const called = await client.contractEpochCall(this.teaserContractAddress, 'sophia-address', 'get_geolocation', '()', '')
@@ -173,13 +184,16 @@
           .then(x => x.data.height)
       },
       openTransaction(id) {
-        window.open(`https://testnet.explorer.aepps.com/#/tx/${id}`)
+        window.open(`https://explorer.aepps.com/#/tx/${id}`)
+      },
+      openLocation() {
+        window.open(`https://www.google.com/maps/search/${this.geolocation}`)
       }
     },
     async created() {
       this.height = await this.getHeight();
       this.currentBlock = await this.getBlock(this.height);
-      //this.teaserData = await this.teaserContractData();
+      this.teaserData = await this.teaserContractData();
 
       this.teaserData = await Promise.all(this.teaserData.map(async teaser => {
         teaser.transaction = await this.transactionHash(teaser.updatedAt);
