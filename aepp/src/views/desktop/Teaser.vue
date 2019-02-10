@@ -21,17 +21,17 @@
       <div v-if="teaserData.length === 0">
         <BiggerLoader></BiggerLoader>
       </div>
-      <div class="flex flex-row mt-2 mb-8">
-        <div v-for="teaser in finishedTeaser" :key="teaser.id" class="w-full">
+      <div class="flex flex-col mt-2 mb-8">
+        <div v-for="teaser in finishedTeaser" :key="teaser.id" class="w-full mb-6">
           <ae-card class="w-full">
             <div class="max-w-full">
               <h1 class="w-full text-center pt-8 pb-4 text-grey-darker leading-tight">{{teaser.title}}</h1>
               <div class="w-full text-center font-mono text-xl mb-6 break-words">
                 {{teaser.transaction}}
               </div>
-              <div class="flex flex-col md:flex-row">
-                <img class="flex-1 teaser-image max-w-full md:max-w-1/2" alt="artwork" :src="teaser.svg">
-                <div class="flex-1 flex flex-col">
+              <div class="flex flex-col md:flex-row max-w-full">
+                <img class="teaser-image max-w-full p-4" alt="artwork" :src="teaser.svg">
+                <div class="flex flex-col">
                   <div class="field">
                     <div class="text-grey">Block</div>
                     <div class="font-mono text-xl">
@@ -51,7 +51,7 @@
                     <div class="font-mono text-xl">
                       <a target="_blank"
                          :href="`https://gateway.ipfs.io/ipfs/${teaser.artworkReference}`"
-                         class="text-grey-dark break-words">
+                         class="text-grey-dark break-words max-w-full">
                         {{teaser.artworkReference}}
                       </a>
                     </div>
@@ -233,4 +233,9 @@
     height: auto;
     max-height: 400px;
   }
+
+  .field {
+    word-break:break-all;
+  }
+
 </style>
