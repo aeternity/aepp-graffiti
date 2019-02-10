@@ -17,12 +17,13 @@ const init = async () => {
         networkId: 'ae_mainnet'
     });
 
-    const contract = await deploy(client);
-    const contractAddress = contract.address;
+    //const contract = await deploy(client);
+    //const contractAddress = contract.address;
     //const contractAddress = "ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr";
 
-    //await addArtwork(contractAddress, client, 1, 200, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd");
-    //await addArtwork(contractAddress, client, 2, 200, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd");
+    //await addArtwork(contractAddress, client, 1, 15, "QmUXh2fDRJu5PP8wWvtU55VPCeruzFJpbBqWPFBPAKKEXh");
+    //await addArtwork(contractAddress, client, 2, 15, "QmZQYdfwi5LYQwzQMM3B2nzUziuEDJ5HNw3o8Fa16tUhVP");
+    //await addArtwork(contractAddress, client, 3, 15, "QmanJhwTQoUMaPpZJhb2x9xuutbpmGwaHtvqr41YSvFBPt");
 };
 
 const deploy = async (client) => {
