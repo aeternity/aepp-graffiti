@@ -12,10 +12,10 @@
 
 <script>
 
-  import BiggerLoader from '@/components/BiggerLoader'
+  import BiggerLoader from '~/components/BiggerLoader'
   import Konva from 'konva'
-  import config from '@/config'
-  import bugsnagClient from '@/utils/bugsnag'
+  import config from '~/config'
+  import bugsnagClient from '~/utils/bugsnag'
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 

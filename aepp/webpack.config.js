@@ -26,11 +26,8 @@ module.exports = {
   resolve: {
     extensions: ['.vue', '.css', '.js'],
     alias: {
-      '@': path.resolve(__dirname, './src/')
-    },
-    modules: [
-      'node_modules'
-    ]
+      '~': path.resolve(__dirname, './src/')
+    }
   },
   node: {
     fs: 'empty'
@@ -72,7 +69,7 @@ module.exports = {
           extractor: TailwindExtractor,
           // Specify the file extensions to include when scanning for
           // class names.
-          extensions: ['html', 'js', 'php', 'vue']
+          extensions: ['html', 'js', 'vue']
         }
       ]
     }),

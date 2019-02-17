@@ -32,8 +32,8 @@
 
 <script>
   import CanvasWithControlls from '../components/CanvasWithControlls.vue'
-  import WhiteHeader from '@/components/WhiteHeader'
-  import { AeButton } from '@aeternity/aepp-components';
+  import WhiteHeader from '~/components/WhiteHeader'
+  import { AeButton } from '@aeternity/aepp-components'
 
   export default {
     name: 'Positioning',

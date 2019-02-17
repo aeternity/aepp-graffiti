@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import bugsnag from '@bugsnag/js'
 import bugsnagVue from '@bugsnag/plugin-vue'
-import secret from '@/secret'
+import secret from '~/secret'
 
 const bugsnagClient = bugsnag({
   apiKey: secret.bugsnagSecret,

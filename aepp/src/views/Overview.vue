@@ -76,11 +76,11 @@
 <script>
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
   import Util from '../utils/blockchain_util'
-  import BiggerLoader from '@/components/BiggerLoader'
-  import WhiteHeader from '@/components/WhiteHeader'
+  import BiggerLoader from '~/components/BiggerLoader'
+  import WhiteHeader from '~/components/WhiteHeader'
   import { AeCard } from '@aeternity/aepp-components'
-  import config from '@/config'
-  import bugsnagClient from '@/utils/bugsnag'
+  import config from '~/config'
+  import bugsnagClient from '~/utils/bugsnag'
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2, ERROR_STATE = 3
 

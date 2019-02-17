@@ -22,14 +22,14 @@
 </template>
 
 <script>
-  import CanvasJS from '@/components/CanvasJS.vue'
-  import WhiteHeader from '@/components/WhiteHeader'
+  import CanvasJS from '~/components/CanvasJS.vue'
+  import WhiteHeader from '~/components/WhiteHeader'
   import { AeIcon } from '@aeternity/aepp-components/'
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import Util from '@/utils/blockchain_util'
+  import Util from '~/utils/blockchain_util'
   import axios from 'axios'
-  import bugsnagClient from '@/utils/bugsnag'
-  import CriticalErrorOverlay from '@/components/CriticalErrorOverlay'
+  import bugsnagClient from '~/utils/bugsnag'
+  import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
 
   export default {
     name: 'Home',

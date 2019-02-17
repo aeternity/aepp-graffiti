@@ -3,8 +3,8 @@ import Vue from 'vue'
 import VuexPersist from 'vuex-persist'
 import Jimp from 'jimp/es'
 import DroneTracer from '../node_modules/dronetracer/src/DroneTracer/main.js'
-import config from '@/config'
-import bugsnagClient from '@/utils/bugsnag'
+import config from '~/config'
+import bugsnagClient from '~/utils/bugsnag'
 
 Vue.use(Vuex)
 

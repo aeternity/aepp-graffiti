@@ -13,7 +13,7 @@ import router from './router'
 import store from './store'
 import VueKonva from 'vue-konva'
 import VueMatomo from 'vue-matomo'
-import config from '@/config'
+import config from '~/config'
 
 /**
  * Documentation of the new components are here.

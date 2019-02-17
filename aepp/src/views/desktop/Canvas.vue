@@ -3,7 +3,8 @@
 </template>
 
 <script>
-  import CanvasJS from '@/components/CanvasJS'
+  import CanvasJS from '~/components/CanvasJS'
+
   export default {
     name: 'Canvas',
     components: { CanvasJS },

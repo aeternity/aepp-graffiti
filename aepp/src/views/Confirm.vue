@@ -56,11 +56,11 @@
   import CanvasWithControlls from '../components/CanvasWithControlls.vue'
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
   import axios from 'axios'
-  import LoadingStep from '@/components/LoadingStep'
-  import Util from '@/utils/blockchain_util'
+  import LoadingStep from '~/components/LoadingStep'
+  import Util from '~/utils/blockchain_util'
   import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
-  import config from '@/config'
-  import bugsnagClient from '@/utils/bugsnag'
+  import config from '~/config'
+  import bugsnagClient from '~/utils/bugsnag'
 
   const STATUS_INITIAL = 1, STATUS_LOADING = 2;
   const LOADING_DATA = 0, LOADING_IPFS = 1, LOADING_CONTRACT = 2, LOADING_FINISHED = 3;
