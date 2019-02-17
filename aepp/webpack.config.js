@@ -1,7 +1,8 @@
 const path = require('path')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
+// Cleans dist folder before building for fresh build
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
@@ -56,6 +57,7 @@ module.exports = {
       title: 'Æpp Drone Aepp',
       template: './src/index.html',
       filename: distFolder + '/index.html',
+      // Avoids building twice for dev
       alwaysWriteToDisk: true
     }),
     new PurgecssPlugin({
@@ -74,7 +76,6 @@ module.exports = {
       ]
     }),
     new HtmlWebpackHarddiskPlugin(),
-    new ExtractTextPlugin('style.css?[hash]'),
     new CleanWebpackPlugin([distFolder]),
     new VueLoaderPlugin()
   ],
@@ -88,20 +89,18 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          use: [
-            'css-loader',
-            {
-              loader: 'postcss-loader',
-              options: {
-                config: {
-                  path: 'postcss.config.js'
-                }
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              config: {
+                path: 'postcss.config.js'
               }
             }
-          ]
-          // publicPath: '/web'
-        })
+          }
+        ]
       },
       // allows vue compoents in '<template><html><script><style>' syntax
       {
@@ -111,7 +110,7 @@ module.exports = {
           loaders: {
             js: jsLoader
           },
-          extractCSS: true
+          // extractCSS: true
           // other vue-loader options go here
         }
       },
