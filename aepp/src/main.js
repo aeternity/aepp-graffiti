@@ -13,14 +13,14 @@ import router from './router'
 import store from './store'
 import VueKonva from 'vue-konva'
 import VueMatomo from 'vue-matomo'
-import config from '@/config.js'
-import '@babel/polyfill'
+import config from '@/config'
 
 /**
  * Documentation of the new components are here.
  *
  * http://aeternity.com/aepp-components/
  */
+
 //import Components from '@aeternity/aepp-components'
 //Vue.use(Components)
 

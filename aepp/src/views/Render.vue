@@ -133,7 +133,7 @@
 
 <script>
 
-  import BiggerLoader from '../components/BiggerLoader'
+  import BiggerLoader from '@/components/BiggerLoader'
   import WhiteHeader from '@/components/WhiteHeader'
   import {AeBackdrop, AeButton, AeButtonGroup, AeCard, AeIcon, AeSwitch} from '@aeternity/aepp-components'
   import config from '@/config'
