@@ -137,7 +137,8 @@ contract DroneGraffitiAuction =
     let updated_auction_slot = update_auction_slot_with_bids(auction_slot, split_successful_bids_tuple)
 
     // update auction_slot in state
-    put(state{ auction_slots[auction_slot_id] = updated_auction_slot, latest_bid_seq_id = next_seq_id })
+    let updated_auction_slots = state.auction_slots{[auction_slot_id] = updated_auction_slot}
+    put(state{ auction_slots = updated_auction_slots, latest_bid_seq_id = next_seq_id })
 
     // refund bids that were newly identified as to low
     refund_new_to_low_bids(split_successful_bids_tuple)
