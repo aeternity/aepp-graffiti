@@ -6,14 +6,14 @@ contract DroneGraffitiAuction =
   // TODO: split admins that are allowed to create slots from admins that are allowed to withdraw
   type is_admin = map(address, bool)
 
-  type auction_slots = map(int, auction_slot)
+  type auction_slots_map = map(int, auction_slot)
 
   record state =
     { is_admin : is_admin
     , auction_metadata : auction_metadata
     , latest_auction_slot_id : int
     , latest_bid_seq_id : int
-    , auction_slots : list(auction_slot) }
+    , auction_slots : auction_slots_map }
 
   // metadata of the physical auction environment in our usecase for paintings on a physical wall
   record auction_metadata =
@@ -137,7 +137,7 @@ contract DroneGraffitiAuction =
     let updated_auction_slot = update_auction_slot_with_bids(auction_slot, split_successful_bids_tuple)
 
     // update auction_slot in state
-    put(state{ auction_slots[auction_slot_id] = updated_auction_slot })
+    put(state{ auction_slots[auction_slot_id] = updated_auction_slot, latest_bid_seq_id = next_seq_id })
 
     // refund bids that were newly identified as to low
     refund_new_to_low_bids(split_successful_bids_tuple)
@@ -155,14 +155,14 @@ contract DroneGraffitiAuction =
 
   // processes bids for if they are still considered successful
   private function process_bids(time_capacity : int, bids_to_reprocess : list(bid)) : (list(bid), list(bid)) =
-      let filter_by_capacity = (bid : bid, acc_bids) =>
-        switch(acc_bids)
-         (sufficient, to_low) =>
-           if(time_capacity >= sum(sufficient, (x) => x.time) + bid.time)
-             (bid :: sufficient, to_low)
-           else
-             (sufficient, bid :: to_low)
-      foldr(filter_by_capacity, ([], []), bids_to_reprocess)
+    let filter_by_capacity = (bid : bid, acc_bids) =>
+     switch(acc_bids)
+       (sufficient, to_low) =>
+         if(time_capacity >= sum(sufficient, (x) => x.time) + bid.time)
+           (bid :: sufficient, to_low)
+         else
+           (sufficient, bid :: to_low)
+    foldr(filter_by_capacity, ([], []), bids_to_reprocess)
 
   // updates and auction slot with the bids that are updated successful or newly to low
   private function update_auction_slot_with_bids(auction_slot : auction_slot, bids_tuple : (list(bid), list(bid))) : auction_slot =
