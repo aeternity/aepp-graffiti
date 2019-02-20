@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "NODE_ENV='prod' webpack -p",
-    "dev": "NODE_ENV='dev' webpack-dev-server --config ./webpack.config.js --verbose"
+    "build": "webpack -p --env.NODE_ENV=prod",
+    "dev": "webpack-dev-server --env.NODE_ENV=dev --config ./webpack.config.js --verbose"
   },
   "dependencies": {
     "@aeternity/aepp-components": "git+https://github.com/aeternity/aepp-components.git#develop",
-    "@aeternity/aepp-sdk": "git+https://github.com/aeternity/aepp-sdk-js.git#for-base-app-sdk-integration",
+    "@aeternity/aepp-sdk": "^2.2.1-next",
     "@bugsnag/js": "^5.2.0",
     "@bugsnag/plugin-vue": "^5.2.0",
     "axios": "^0.18.0",

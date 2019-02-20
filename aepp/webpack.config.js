@@ -10,7 +10,6 @@ const PurgecssPlugin = require('purgecss-webpack-plugin')
 let glob = require('glob-all')
 
 const distFolder = path.resolve(__dirname, 'dist')
-const jsLoader = 'babel-loader!standard-loader?error=true'
 
 // Custom PurgeCSS extractor for Tailwind that allows special characters in
 // class names.
@@ -108,8 +107,8 @@ module.exports = {
         loader: 'vue-loader',
         options: {
           loaders: {
-            js: jsLoader
-          },
+            js: 'babel-loader!standard-loader?error=true'
+          }
           // extractCSS: true
           // other vue-loader options go here
         }
