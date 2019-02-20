@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack -p --env.NODE_ENV=prod",
-    "dev": "webpack-dev-server --env.NODE_ENV=dev --config ./webpack.config.js --verbose"
+    "dev": "webpack-dev-server --env.NODE_ENV=dev --config ./webpack.config.js --verbose",
+    "build:stats": "NODE_ENV='prod' webpack --profile --json > stats.json"
   },
   "dependencies": {
     "@aeternity/aepp-components": "git+https://github.com/aeternity/aepp-components.git#develop",
