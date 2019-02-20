@@ -91,7 +91,6 @@ const router = new Router({ mode: 'history', routes: routes })
 
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} - Drone Aepp`
-  document.querySelector('meta[name=viewport]').content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
   next()
 })
 
