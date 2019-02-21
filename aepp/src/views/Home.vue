@@ -3,7 +3,7 @@
     <WhiteHeader title="Drone Graffiti"></WhiteHeader>
 
     <div class="w-full h-full">
-      <CanvasJS @error="showConnectionError" :height="height" :draggable=true :fill-scale=true ref="canvas"></CanvasJS>
+      <NativeCanvas @error="showConnectionError" :height="height" :draggable=true :fill-scale=true ref="canvas"></NativeCanvas>
     </div>
     <div @click="$router.push('contribute')" class="absolute pin-b pin-r p-8 ">
       <ae-icon name="plus" fill="primary" face="round"
@@ -22,7 +22,6 @@
 </template>
 
 <script>
-  import CanvasJS from '~/components/CanvasJS.vue'
   import WhiteHeader from '~/components/WhiteHeader'
   import { AeIcon } from '@aeternity/aepp-components/'
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
@@ -30,10 +29,11 @@
   import axios from 'axios'
   import bugsnagClient from '~/utils/bugsnag'
   import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
+  import NativeCanvas from '../components/NativeCanvas'
 
   export default {
     name: 'Home',
-    components: { CriticalErrorOverlay, AeIcon, WhiteHeader, CanvasJS },
+    components: { NativeCanvas, CriticalErrorOverlay, AeIcon, WhiteHeader },
     data () {
       return {
         height: window.innerHeight - 64,

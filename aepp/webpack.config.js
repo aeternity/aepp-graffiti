@@ -21,116 +21,116 @@ class TailwindExtractor {
   }
 }
 
-module.exports = {
-  mode: process.env.NODE_ENV === 'prod' ? 'production' : 'development',
-  resolve: {
-    extensions: ['.vue', '.css', '.js'],
-    alias: {
-      '~': path.resolve(__dirname, './src/')
-    }
-  },
-  node: {
-    fs: 'empty'
-  },
-  entry: {
-    'main': './src/main.js'
-  },
-  output: {
-    filename: 'bundle.js?[hash]',
-    publicPath: '/'
-  },
-  devServer: {
-    contentBase: path.join(__dirname, 'dist'),
-    port: 8081,
-    historyApiFallback: true,
-    allowedHosts: [
-      '192.168.1.16',
-      'localhost'
-    ]
-  },
-  devtool: process.env.NODE_ENV === 'prod' ? '' : 'eval-source-map',
-  plugins: [
-    new HtmlWebpackPlugin({
-      inject: true,
-      // chunks: ['main'],
-      title: 'Æpp Drone Aepp',
-      template: './src/index.html',
-      filename: distFolder + '/index.html',
-      // Avoids building twice for dev
-      alwaysWriteToDisk: true
-    }),
-    new PurgecssPlugin({
-      // Specify the locations of any files you want to scan for class names.
-      paths: glob.sync([
-        path.join(__dirname, './src/**/*.vue'),
-        path.join(__dirname, './src/index.html')
-      ]),
-      extractors: [
-        {
-          extractor: TailwindExtractor,
-          // Specify the file extensions to include when scanning for
-          // class names.
-          extensions: ['html', 'js', 'vue']
-        }
-      ]
-    }),
-    new HtmlWebpackHarddiskPlugin(),
-    new CleanWebpackPlugin([distFolder]),
-    new VueLoaderPlugin()
-  ],
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: [/node_modules/],
-        include: [/node_modules\/@aeternity/, /node_modules\/rlp/],
-        loader: 'babel-loader'
-      },
-      {
-        test: /\.css$/,
-        use: [
-          'vue-style-loader',
-          'css-loader',
+module.exports = env => {
+  return {
+    mode: env.NODE_ENV === 'prod' ? 'production' : 'development',
+    resolve: {
+      extensions: ['.vue', '.css', '.js'],
+      alias: {
+        '~': path.resolve(__dirname, './src/')
+      }
+    },
+    node: {
+      fs: 'empty'
+    },
+    entry: {
+      'main': './src/main.js'
+    },
+    output: {
+      filename: 'bundle.js?[hash]',
+      publicPath: '/'
+    },
+    devServer: {
+      contentBase: path.join(__dirname, 'dist'),
+      port: 8081,
+      historyApiFallback: true,
+      disableHostCheck: true,
+      host: '0.0.0.0'
+    },
+    devtool: env.NODE_ENV === 'prod' ? '' : 'eval-source-map',
+    plugins: [
+      new HtmlWebpackPlugin({
+        inject: true,
+        // chunks: ['main'],
+        title: 'Æpp Drone Aepp',
+        template: './src/index.html',
+        filename: distFolder + '/index.html',
+        // Avoids building twice for dev
+        alwaysWriteToDisk: true
+      }),
+      new PurgecssPlugin({
+        // Specify the locations of any files you want to scan for class names.
+        paths: glob.sync([
+          path.join(__dirname, './src/**/*.vue'),
+          path.join(__dirname, './src/index.html')
+        ]),
+        extractors: [
           {
-            loader: 'postcss-loader',
-            options: {
-              config: {
-                path: 'postcss.config.js'
+            extractor: TailwindExtractor,
+            // Specify the file extensions to include when scanning for
+            // class names.
+            extensions: ['html', 'js', 'vue']
+          }
+        ]
+      }),
+      new HtmlWebpackHarddiskPlugin(),
+      new CleanWebpackPlugin([distFolder]),
+      new VueLoaderPlugin()
+    ],
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          exclude: [/node_modules/],
+          include: [/node_modules\/@aeternity/, /node_modules\/rlp/],
+          loader: 'babel-loader'
+        },
+        {
+          test: /\.css$/,
+          use: [
+            'vue-style-loader',
+            'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                config: {
+                  path: 'postcss.config.js'
+                }
               }
             }
-          }
-        ]
-      },
-      // allows vue compoents in '<template><html><script><style>' syntax
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders: {
-            js: 'babel-loader!standard-loader?error=true'
-          }
-          // extractCSS: true
-          // other vue-loader options go here
-        }
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          'vue-style-loader',
-          'css-loader', // translates CSS into CommonJS
-          'sass-loader' // compiles Sass to CSS, using Node Sass by default
-        ]
-      },
-      {
-        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-        use: [{
-          loader: 'file-loader',
+          ]
+        },
+        // allows vue compoents in '<template><html><script><style>' syntax
+        {
+          test: /\.vue$/,
+          loader: 'vue-loader',
           options: {
-            name: '[name].[ext]',
-            outputPath: 'assets/'
+            loaders: {
+              js: 'babel-loader!standard-loader?error=true'
+            }
+            // extractCSS: true
+            // other vue-loader options go here
           }
-        }]
-      }
-    ]
+        },
+        {
+          test: /\.scss$/,
+          use: [
+            'vue-style-loader',
+            'css-loader', // translates CSS into CommonJS
+            'sass-loader' // compiles Sass to CSS, using Node Sass by default
+          ]
+        },
+        {
+          test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+          use: [{
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'assets/'
+            }
+          }]
+        }
+      ]
+    }
   }
 }
