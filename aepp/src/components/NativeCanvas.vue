@@ -1,10 +1,8 @@
 <template>
-  <div class="w-full h-full bg-grey-lighter">
-    <div v-show="isLoading" class="w-full h-64 flex justify-center items-center">
-      <BiggerLoader></BiggerLoader>
-    </div>
-    <div v-show="isReady" class="w-full h-full">
+  <div class="w-full h-full" ref="canvasContainer">
+    <div class="w-full h-full">
       <div ref="stageWrapper" class="stageWrapper relative" id="stageWrapper">
+        <BiggerLoader v-show="isLoading" class="absolute pin"></BiggerLoader>
         <canvas id="backgroundCanvas" ref="backgroundCanvas" class="absolute pin"></canvas>
         <canvas id="overlayCanvas" ref="overlayCanvas" class="absolute pin"></canvas>
       </div>
@@ -100,22 +98,45 @@
           }
           this.renderQueue.background.push(imageData)
           this.$emit('load')
+
+
+          /*src = this.canvasSettings.urlSmall
+          const currentOffset = this.renderQueue.background.length > 0
+
+          const windowImage = await this.createWindowImage(src)
+          for (let i = 0; i < 4; i++) {
+            const imageData = {
+              position: {
+                x: this.canvasSettings.width / 2 * (i % 2),
+                y: this.canvasSettings.height / 2 * Math.floor(i / 2)
+              },
+              width: this.canvasSettings.width / 2,
+              height: this.canvasSettings.height / 2,
+              renderPosition: { x: 0, y: 0 },
+              windowImage: windowImage
+            }
+            this.renderQueue.background.push(imageData)*/
         } catch (e) {
           console.error(e)
           this.$emit('error')
         }
       },
 
-      async updateBackgroundImage() {
+      async updateBackgroundImage () {
         this.renderQueue.background = []
         this.currentStatus = STATUS_LOADING
         await this.addBackgroundImage()
+        this.renderBackground = true
         this.currentStatus = STATUS_READY
       },
 
       async addOverlayImage (imageObject) {
         imageObject.windowImage = await this.createWindowImage(imageObject.src)
         imageObject.renderPosition = { x: 0, y: 0 }
+        imageObject.position = {
+          x: imageObject.position.x * this.scale,
+          y: imageObject.position.y * this.scale
+        }
         this.renderQueue.overlay.push(imageObject)
         this.updateOverlayRenderPosition()
       },
@@ -131,7 +152,7 @@
       },
 
       runRenderQueue () {
-        if (this.renderBackground) {
+        if (this.renderBackground  && this.renderQueue.background.length > 0) {
           this.clearContext(this.backgroundContext)
 
           this.renderQueue.background.map(imageObject => {
@@ -140,7 +161,7 @@
           this.renderBackground = false
         }
 
-        if (this.renderOverlay) {
+        if (this.renderOverlay && this.renderQueue.overlay.length > 0) {
           this.clearContext(this.overlayContext)
 
           this.renderQueue.overlay.map(imageObject => {
@@ -149,7 +170,7 @@
           this.renderOverlay = false
         }
 
-        requestAnimationFrame(this.runRenderQueue)
+        window.requestAnimationFrame(this.runRenderQueue)
       },
 
       clearContext (context) {
@@ -176,29 +197,51 @@
       },
       setScaleToFill () {
 
-        const containerWidth = this.$refs.backgroundCanvas.width
+        const containerWidth = this.$refs.canvasContainer.clientWidth
 
         const smallerThanContainerScale = 0.95
-        const scale = (containerWidth / this.canvasSettings.width) * smallerThanContainerScale
+        const newScale = (containerWidth / config.canvas.width) * smallerThanContainerScale
 
-        this.setScale(scale)
+        this.onScaleEvent({
+          x: this.$refs.canvasContainer.offsetLeft,
+          y: this.$refs.canvasContainer.offsetTop
+        }, newScale)
+
         const smallerThanContainerBorder = (containerWidth - (containerWidth * smallerThanContainerScale)) / 2
 
-        this.setCanvasPosition({ x: smallerThanContainerBorder, y: smallerThanContainerBorder })
+        const backgroundPositionUpdate = {
+          x: smallerThanContainerBorder - this.renderQueue.background[0].position.x,
+          y: smallerThanContainerBorder - this.renderQueue.background[0].position.y
+        }
 
+        this.updateCanavsPosition(backgroundPositionUpdate)
       },
 
       _getFirstOverlayPosition () {
-
         if (this.renderQueue.overlay.length === 0) throw Error('No overlay found')
 
         return {
-          x: this.position.overlay.x + this.renderQueue.overlay[0].position.x,
-          y: this.position.overlay.y + this.renderQueue.overlay[0].position.y,
+          x: this.renderQueue.overlay[0].position.x,
+          y: this.renderQueue.overlay[0].position.y,
         }
       },
 
-      getScaledOverlayPosition()  {
+      _getBackgroundBoundingRect () {
+        if (this.renderQueue.background.length === 0) throw Error('No overlay found')
+
+        const boundingRect = this.renderQueue.background.reduce((acc, imageObject) => {
+          if (acc.x === null || imageObject.position.x < acc.x) acc.x = imageObject.position.x
+          if (acc.y === null || imageObject.position.y < acc.y) acc.y = imageObject.position.y
+          return acc
+        }, { y: null, x: null })
+
+        boundingRect.width = config.canvas.width
+        boundingRect.height = config.canvas.height
+
+        return boundingRect
+      },
+
+      getScaledOverlayPosition () {
         const overlayPos = this._getFirstOverlayPosition()
         return {
           x: overlayPos.x / this.scale,
@@ -206,86 +249,88 @@
         }
       },
 
-      updateOverlayPosition ({ x, y }) {
+      updateOverlayPosition (imageObject, { x, y }) {
         if (x === 0 && y === 0) return
+        if (this.renderQueue.overlay.length === 0) return
 
-        const overlayPos = this._getFirstOverlayPosition()
+        const overlayPos = imageObject.position
+        const boundingRect = this._getBackgroundBoundingRect()
 
         // LIMIT TOP & LEFT
-        if (overlayPos.x + x < this.position.background.x && x < 0) x = -1 * (overlayPos.x - this.position.background.x)
-        if (overlayPos.y + y < this.position.background.y && y < 0) y = -1 * (overlayPos.y - this.position.background.y)
+        if (overlayPos.x + x < boundingRect.x && x < 0) x = -1 * (overlayPos.x - boundingRect.x)
+        if (overlayPos.y + y < boundingRect.y && y < 0) y = -1 * (overlayPos.y - boundingRect.y)
 
         // LIMIT BOTTOM & RIGHT
-        if (overlayPos.x + this.renderQueue.overlay[0].width * this.scale + x > this.position.background.x + config.canvas.width * this.scale && x > 0)
-          x = this.position.background.x + config.canvas.width * this.scale - overlayPos.x - this.renderQueue.overlay[0].width * this.scale
+        if (overlayPos.x + imageObject.width * this.scale + x > boundingRect.x + config.canvas.width * this.scale && x > 0)
+          x = boundingRect.x + boundingRect.width * this.scale - overlayPos.x - imageObject.width * this.scale
 
-        if (overlayPos.y + this.renderQueue.overlay[0].height * this.scale + y > this.position.background.y + config.canvas.height * this.scale && y > 0)
-          y = this.position.background.y + config.canvas.height * this.scale - overlayPos.y - this.renderQueue.overlay[0].height * this.scale
+        if (overlayPos.y + imageObject.height * this.scale + y > boundingRect.y + config.canvas.height * this.scale && y > 0)
+          y = boundingRect.y + boundingRect.height * this.scale - overlayPos.y - imageObject.height * this.scale
 
         if (x === 0 && y === 0) return
 
-        this.position.overlay.x += x
-        this.position.overlay.y += y
+        imageObject.position.x += x
+        imageObject.position.y += y
 
         this.updateOverlayRenderPosition()
       },
 
-      updateBackgroundPosition ({ x, y }) {
-        if (x === 0 && y === 0) return {x, y}
+      checkIfBackgroundUpdateIsValid ({ x, y }) {
+        if (x === 0 && y === 0) return { x, y }
 
         const maxOffset = 70
 
+        const boundingRect = this._getBackgroundBoundingRect()
+
         // LEFT
-        if (this.position.background.x + x + config.canvas.width * this.scale < maxOffset) x = 0
+        if (boundingRect.x + x + boundingRect.width * this.scale < maxOffset) x = 0
 
         // TOP
-        if (this.position.background.y + y + config.canvas.height * this.scale < maxOffset) y = 0
+        if (boundingRect.y + y + boundingRect.height * this.scale < maxOffset) y = 0
 
         // RIGHT
-        if (this.position.background.x + x > this.$refs.backgroundCanvas.clientWidth - maxOffset) x = 0
+        if (boundingRect.x + x > this.$refs.canvasContainer.clientWidth - maxOffset) x = 0
 
         // BOTTOM
-        if (this.position.background.y + y > this.$refs.backgroundCanvas.clientHeight - maxOffset) y = 0
+        if (boundingRect.y + y > this.$refs.backgroundCanvas.clientHeight - maxOffset) y = 0
 
-        if (x === 0 && y === 0) return {x, y}
+        if (x === 0 && y === 0) return { x, y }
 
-        this.position.background.x += x
-        this.position.background.y += y
+        return { x, y }
+      },
+
+      updateBackgroundPosition (imageObject, { x, y }) {
+
+        imageObject.position.x += x
+        imageObject.position.y += y
 
         this.updateBackgroundRenderPosition()
-        return { x, y }
+
       },
 
       updateCanavsPosition ({ x, y }) {
 
         // AVOID MORE UPDATES WHEN WE ARE RUNNING OUT OF BOUND
-        let { x:newX, y:newY } = this.updateBackgroundPosition({ x, y })
+
+        let { x: newX, y: newY } = this.checkIfBackgroundUpdateIsValid({ x, y })
+        this.renderQueue.background.map(imageObject => {
+          this.updateBackgroundPosition(imageObject, { x: newX, y: newY })
+        })
+
         this.updateBackgroundRenderPosition()
 
-        this.updateOverlayPosition({ x:newX, y:newY })
-        this.updateBackgroundRenderPosition()
-      },
-
-      setOverlayPosition ({ x, y }) {
-        this.position.overlay.x = x
-        this.position.overlay.y = y
-
+        this.renderQueue.overlay.map(imageObject => {
+          this.updateOverlayPosition(imageObject, { x: newX, y: newY })
+        })
         this.updateOverlayRenderPosition()
-      },
 
-      setCanvasPosition ({ x, y }) {
-        this.position.background.x = x
-        this.position.background.y = y
-
-        this.setOverlayPosition({ x, y })
-        this.updateBackgroundRenderPosition()
       },
 
       updateOverlayRenderPosition () {
         this.renderQueue.overlay.map(imageObject => {
           imageObject.renderPosition = {
-            x: imageObject.position.x / this.scale + this.position.overlay.x / this.scale,
-            y: imageObject.position.y / this.scale + this.position.overlay.y / this.scale
+            x: imageObject.position.x / this.scale,
+            y: imageObject.position.y / this.scale
           }
         })
         this.renderOverlay = true
@@ -294,8 +339,8 @@
       updateBackgroundRenderPosition () {
         this.renderQueue.background.map(imageObject => {
           imageObject.renderPosition = {
-            x: imageObject.position.x / this.scale + this.position.background.x / this.scale,
-            y: imageObject.position.y / this.scale + this.position.background.y / this.scale
+            x: imageObject.position.x / this.scale,
+            y: imageObject.position.y / this.scale
           }
         })
         this.renderBackground = true
@@ -312,21 +357,15 @@
         return Math.sqrt(Math.pow((p2.x - p1.x), 2) + Math.pow((p2.y - p1.y), 2))
       },
 
-      isUserClickingOnOverlay (event) {
-
-        // IS THERE EVEN AN OVERLAY?
-        if (this.renderQueue.overlay.length === 0) return false
-
-        const overlay = this.renderQueue.overlay[0]
-
+      isUserClickingOnOverlay (overlay, event) {
         const currentClick = {
-          x: event.clientX - this.$refs.stageWrapper.offsetLeft,
-          y: event.clientY - this.$refs.stageWrapper.offsetTop
+          x: event.clientX - this.$refs.canvasContainer.offsetLeft,
+          y: event.clientY - this.$refs.canvasContainer.offsetTop
         }
 
         const localCoords = {
-          x: currentClick.x / this.scale - (this.position.overlay.x + overlay.position.x) / this.scale,
-          y: currentClick.y / this.scale - (this.position.overlay.y + overlay.position.y) / this.scale,
+          x: currentClick.x / this.scale - overlay.position.x / this.scale,
+          y: currentClick.y / this.scale - overlay.position.y / this.scale,
         }
 
         return localCoords.x > 0
@@ -336,8 +375,8 @@
       },
 
       onMoveEvent (event) {
-        let offsetTop = this.$refs.stageWrapper.offsetTop
-        let offsetLeft = this.$refs.stageWrapper.offsetLeft
+        let offsetTop = this.$refs.canvasContainer.offsetTop
+        let offsetLeft = this.$refs.canvasContainer.offsetLeft
 
         // SET CURSOR POS
         this.currentCursor = {
@@ -359,10 +398,9 @@
               x: event.clientX - offsetLeft - this.lastPos.x,
               y: event.clientY - offsetTop - this.lastPos.y,
             }
-
             if (this.moveTarget === 'stage') this.updateCanavsPosition(diff)
-            else if (this.moveTarget === 'overlay') {
-              this.updateOverlayPosition(diff)
+            else if (this.moveTarget) {
+              this.updateOverlayPosition(this.moveTarget, diff)
             }
 
             this.lastPos = {
@@ -373,54 +411,45 @@
         }
       },
 
+      calculatePositionUpdate (imageObject, scaleCenter, oldScale, newScale) {
+
+        const relativeCursorPosition = {
+          x: scaleCenter.x / oldScale - imageObject.position.x / oldScale,
+          y: scaleCenter.y / oldScale - imageObject.position.y / oldScale
+        }
+
+        const newPos = {
+          x: -(relativeCursorPosition.x - scaleCenter.x / newScale) * newScale,
+          y: -(relativeCursorPosition.y - scaleCenter.y / newScale) * newScale
+        }
+
+        return {
+          x: newPos.x - imageObject.position.x,
+          y: newPos.y - imageObject.position.y
+        }
+      },
+
       onScaleEvent (scaleCenter, newScale) {
 
         // SET SCALE CENTER RELATIVE TO CANVAS POSITION
         scaleCenter = {
-          x: scaleCenter.x - this.$refs.stageWrapper.offsetLeft,
-          y: scaleCenter.y - this.$refs.stageWrapper.offsetTop
+          x: scaleCenter.x - this.$refs.canvasContainer.offsetLeft,
+          y: scaleCenter.y - this.$refs.canvasContainer.offsetTop
         }
 
         const oldScale = this.scale
 
-        const mousePointTo = {
-          x: scaleCenter.x / oldScale - this.position.background.x / oldScale,
-          y: scaleCenter.y / oldScale - this.position.background.y / oldScale,
-        }
-
         newScale = this.setScale(newScale)
 
-        const newPos = {
-          x: -(mousePointTo.x - scaleCenter.x / newScale) * newScale,
-          y: -(mousePointTo.y - scaleCenter.y / newScale) * newScale
-        }
+        this.renderQueue.background.map(imageObject => {
+          let update = this.calculatePositionUpdate(imageObject, scaleCenter, oldScale, newScale)
+          this.updateBackgroundPosition(imageObject, update)
+        })
 
-        const updatePosition = {
-          x: newPos.x - this.position.background.x,
-          y: newPos.y - this.position.background.y
-        }
-
-        this.updateBackgroundPosition(updatePosition)
-
-        if (this.renderQueue.overlay[0]) {
-          const mouseRelativeToOverlay = {
-            x: scaleCenter.x / oldScale - (this.position.overlay.x + this.renderQueue.overlay[0].position.x) / oldScale,
-            y: scaleCenter.y / oldScale - (this.position.overlay.y + this.renderQueue.overlay[0].position.y) / oldScale,
-          }
-
-          const newOverlayPos = {
-            x: -(mouseRelativeToOverlay.x - scaleCenter.x / newScale) * newScale,
-            y: -(mouseRelativeToOverlay.y - scaleCenter.y / newScale) * newScale
-          }
-
-          const updateToOverlayPosition = {
-            x: newOverlayPos.x - (this.position.overlay.x + this.renderQueue.overlay[0].position.x),
-            y: newOverlayPos.y - (this.position.overlay.y + this.renderQueue.overlay[0].position.y)
-          }
-
-          this.updateOverlayPosition(updateToOverlayPosition)
-        }
-
+        this.renderQueue.overlay.map(imageObject => {
+          let update = this.calculatePositionUpdate(imageObject, scaleCenter, oldScale, newScale)
+          this.updateOverlayPosition(imageObject, update)
+        })
       },
 
       // EVENT HANDLER METHODS FOR MOVEMENTS
@@ -472,8 +501,8 @@
 
         if (event.touches.length === 1) {
           this.lastPos = {
-            x: touch1.clientX - this.$refs.stageWrapper.offsetLeft,
-            y: touch1.clientY - this.$refs.stageWrapper.offsetTop
+            x: touch1.clientX - this.$refs.canvasContainer.offsetLeft,
+            y: touch1.clientY - this.$refs.canvasContainer.offsetTop
           }
         } else if (event.touches.length === 2) {
           let touch2 = event.touches[1]
@@ -486,8 +515,9 @@
           })
         }
 
-        if (this.isUserClickingOnOverlay(touch1)) {
-          this.moveTarget = 'overlay'
+        const target = this.renderQueue.overlay.find(imageObject => this.isUserClickingOnOverlay(imageObject, touch1))
+        if (target) {
+          this.moveTarget = target
         } else {
           this.moveTarget = 'stage'
         }
@@ -510,15 +540,15 @@
       onMouseDownEvent (event) {
 
         this.lastPos = {
-          x: event.clientX - this.$refs.stageWrapper.offsetLeft,
-          y: event.clientY - this.$refs.stageWrapper.offsetTop
+          x: event.clientX - this.$refs.canvasContainer.offsetLeft,
+          y: event.clientY - this.$refs.canvasContainer.offsetTop
         }
 
-        console.log(this.isUserClickingOnOverlay(event))
 
         // CHECK IF USER IS CLICKING ON OVERLAY
-        if (this.isUserClickingOnOverlay(event)) {
-          this.moveTarget = 'overlay'
+        const target = this.renderQueue.overlay.find(imageObject => this.isUserClickingOnOverlay(imageObject, event))
+        if (target) {
+          this.moveTarget = target
         } else {
           this.moveTarget = 'stage'
         }
