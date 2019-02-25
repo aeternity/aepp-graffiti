@@ -47,7 +47,11 @@
           y: -1
         },
         moveTarget: null,
-        currentStatus: STATUS_LOADING
+        currentStatus: STATUS_LOADING,
+        shards: {
+          horizontal: 1,
+          vertical: 1
+        }
       }
     },
     computed: {
@@ -84,8 +88,51 @@
         context.drawImage(imageObject.windowImage, imageObject.renderPosition.x, imageObject.renderPosition.y, imageObject.width, imageObject.height)
       },
 
+      async updateBackgroundOnZoom () {
+        let foundUpdate = false
+        if (this.scale > 5) {
+          if(this.shards.horizontal === 4) return
+          console.log("updating to 4x4")
+          this.shards = {
+            horizontal: 4,
+            vertical: 4
+          }
+          foundUpdate = true
+        } else if (this.scale > 3) {
+          if(this.shards.horizontal === 3) return
+          console.log("updating to 3x3")
+          this.shards = {
+            horizontal: 3,
+            vertical: 3
+          }
+          foundUpdate = true
+        } else if (this.scale > 1) {
+          if(this.shards.horizontal === 2) return
+          console.log("updating to 2x2")
+          this.shards = {
+            horizontal: 2,
+            vertical: 2
+          }
+          foundUpdate = true
+        } else if(this.scale <= 1) {
+          if(this.shards.horizontal === 1) return
+          console.log("updating to 1x1")
+          this.shards  = {
+            horizontal: 1,
+            vertical: 1
+          }
+          foundUpdate = true
+        }
+        if(foundUpdate) {
+          await this.addBackgroundImage ()
+          this.renderBackground = true
+        }
+      },
+
       async addBackgroundImage () {
         try {
+
+          /*
           const src = (this.smallBackground ? this.canvasSettings.urlSmall : this.canvasSettings.url) + '?date=' + Math.round(Date.now())
 
           const windowImage = await this.createWindowImage(src)
@@ -98,24 +145,39 @@
           }
           this.renderQueue.background.push(imageData)
           this.$emit('load')
+          */
 
-
-          /*src = this.canvasSettings.urlSmall
-          const currentOffset = this.renderQueue.background.length > 0
+          const src = this.canvasSettings.urlSmall
 
           const windowImage = await this.createWindowImage(src)
-          for (let i = 0; i < 4; i++) {
+          let xOffset = 0, yOffset = 0
+          if(this.renderQueue.background.length > 0) {
+            // RETRIEVE POSITION AND SET NEW BACKGROUND ACCORDINGLY
+            xOffset = this.renderQueue.background[0].position.x
+            yOffset = this.renderQueue.background[0].position.y
+            console.log(xOffset, yOffset)
+          }
+
+          this.renderQueue.background = []
+
+
+          for (let i = 0; i < this.shards.horizontal * this.shards.vertical; i++) {
             const imageData = {
               position: {
-                x: this.canvasSettings.width / 2 * (i % 2),
-                y: this.canvasSettings.height / 2 * Math.floor(i / 2)
+                x: (this.canvasSettings.width / this.shards.horizontal * (i % this.shards.horizontal)) * this.scale + xOffset,
+                y: (this.canvasSettings.height / this.shards.vertical * Math.floor(i / this.shards.vertical)) * this.scale + xOffset
               },
-              width: this.canvasSettings.width / 2,
-              height: this.canvasSettings.height / 2,
+              width: this.canvasSettings.width / this.shards.horizontal,
+              height: this.canvasSettings.height / this.shards.vertical,
               renderPosition: { x: 0, y: 0 },
               windowImage: windowImage
             }
-            this.renderQueue.background.push(imageData)*/
+            this.renderQueue.background.push(imageData)
+          }
+          this.updateBackgroundRenderPosition()
+          this.renderBackground = true
+          console.log(this.scale, this.renderQueue.background.length)
+
         } catch (e) {
           console.error(e)
           this.$emit('error')
@@ -126,7 +188,6 @@
         this.renderQueue.background = []
         this.currentStatus = STATUS_LOADING
         await this.addBackgroundImage()
-        this.renderBackground = true
         this.currentStatus = STATUS_READY
       },
 
@@ -151,12 +212,27 @@
         this.renderOverlay = true
       },
 
+      isImageObjectVisible (imageObject) {
+        return !(
+          // IS TOO FAR BOTTOM
+          this.$refs.backgroundCanvas.clientHeight < imageObject.position.y ||
+          // IS TOO FAR RIGHT
+          this.$refs.backgroundCanvas.clientWidth < imageObject.position.x ||
+          // IS TOO FAR TOP
+          0 > imageObject.position.y + imageObject.height * this.scale ||
+          // IS TOO FAR LEFT
+          0 > imageObject.position.x + imageObject.width * this.scale
+        )
+      },
+
       runRenderQueue () {
-        if (this.renderBackground  && this.renderQueue.background.length > 0) {
+        if (this.renderBackground && this.renderQueue.background.length > 0) {
           this.clearContext(this.backgroundContext)
 
           this.renderQueue.background.map(imageObject => {
-            this.renderImage(this.backgroundContext, imageObject)
+            if (this.isImageObjectVisible(imageObject)) {
+              this.renderImage(this.backgroundContext, imageObject)
+            }
           })
           this.renderBackground = false
         }
@@ -165,7 +241,9 @@
           this.clearContext(this.overlayContext)
 
           this.renderQueue.overlay.map(imageObject => {
-            this.renderImage(this.overlayContext, imageObject)
+            if (this.isImageObjectVisible(imageObject)) {
+              this.renderImage(this.overlayContext, imageObject)
+            }
           })
           this.renderOverlay = false
         }
@@ -375,17 +453,12 @@
       },
 
       onMoveEvent (event) {
-        let offsetTop = this.$refs.canvasContainer.offsetTop
-        let offsetLeft = this.$refs.canvasContainer.offsetLeft
-
-        // SET CURSOR POS
-        this.currentCursor = {
-          x: event.clientX,
-          y: event.clientY
-        }
-
         // CHECK IF OLD POS IS NOT DEFAULT
         if (this.lastPos.x !== -1 && this.lastPos.y !== -1) {
+
+          let offsetTop = this.$refs.canvasContainer.offsetTop
+          let offsetLeft = this.$refs.canvasContainer.offsetLeft
+
           // CHECK IF FINGER MOVED
           let dist = this.getDistance({
             x: event.clientX - offsetLeft,
@@ -429,7 +502,7 @@
         }
       },
 
-      onScaleEvent (scaleCenter, newScale) {
+      async onScaleEvent (scaleCenter, newScale) {
 
         // SET SCALE CENTER RELATIVE TO CANVAS POSITION
         scaleCenter = {
@@ -450,6 +523,10 @@
           let update = this.calculatePositionUpdate(imageObject, scaleCenter, oldScale, newScale)
           this.updateOverlayPosition(imageObject, update)
         })
+
+        await this.updateBackgroundOnZoom()
+
+
       },
 
       // EVENT HANDLER METHODS FOR MOVEMENTS
@@ -528,8 +605,8 @@
         const scaleBy = 1.1
 
         const cursorPosOnStart = {
-          x: this.currentCursor.x,
-          y: this.currentCursor.y
+          x: event.clientX,
+          y: event.clientY
         }
 
         const newScale = event.deltaY > 0 ? this.scale * scaleBy : this.scale / scaleBy
@@ -543,7 +620,6 @@
           x: event.clientX - this.$refs.canvasContainer.offsetLeft,
           y: event.clientY - this.$refs.canvasContainer.offsetTop
         }
-
 
         // CHECK IF USER IS CLICKING ON OVERLAY
         const target = this.renderQueue.overlay.find(imageObject => this.isUserClickingOnOverlay(imageObject, event))
