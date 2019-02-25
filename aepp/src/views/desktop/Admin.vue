@@ -157,14 +157,14 @@
 </template>
 
 <script>
-  import {ChainNode, ContractNodeAPI} from '@aeternity/aepp-sdk'
-  import Util from '@/utils/blockchain_util'
-  import {AeBadge, AeButton, AeIcon, AeLoader} from '@aeternity/aepp-components'
-  import BiggerLoader from '@/components/BiggerLoader'
+  import { ChainNode, ContractNodeAPI } from '@aeternity/aepp-sdk'
+  import Util from '~/utils/blockchain_util'
+  import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components'
+  import BiggerLoader from '~/components/BiggerLoader'
   import BigNumber from 'bignumber.js'
-  import config from '@/config'
+  import config from '~/config'
   import axios from 'axios'
-  import bugsnagClient from '@/utils/bugsnag'
+  import bugsnagClient from '~/utils/bugsnag'
 
   export default {
     name: 'Admin',

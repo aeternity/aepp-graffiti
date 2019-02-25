@@ -11,6 +11,8 @@ import Canvas from './views/desktop/Canvas'
 import Admin from './views/desktop/Admin'
 import Teaser from './views/desktop/Teaser'
 import Amount from './views/Amount'
+import NativeCanvas from './components/NativeCanvas'
+import CSSCanvas from './components/CSSCanvas'
 
 const routes = [
   {
@@ -84,6 +86,18 @@ const routes = [
     name: 'teaser',
     component: Teaser,
     meta: { title: `Teaser` },
+  },
+  {
+    path: '/canvastest',
+    name: 'c1',
+    component: NativeCanvas,
+    meta: { title: `Teaser` },
+  },
+  {
+    path: '/csscanvas',
+    name: 'c2',
+    component: CSSCanvas,
+    meta: { title: `Teaser` },
   }
 ]
 
@@ -91,7 +105,6 @@ const router = new Router({ mode: 'history', routes: routes })
 
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} - Drone Aepp`
-  document.querySelector('meta[name=viewport]').content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
   next()
 })
 

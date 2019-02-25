@@ -1,12 +1,13 @@
 <template>
-  <CanvasJS :height=height :draggable=true ></CanvasJS>
+  <NativeCanvas :height=height :draggable=true ></NativeCanvas>
 </template>
 
 <script>
-  import CanvasJS from '@/components/CanvasJS'
+  import NativeCanvas from '../../components/NativeCanvas'
+
   export default {
     name: 'Canvas',
-    components: { CanvasJS },
+    components: { NativeCanvas },
     data() {
       return {
         height: window.innerHeight

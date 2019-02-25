@@ -51,7 +51,7 @@
 </template>
 
 <script>
-  import OnboardingStep from '@/components/OnboardingStep'
+  import OnboardingStep from '~/components/OnboardingStep'
   import { AeText } from '@aeternity/aepp-components'
 
   export default {

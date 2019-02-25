@@ -56,7 +56,7 @@
 
 <script>
   import { AeBackdrop, AeButton, AeCard, AeDropdown, AeIcon } from '@aeternity/aepp-components'
-  import config from '@/config'
+  import config from '~/config'
 
   export default {
     name: 'WhiteHeader',

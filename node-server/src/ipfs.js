@@ -11,7 +11,6 @@ ipfsWrap.init = () => {
 
 ipfsWrap.checkFileExists = async (hash) => {
     if (!node) ipfsWrap.init();
-    //TIMEOUT AFTER 5 SECONDS
     const result = await Promise.race([
         node.files.stat(`/ipfs/${hash}`),
         new Promise((resolve) => {

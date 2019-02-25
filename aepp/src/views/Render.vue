@@ -133,10 +133,10 @@
 
 <script>
 
-  import BiggerLoader from '../components/BiggerLoader'
-  import WhiteHeader from '@/components/WhiteHeader'
+  import BiggerLoader from '~/components/BiggerLoader'
+  import WhiteHeader from '~/components/WhiteHeader'
   import {AeBackdrop, AeButton, AeButtonGroup, AeCard, AeIcon, AeSwitch} from '@aeternity/aepp-components'
-  import config from '@/config'
+  import config from '~/config'
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 

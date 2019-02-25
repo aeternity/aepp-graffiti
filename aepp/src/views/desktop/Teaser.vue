@@ -113,11 +113,11 @@
 
 <script>
   import axios from 'axios'
-  import {AeCard, AeButton} from "@aeternity/aepp-components";
-  import BiggerLoader from "../../components/BiggerLoader";
-  import TeaserUtil from '@/utils/blockchain_teaser_utils'
-  import {ChainNode, ContractNodeAPI} from '@aeternity/aepp-sdk'
-  import AeLoader from "@aeternity/aepp-components/src/components/aeLoader/aeLoader";
+  import { AeButton, AeCard } from '@aeternity/aepp-components'
+  import BiggerLoader from '../../components/BiggerLoader'
+  import TeaserUtil from '~/utils/blockchain_teaser_utils'
+  import { ChainNode, ContractNodeAPI } from '@aeternity/aepp-sdk'
+  import AeLoader from '@aeternity/aepp-components/src/components/aeLoader/aeLoader'
 
   export default {
     name: 'Teaser',

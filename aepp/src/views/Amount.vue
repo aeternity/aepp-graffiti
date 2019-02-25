@@ -38,8 +38,8 @@
   import WhiteHeader from '../components/WhiteHeader'
   import { AeButton, AeInput, AeToolbar } from '@aeternity/aepp-components'
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import Utils from '@/utils/blockchain_util'
-  import bugsnagClient from '@/utils/bugsnag'
+  import Utils from '~/utils/blockchain_util'
+  import bugsnagClient from '~/utils/bugsnag'
 
   export default {
     name: 'Amount',

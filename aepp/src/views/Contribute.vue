@@ -67,8 +67,8 @@
 
 <script>
 
-  import BiggerLoader from '../components/BiggerLoader'
-  import WhiteHeader from '@/components/WhiteHeader'
+  import BiggerLoader from '~/components/BiggerLoader'
+  import WhiteHeader from '~/components/WhiteHeader'
   import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
 
   const STATUS_INITIAL = 0, STATUS_LOADING = 1, STATUS_SUCCESS = 2, STATUS_ERROR = 3

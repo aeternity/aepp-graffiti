@@ -115,13 +115,13 @@
 
 <script>
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import Util from '@/utils/blockchain_util'
-  import BiggerLoader from '@/components/BiggerLoader'
-  import Countdown from '@/components/Countdown'
+  import Util from '~/utils/blockchain_util'
+  import BiggerLoader from '~/components/BiggerLoader'
+  import Countdown from '~/components/Countdown'
   import { AeButton, AeCard, AeDivider } from '@aeternity/aepp-components'
-  import WhiteHeader from '@/components/WhiteHeader'
+  import WhiteHeader from '~/components/WhiteHeader'
   import 'swiper/dist/css/swiper.css'
-  import config from '@/config'
+  import config from '~/config'
 
   import { swiper, swiperSlide } from 'vue-awesome-swiper'
 

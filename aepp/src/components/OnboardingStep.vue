@@ -1,7 +1,7 @@
 <template>
     <div class="p-8 flex flex-col justify-center items-center">
       <div class="w-full flex justify-center items-center ae-image-height">
-        <img :src="require(`@/assets/${image}`)" class="onboarding-logo" alt="onboarding step" />
+        <img :src="require(`~/assets/${image}`)" class="onboarding-logo" alt="onboarding step" />
       </div>
       <div>
         <div class="mt-4 pl-2 pr-2">

@@ -1,24 +1,23 @@
 <template>
   <div class="w-full h-full">
-    <CanvasJS
+    <NativeCanvas
       :fillScale="true"
-      @positionUpdate="updateVisualPosition"
       :height=height
       ref="canvas"
       :draggable=draggable
       :greyed-out=greyedOut
       :smallBackground="true"
-    ></CanvasJS>
+    ></NativeCanvas>
   </div>
 </template>
 
 <script>
-  import CanvasJS from './CanvasJS.vue'
-  import config from '@/config'
+  import NativeCanvas from './NativeCanvas.vue'
+  import config from '~/config'
 
   export default {
     name: 'CanvasWithControlls',
-    components: { CanvasJS },
+    components: { NativeCanvas },
     data () {
       return {
         x: this.$store.state.position.x,
@@ -54,29 +53,19 @@
       },
     },
     methods: {
-      updateVisualPosition ({ x, y }) {
-        this.x = Math.round(x)
-        this.y = Math.round(y) // eslint-disable-line
-      },
-      moveCanvas (xDiff, yDiff) {
-        this.$refs.canvas.moveCanvas({ xDiff, yDiff })
-      },
       getOverlayPosition () {
-        return this.$refs.canvas.getOverlayPosition()
+        return this.$refs.canvas.getScaledOverlayPosition()
       },
       async changeOverlayScale (scaleDiff) {
+        const pos = this.getOverlayPosition()
         await this.$store.dispatch('updatePosition', {
-          x: this.x,
-          y: this.y
+          x: pos.x,
+          y: pos.y
         })
         await this.$store.dispatch('updateSettings', {
           scaleFactor: this.settings.scaleFactor + scaleDiff
         })
-        this.updateOverlayImage()
-      },
-
-      updateOverlayImage () {
-        this.$refs.canvas.updateOverlayImageSource({
+        this.$refs.canvas.updateOverlayImage({
           src: this.transformedImage.src,
           width: this.transformedImage.width,
           height: this.transformedImage.height
