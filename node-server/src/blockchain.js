@@ -1,4 +1,4 @@
-const {EpochChain, EpochContract} = require('@aeternity/aepp-sdk');
+const {ChainNode, ContractNodeAPI} = require('@aeternity/aepp-sdk');
 const Util = require('./util/blockchain_util');
 const TeaserUtil = require('./util/blockchain_teaser_utils');
 const blockchain = {};
@@ -14,12 +14,12 @@ const aeternityUrl = process.env.AETERNITY_URL || 'http://localhost:3013';
 const aeternityInternalUrl = process.env.AETERNITY_URL || 'http://localhost:3113';
 
 blockchain.init = async () => {
-    client = await EpochChain.compose(EpochContract)({
+    client = await ChainNode.compose(ContractNodeAPI)({
         url: aeternityUrl,
         internalUrl: aeternityInternalUrl,
     }).catch(console.error);
 
-    mainnetClient = await EpochChain.compose(EpochContract)({
+    mainnetClient = await ChainNode.compose(ContractNodeAPI)({
         url: "https://sdk-mainnet.aepps.com",
         internalUrl:  "https://sdk-mainnet.aepps.com",
     }).catch(console.error);
@@ -36,8 +36,8 @@ blockchain.height = async () => {
 blockchain.auctionSlots = async () => {
     if (!client) await blockchain.init();
 
-    const called = await client.contractEpochCall(contractAddress, 'sophia-address', 'all_auction_slots', '()').catch(console.error);
-    const decoded = await client.contractEpochDecodeData(Util.auctionSlotListType, called.out).catch(console.error);
+    const called = await client.contractNodeCall(contractAddress, 'sophia-address', 'all_auction_slots', '()').catch(console.error);
+    const decoded = await client.contractNodeDecodeData(Util.auctionSlotListType, called.out).catch(console.error);
 
     return Util.auctionSlotListToObject(decoded);
 };
@@ -45,8 +45,8 @@ blockchain.auctionSlots = async () => {
 blockchain.teaserArtworks = async () => {
     if (!mainnetClient) await blockchain.init();
 
-    const called = await mainnetClient.contractEpochCall(teaserContractAddress, 'sophia-address', 'all_artworks', '()').catch(console.error);
-    const decoded = await mainnetClient.contractEpochDecodeData(TeaserUtil.artworkListType, called.out).catch(console.error);
+    const called = await mainnetClient.contractNodeCall(teaserContractAddress, 'sophia-address', 'all_artworks', '()').catch(console.error);
+    const decoded = await mainnetClient.contractNodeDecodeData(TeaserUtil.artworkListType, called.out).catch(console.error);
 
     return TeaserUtil.artworkListToObject(decoded);
 };
@@ -54,8 +54,8 @@ blockchain.teaserArtworks = async () => {
 blockchain.teaserGeolocation = async () => {
     if (!mainnetClient) await blockchain.init();
 
-    const called = await mainnetClient.contractEpochCall(teaserContractAddress, 'sophia-address', 'get_geolocation', '()').catch(console.error);
-    const decoded = await mainnetClient.contractEpochDecodeData(TeaserUtil.geolocationType, called.out).catch(console.error);
+    const called = await mainnetClient.contractNodeCall(teaserContractAddress, 'sophia-address', 'get_geolocation', '()').catch(console.error);
+    const decoded = await mainnetClient.contractNodeDecodeData(TeaserUtil.geolocationType, called.out).catch(console.error);
 
     return TeaserUtil.geolocationToObject(decoded);
 };
