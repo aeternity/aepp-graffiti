@@ -6,12 +6,14 @@ contract DroneGraffitiAuction =
   // TODO: split admins that are allowed to create slots from admins that are allowed to withdraw
   type is_admin = map(address, bool)
 
+  type auction_slots_map = map(int, auction_slot)
+
   record state =
     { is_admin : is_admin
     , auction_metadata : auction_metadata
     , latest_auction_slot_id : int
     , latest_bid_seq_id : int
-    , auction_slots : list(auction_slot) }
+    , auction_slots : auction_slots_map }
 
   // metadata of the physical auction environment in our usecase for paintings on a physical wall
   record auction_metadata =
@@ -55,7 +57,7 @@ contract DroneGraffitiAuction =
       auction_metadata = auction_metadata',
       latest_auction_slot_id = 0,
       latest_bid_seq_id = 0,
-      auction_slots = [] }
+      auction_slots = {} }
 
   public function get_auction_metadata() : auction_metadata =
     state.auction_metadata
@@ -83,15 +85,15 @@ contract DroneGraffitiAuction =
                              start_block_height = start_block_height',
                              end_block_height = start_block_height' + block_duration }
 
-    put(state{ latest_auction_slot_id = next_auction_slot_id,  auction_slots = new_auction_slot :: state.auction_slots })
+    put(state{ latest_auction_slot_id = next_auction_slot_id, auction_slots[next_auction_slot_id] = new_auction_slot })
     next_auction_slot_id
 
   public function all_auction_slots() : list(auction_slot) =
-    state.auction_slots
+    let auction_slot_list = Map.to_list(state.auction_slots)
+    map(tuple_second, auction_slot_list)
 
   public function get_auction_slot(id : int) : auction_slot =
-    let find_function = (e) => e.id == id
-    switch(find(state.auction_slots, find_function))
+    switch(Map.lookup(id, state.auction_slots))
       Some(auction_slot) => auction_slot
       None => abort("auction_slot does not exist")
 
@@ -131,14 +133,14 @@ contract DroneGraffitiAuction =
     // only reprocesses previously successful bids plus the new one, returned bids are old successful, excluding old failed
     let split_successful_bids_tuple = process_bids(auction_slot.time_capacity, bids_to_reprocess)
 
-    //old failed bids have to be appended to newly failed bids from reprocessing, successful includes all old ones
+    // old failed bids have to be appended to newly failed bids from reprocessing, successful includes all old ones
     let updated_auction_slot = update_auction_slot_with_bids(auction_slot, split_successful_bids_tuple)
 
-    // filter auction_slot from list in state, then add the updated one
-    let filter_function = (e) => e.id != auction_slot.id
-    let filtered_auction_slots = filter(filter_function, state.auction_slots)
-    put(state{ auction_slots = updated_auction_slot :: filtered_auction_slots, latest_bid_seq_id = next_seq_id })
+    // update auction_slot in state
+    let updated_auction_slots = state.auction_slots{[auction_slot_id] = updated_auction_slot}
+    put(state{ auction_slots = updated_auction_slots, latest_bid_seq_id = next_seq_id })
 
+    // refund bids that were newly identified as to low
     refund_new_to_low_bids(split_successful_bids_tuple)
     updated_auction_slot
 
@@ -154,14 +156,14 @@ contract DroneGraffitiAuction =
 
   // processes bids for if they are still considered successful
   private function process_bids(time_capacity : int, bids_to_reprocess : list(bid)) : (list(bid), list(bid)) =
-      let filter_by_capacity = (bid : bid, acc_bids) =>
-        switch(acc_bids)
-         (sufficient, to_low) =>
-           if(time_capacity >= sum(sufficient, (x) => x.time) + bid.time)
-             (bid :: sufficient, to_low)
-           else
-             (sufficient, bid :: to_low)
-      foldr(filter_by_capacity, ([], []), bids_to_reprocess)
+    let filter_by_capacity = (bid : bid, acc_bids) =>
+     switch(acc_bids)
+       (sufficient, to_low) =>
+         if(time_capacity >= sum(sufficient, (x) => x.time) + bid.time)
+           (bid :: sufficient, to_low)
+         else
+           (sufficient, bid :: to_low)
+    foldr(filter_by_capacity, ([], []), bids_to_reprocess)
 
   // updates and auction slot with the bids that are updated successful or newly to low
   private function update_auction_slot_with_bids(auction_slot : auction_slot, bids_tuple : (list(bid), list(bid))) : auction_slot =
@@ -180,10 +182,6 @@ contract DroneGraffitiAuction =
   // comperator for bidding amount per time
   private function bid_amount_comperator(a : bid, b : bid) = a.amount_per_time > b.amount_per_time
 
-  private function tuple_first(tuple) =
-    switch(tuple)
-      (e, _) => e
-
   private function tuple_second(tuple) =
     switch(tuple)
       (_, e) => e
@@ -199,15 +197,6 @@ contract DroneGraffitiAuction =
 
   private function sum(l : list('a), f : 'a => int) : int =
     foldr((x, y) => x + y, 0, map(f, l))
-
-  private function find(l : list('a), f: 'a => bool) : option('a) =
-    switch(l)
-     [] => None
-     e :: l' =>
-      if(f(e))
-        Some(e)
-      else
-        find(l', f)
 
   private function map(f : 'a => 'b, l : list('a)) : list('b) =
     switch(l)
@@ -227,16 +216,6 @@ contract DroneGraffitiAuction =
           e :: insert_by(f, x, l')
         else
           x :: l
-
-  private function filter(f : ('a) => bool, l : list('a)) = filter'(f, l, [])
-  private function filter'(f : ('a) => bool, l : list('a), acc : list('a)) =
-    switch(l)
-      [] => acc
-      e :: l' =>
-        if(f(e))
-          filter'(f, l', e :: acc)
-        else
-          filter'(f, l', acc)
 
   private function is_greater_zero(x : int) : bool = x > 0
 

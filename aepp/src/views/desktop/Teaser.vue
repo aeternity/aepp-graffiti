@@ -116,7 +116,7 @@
   import { AeButton, AeCard } from '@aeternity/aepp-components'
   import BiggerLoader from '../../components/BiggerLoader'
   import TeaserUtil from '~/utils/blockchain_teaser_utils'
-  import { EpochChain, EpochContract } from '@aeternity/aepp-sdk'
+  import { ChainNode, ContractNodeAPI } from '@aeternity/aepp-sdk'
   import AeLoader from '@aeternity/aepp-components/src/components/aeLoader/aeLoader'
 
   export default {
@@ -146,24 +146,24 @@
           .then(x => x.data);
       },
       async teaserContractData() {
-        const client = await EpochChain.compose(EpochContract)({
+        const client = await ChainNode.compose(ContractNodeAPI)({
           url: this.mainnetUrl,
           internalUrl: this.mainnetUrl,
         })
 
-        const called = await client.contractEpochCall(this.teaserContractAddress, 'sophia-address', 'all_artworks', '()', '')
-        const decoded = await client.contractEpochDecodeData(TeaserUtil.artworkListType, called.out)
+        const called = await client.contractNodeCall(this.teaserContractAddress, 'sophia-address', 'all_artworks', '()', '')
+        const decoded = await client.contractNodeDecodeData(TeaserUtil.artworkListType, called.out)
         return TeaserUtil.artworkListToObject(decoded);
       },
 
       async teaserContractGeolocation() {
-        const client = await EpochChain.compose(EpochContract)({
+        const client = await ChainNode.compose(ContractNodeAPI)({
           url: this.mainnetUrl,
           internalUrl: this.mainnetUrl,
         })
 
-        const called = await client.contractEpochCall(this.teaserContractAddress, 'sophia-address', 'get_geolocation', '()', '')
-        const decoded = await client.contractEpochDecodeData(TeaserUtil.geolocationType, called.out)
+        const called = await client.contractNodeCall(this.teaserContractAddress, 'sophia-address', 'get_geolocation', '()', '')
+        const decoded = await client.contractNodeDecodeData(TeaserUtil.geolocationType, called.out)
         return TeaserUtil.geolocationToObject(decoded);
       },
 
