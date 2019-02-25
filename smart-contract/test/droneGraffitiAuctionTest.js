@@ -65,7 +65,7 @@ describe('DroneGraffitiAuction', () => {
 
     it('Call DroneGraffitiAuction Contract; add auction slot', async () => {
         const callAddAuction = await contract.call('add_auction_slot', {
-            args: `(100, ${(await owner.height()) + 2}, 20, 1, 100)`,
+            args: `(100, ${(await owner.height()) + 2}, 200, 1, 100)`,
             options: {amount: 0}
         }).catch(decodeError);
         assert.isTrue(!!callAddAuction, 'Could not call the DroneGraffitiAuction add auction slot');
@@ -167,6 +167,57 @@ describe('DroneGraffitiAuction', () => {
         const contractBalance = await owner.balance(contract.address);
         const successfulAmount = auctionSlot2.successfulBids.map(bid => parseInt(bid.amount)).reduce((x, y) => x + y, 0);
         assert.equal(successfulAmount, contractBalance);
+    });
+
+    it('Call DroneGraffitiAuction Contract; place lots of bid', async () => {
+        await contract.call('place_bid', {
+            args: `(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 5000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 20000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 12000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 5000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 20000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 12000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 5000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 20000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 12000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 5000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 20000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 12000}
+        }).catch(decodeError);
     });
 
 });
