@@ -2,11 +2,13 @@ version: '3'
 services:
 
   aeternity:
-    image: aeternity/aeternity:v1.4.0
+    image: aeternity/aeternity:latest
     command: "-aehttp enable_debug_endpoints true"
+    environment:
+      - EPOCH_CONFIG=/home/aeternity/aeternity.yaml
     volumes:
-      - "./aeternity.yaml:/home/epoch/.epoch/epoch/epoch.yaml"
-      - "./.docker/aeternity_uat:/home/epoch/node/data/mnesia"
+      - ./aeternity.yaml:/home/aeternity/aeternity.yaml
+      - ./.docker/aeternity_uat:/home/aeternity/node/data/mnesia
     ports:
       - "3013:3013"
       - "3113:3113"
