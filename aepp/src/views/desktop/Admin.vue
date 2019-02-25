@@ -157,7 +157,7 @@
 </template>
 
 <script>
-  import {EpochChain, EpochContract} from '@aeternity/aepp-sdk'
+  import {ChainNode, ContractNodeAPI} from '@aeternity/aepp-sdk'
   import Util from '@/utils/blockchain_util'
   import {AeBadge, AeButton, AeIcon, AeLoader} from '@aeternity/aepp-components'
   import BiggerLoader from '@/components/BiggerLoader'
@@ -245,15 +245,15 @@
       },
       async loadData() {
         try {
-          const client = await EpochChain.compose(EpochContract)({
+          const client = await ChainNode.compose(ContractNodeAPI)({
             url: `https://testnet.dronegraffiti.com`,
             internalUrl: `https://testnet.dronegraffiti.com`,
           })
 
           this.height = await client.height()
 
-          const called = await client.contractEpochCall(this.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()', '')
-          const decoded = await client.contractEpochDecodeData(Util.auctionSlotListType, called.out)
+          const called = await client.contractNodeCall(this.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()', '')
+          const decoded = await client.contractNodeDecodeData(Util.auctionSlotListType, called.out)
           this.slots = Util.auctionSlotListToObject(decoded)
             .sort((a, b) => a.endBlockHeight - b.endBlockHeight)
             .map(slot => {

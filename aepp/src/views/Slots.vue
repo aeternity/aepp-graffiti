@@ -169,8 +169,8 @@
         this.choice = this.slots.find(slot => slot.index === realIndex).id
       },
       async updateMyBids () {
-        const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '')
-        const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out)
+        const calledAllBids = await this.client.contractNodeCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '')
+        const decodedAllBids = await this.client.contractNodeDecodeData(Util.auctionSlotListType, calledAllBids.out)
 
         let slotIndex = 0
         const slots = Util.auctionSlotListToObject(decodedAllBids)

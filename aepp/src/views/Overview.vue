@@ -115,7 +115,7 @@
     methods: {
       async updateMyBids () {
         try {
-          const calledAllBids = await this.client.contractEpochCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
+          const calledAllBids = await this.client.contractNodeCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
 
           if(!calledAllBids) {
             this.error = 'Could not retrieve data from contract. Are you online?'
@@ -125,7 +125,7 @@
 
           const height = await this.client.height()
 
-          const decodedAllBids = await this.client.contractEpochDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
+          const decodedAllBids = await this.client.contractNodeDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
 
           if(!decodedAllBids) {
             this.error = 'Could not decode data from contract.'
