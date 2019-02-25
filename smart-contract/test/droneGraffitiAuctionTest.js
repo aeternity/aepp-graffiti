@@ -15,8 +15,9 @@ describe('DroneGraffitiAuction', () => {
     let publicKey;
 
     const decodeError = async (e) => {
-        const decodedError = await owner.contractDecodeData('string', e.returnValue).catch(e => console.error(e));
-        console.error('decodedError', decodedError);
+        console.error(e);
+        if(e.rawTx) console.error('decodeError', await owner.unpackAndVerify(e.rawTx));
+        if(e.returnValue) console.error('decodedError', await owner.contractDecodeData('string', e.returnValue).catch(e => console.error(e)));
     };
 
     before(async () => {
@@ -43,9 +44,10 @@ describe('DroneGraffitiAuction', () => {
             initState: '("0.000000,-0.000000", 3300, 5000)',
             options: {
                 ttl: config.ttl,
-                amount: 0
+                amount: 0,
+                verify: true
             }
-        });
+        }).catch(console.error);
 
         assert.isFulfilled(deployPromise, 'Could not deploy the DroneGraffitiAuction Contract'); // Check it is deployed
         contract = await deployPromise;
