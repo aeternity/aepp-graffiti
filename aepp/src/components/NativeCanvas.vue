@@ -92,43 +92,22 @@
       },
 
       async updateBackgroundOnZoom () {
+
+
         let foundUpdate = false
-        if (this.scale > 5) {
-          if(this.shards.horizontal === 4) return
-          console.log("updating to 4x4")
-          this.shards = {
-            horizontal: 4,
-            vertical: 4
-          }
+
+        if (this.scale > 1) {
+          if( this.backgroundUrl === config.canvas.url ) return
+          this.backgroundUrl = config.canvas.url
           foundUpdate = true
-        } else if (this.scale > 3) {
-          if(this.shards.horizontal === 3) return
-          console.log("updating to 3x3")
-          this.shards = {
-            horizontal: 3,
-            vertical: 3
-          }
-          foundUpdate = true
-        } else if (this.scale > 1) {
-          if(this.shards.horizontal === 2) return
-          console.log("updating to 2x2")
-          this.shards = {
-            horizontal: 2,
-            vertical: 2
-          }
-          foundUpdate = true
-        } else if(this.scale <= 1) {
-          if(this.shards.horizontal === 1) return
-          console.log("updating to 1x1")
-          this.shards  = {
-            horizontal: 1,
-            vertical: 1
-          }
+        } else {
+          if(this.backgroundUrl === config.canvas.urlSmall) return
+          this.backgroundUrl = config.canvas.urlSmall
           foundUpdate = true
         }
+
         if(foundUpdate) {
-          await this.addBackgroundImage ()
-          this.renderBackground = true
+          this.updateBackgroundImage()
         }
       },
 
@@ -183,7 +162,13 @@
       },
 
       async updateBackgroundImage () {
-        this.renderQueue.background = []
+        const src = this.backgroundUrl
+        this.renderQueue.background[0].windowImage = await this.createWindowImage(src)
+        this.renderBackground = true
+      },
+
+      async reloadBackgroundImage () {
+        this.cacheTimestamp = Date.now()
         this.currentStatus = STATUS_LOADING
         await this.addBackgroundImage()
         this.currentStatus = STATUS_READY

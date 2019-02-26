@@ -9,7 +9,7 @@ export default {
     min: { width: 400, height: 300 }
   },
   canvas: {
-    url: API_URL + '/rendered/latest.png',
+    url: API_URL + '/rendered/latest.svg',
     urlSmall: API_URL + '/rendered/latest_small.png',
     width: 3300,
     height: 5000,

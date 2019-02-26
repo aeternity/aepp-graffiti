@@ -50,7 +50,7 @@
     },
     methods: {
       reloadCanvas () {
-        this.$refs.canvas.updateBackgroundImage()
+        this.$refs.canvas.reloadBackgroundImage()
       },
       showConnectionError () {
         // ALREADY SHOWED AN ERROR?
