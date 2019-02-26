@@ -2,9 +2,13 @@
   <div class="w-full h-full" ref="canvasContainer">
     <div class="w-full h-full">
       <div ref="stageWrapper" class="stageWrapper relative" id="stageWrapper">
-        <BiggerLoader v-show="isLoading" class="absolute pin"></BiggerLoader>
         <canvas id="backgroundCanvas" ref="backgroundCanvas" class="absolute pin"></canvas>
         <canvas id="overlayCanvas" ref="overlayCanvas" class="absolute pin"></canvas>
+        <div v-show="isLoading" class="absolute pin h-full w-full">
+          <div class="flex justify-center items-center">
+            <BiggerLoader></BiggerLoader>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -48,11 +52,6 @@
         },
         moveTarget: null,
         currentStatus: STATUS_LOADING,
-        shards: {
-          horizontal: 1,
-          vertical: 1,
-          svg: false
-        },
         backgroundUrl: config.canvas.urlSmall,
         cacheTimestamp: Date.now()
       }
@@ -115,45 +114,33 @@
         try {
 
           let xOffset = 0, yOffset = 0
+
           if(this.renderQueue.background.length > 0) {
             // RETRIEVE POSITION AND SET NEW BACKGROUND ACCORDINGLY
             xOffset = this.renderQueue.background[0].position.x
             yOffset = this.renderQueue.background[0].position.y
-            console.log(xOffset, yOffset)
           }
 
           this.renderQueue.background = []
 
-          const shardWidth = this.canvasSettings.width / this.shards.horizontal
-          const shardHeight = this.canvasSettings.height / this.shards.vertical
+          let src = this.backgroundUrl + `?date=${this.cacheTimestamp}`
 
-          for (let i = 0; i < this.shards.horizontal * this.shards.vertical; i++) {
-
-            const horizontalIndex = i % this.shards.horizontal;
-            const verticalIndex = Math.floor(i / this.shards.vertical);
-
-            let src = this.canvasSettings.shardURL + `${this.shards.horizontal}${this.shards.vertical}_${horizontalIndex}_${verticalIndex}.png`
-
-            if(this.shards.horizontal === 1 && this.shards.vertical === 1) {
-              src = this.shards.svg ? this.canvasSettings.url : this.canvasSettings.urlSmall
-            }
-
-            const windowImage = await this.createWindowImage(src)
-            const imageData = {
-              position: {
-                x: (shardWidth * horizontalIndex) * this.scale + xOffset,
-                y: (shardHeight * verticalIndex) * this.scale + yOffset
-              },
-              width: shardWidth,
-              height: shardHeight,
-              renderPosition: { x: 0, y: 0 },
-              windowImage: windowImage
-            }
-            this.renderQueue.background.push(imageData)
+          const windowImage = await this.createWindowImage(src)
+          const imageData = {
+            position: {
+              x: xOffset,
+              y: yOffset
+            },
+            width: this.canvasSettings.width,
+            height: this.canvasSettings.height,
+            renderPosition: { x: 0, y: 0 },
+            windowImage: windowImage
           }
+          this.renderQueue.background.push(imageData)
+
           this.updateBackgroundRenderPosition()
+
           this.renderBackground = true
-          console.log(this.scale, this.renderQueue.background.length)
 
         } catch (e) {
           console.error(e)
@@ -162,16 +149,15 @@
       },
 
       async updateBackgroundImage () {
-        const src = this.backgroundUrl
+        const src = this.backgroundUrl + `?date=${this.cacheTimestamp}`
         this.renderQueue.background[0].windowImage = await this.createWindowImage(src)
         this.renderBackground = true
       },
 
       async reloadBackgroundImage () {
         this.cacheTimestamp = Date.now()
-        this.currentStatus = STATUS_LOADING
-        await this.addBackgroundImage()
-        this.currentStatus = STATUS_READY
+        await this.updateBackgroundImage()
+        this.$emit('reloadSuccess')
       },
 
       async addOverlayImage (imageObject) {
@@ -410,6 +396,11 @@
       setBackgroundAlpha (alpha) {
         this.backgroundContext.globalAlpha = alpha
         this.renderBackground = true
+      },
+
+      setOverlayAlpha (alpha) {
+        this.overlayContext.globalAlpha = alpha
+        this.renderOverlay = true
       },
 
       // HANDLER HELPERS
