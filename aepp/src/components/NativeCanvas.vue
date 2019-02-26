@@ -180,8 +180,8 @@
         imageObject.width = imageObject.width * this.canvasToWallRation
         imageObject.height = imageObject.height * this.canvasToWallRation
         imageObject.position = {
-          x: imageObject.position.x * this.scale,
-          y: imageObject.position.y * this.scale
+          x: imageObject.position.x * this.scale * this.canvasToWallRation,
+          y: imageObject.position.y * this.scale * this.canvasToWallRation
         }
         this.renderQueue.overlay.push(imageObject)
         this.updateOverlayRenderPosition()
@@ -306,9 +306,10 @@
 
       getScaledOverlayPosition () {
         const overlayPos = this._getFirstOverlayPosition()
+        const backgroundBoundingBox = this._getBackgroundBoundingRect()
         return {
-          x: overlayPos.x / this.scale,
-          y: overlayPos.y / this.scale
+          x: (overlayPos.x - backgroundBoundingBox.x)  / this.canvasToWallRation / this.scale,
+          y: (overlayPos.y - backgroundBoundingBox.y) / this.canvasToWallRation / this.scale
         }
       },
 
