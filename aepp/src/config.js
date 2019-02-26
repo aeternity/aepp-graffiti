@@ -11,8 +11,8 @@ export default {
   canvas: {
     url: API_URL + '/rendered/latest.svg',
     urlSmall: API_URL + '/rendered/latest_small.png',
-    width: 3300,
-    height: 5000,
+    width: 990,
+    height: 1500,
     pixelToMM: 10, // Pixel * pixelToMM = mm
     shardURL: API_URL + '/rendered/shards/'
   },

@@ -2,8 +2,14 @@
   <div class="w-full h-full" ref="canvasContainer">
     <div class="w-full h-full">
       <div ref="stageWrapper" class="stageWrapper relative" id="stageWrapper">
-        <canvas id="backgroundCanvas" ref="backgroundCanvas" class="absolute pin"></canvas>
-        <canvas id="overlayCanvas" ref="overlayCanvas" class="absolute pin"></canvas>
+        <canvas id="backgroundCanvas" ref="backgroundCanvas" class="absolute pin" :style="{
+          width: cssWidth,
+          height: cssHeight
+        }"></canvas>
+        <canvas id="overlayCanvas" ref="overlayCanvas" class="absolute pin" :style="{
+          width: cssWidth,
+          height: cssHeight
+        }"></canvas>
         <div v-show="isLoading" class="absolute pin h-full w-full">
           <div class="flex justify-center items-center">
             <BiggerLoader></BiggerLoader>
@@ -34,6 +40,7 @@
         scale: 1,
         renderBackground: true,
         renderOverlay: true,
+        width: 0,
         lastPos: {
           x: -1,
           y: -1
@@ -50,6 +57,8 @@
           x: -1,
           y: -1
         },
+        cssToCanvasRatio: 1,
+        canvasToWallRation: 1,
         moveTarget: null,
         currentStatus: STATUS_LOADING,
         backgroundUrl: config.canvas.urlSmall,
@@ -65,6 +74,12 @@
       },
       isReady () {
         return this.currentStatus === STATUS_READY
+      },
+      cssWidth () {
+        return `${this.width}px`
+      },
+      cssHeight () {
+        return `${this.height}px`
       }
     },
     methods: {
@@ -92,20 +107,19 @@
 
       async updateBackgroundOnZoom () {
 
-
         let foundUpdate = false
 
-        if (this.scale > 1) {
-          if( this.backgroundUrl === config.canvas.url ) return
+        if (this.scale > 4) {
+          if (this.backgroundUrl === config.canvas.url) return
           this.backgroundUrl = config.canvas.url
           foundUpdate = true
         } else {
-          if(this.backgroundUrl === config.canvas.urlSmall) return
+          if (this.backgroundUrl === config.canvas.urlSmall) return
           this.backgroundUrl = config.canvas.urlSmall
           foundUpdate = true
         }
 
-        if(foundUpdate) {
+        if (foundUpdate) {
           this.updateBackgroundImage()
         }
       },
@@ -115,7 +129,7 @@
 
           let xOffset = 0, yOffset = 0
 
-          if(this.renderQueue.background.length > 0) {
+          if (this.renderQueue.background.length > 0) {
             // RETRIEVE POSITION AND SET NEW BACKGROUND ACCORDINGLY
             xOffset = this.renderQueue.background[0].position.x
             yOffset = this.renderQueue.background[0].position.y
@@ -163,6 +177,8 @@
       async addOverlayImage (imageObject) {
         imageObject.windowImage = await this.createWindowImage(imageObject.src)
         imageObject.renderPosition = { x: 0, y: 0 }
+        imageObject.width = imageObject.width * this.canvasToWallRation
+        imageObject.height = imageObject.height * this.canvasToWallRation
         imageObject.position = {
           x: imageObject.position.x * this.scale,
           y: imageObject.position.y * this.scale
@@ -175,8 +191,8 @@
         if (this.renderQueue.overlay.length === 0) throw Error('No overlay image found in render queue')
         // CHANGE IMAGE
         this.renderQueue.overlay[0].windowImage = await this.createWindowImage(imageObject.src)
-        this.renderQueue.overlay[0].width = imageObject.width
-        this.renderQueue.overlay[0].height = imageObject.height
+        this.renderQueue.overlay[0].width = imageObject.width * this.canvasToWallRation
+        this.renderQueue.overlay[0].height = imageObject.height * this.canvasToWallRation
         // SIGNAL RENDER
         this.renderOverlay = true
       },
@@ -184,9 +200,9 @@
       isImageObjectVisible (imageObject) {
         return !(
           // IS TOO FAR BOTTOM
-          this.$refs.backgroundCanvas.clientHeight < imageObject.position.y ||
+          this.$refs.backgroundCanvas.height < imageObject.position.y ||
           // IS TOO FAR RIGHT
-          this.$refs.backgroundCanvas.clientWidth < imageObject.position.x ||
+          this.$refs.backgroundCanvas.width < imageObject.position.x ||
           // IS TOO FAR TOP
           0 > imageObject.position.y + imageObject.height * this.scale ||
           // IS TOO FAR LEFT
@@ -228,8 +244,8 @@
       },
 
       setScale (newScale) {
-        if (newScale > 20) newScale = 20
-        if (newScale < 0.08) newScale = 0.08
+        if (newScale > 30) newScale = 30
+        if (newScale < 0.3) newScale = 0.3
         const scaleDiff = newScale / this.scale
 
         if (scaleDiff !== 0) {
@@ -244,10 +260,10 @@
       },
       setScaleToFill () {
 
-        const containerWidth = this.$refs.canvasContainer.clientWidth
+        const containerWidth = this.$refs.backgroundCanvas.width
 
         const smallerThanContainerScale = 0.95
-        const newScale = (containerWidth / config.canvas.width) * smallerThanContainerScale
+        const newScale = (this.$refs.backgroundCanvas.width / config.canvas.width) * smallerThanContainerScale
 
         this.onScaleEvent({
           x: this.$refs.canvasContainer.offsetLeft,
@@ -328,7 +344,6 @@
         const maxOffset = 70
 
         const boundingRect = this._getBackgroundBoundingRect()
-
         // LEFT
         if (boundingRect.x + x + boundingRect.width * this.scale < maxOffset) x = 0
 
@@ -336,10 +351,10 @@
         if (boundingRect.y + y + boundingRect.height * this.scale < maxOffset) y = 0
 
         // RIGHT
-        if (boundingRect.x + x > this.$refs.canvasContainer.clientWidth - maxOffset) x = 0
+        if (boundingRect.x + x > this.$refs.backgroundCanvas.width - maxOffset) x = 0
 
         // BOTTOM
-        if (boundingRect.y + y > this.$refs.backgroundCanvas.clientHeight - maxOffset) y = 0
+        if (boundingRect.y + y > this.$refs.backgroundCanvas.height - maxOffset) y = 0
 
         if (x === 0 && y === 0) return { x, y }
 
@@ -398,21 +413,16 @@
         this.renderBackground = true
       },
 
-      setOverlayAlpha (alpha) {
-        this.overlayContext.globalAlpha = alpha
-        this.renderOverlay = true
-      },
-
       // HANDLER HELPERS
 
       getDistance (p1, p2) {
         return Math.sqrt(Math.pow((p2.x - p1.x), 2) + Math.pow((p2.y - p1.y), 2))
       },
 
-      isUserClickingOnOverlay (overlay, event) {
+      isUserClickingOnOverlay (overlay, { clientX, clientY }) {
         const currentClick = {
-          x: event.clientX - this.$refs.canvasContainer.offsetLeft,
-          y: event.clientY - this.$refs.canvasContainer.offsetTop
+          x: (clientX - this.$refs.canvasContainer.offsetLeft) / this.cssToCanvasRatio,
+          y: (clientY - this.$refs.canvasContainer.offsetTop) / this.cssToCanvasRatio
         }
 
         const localCoords = {
@@ -426,24 +436,24 @@
           && localCoords.y < overlay.height
       },
 
-      onMoveEvent (event) {
+      onMoveEvent ({ clientX, clientY }) {
         // CHECK IF OLD POS IS NOT DEFAULT
         if (this.lastPos.x !== -1 && this.lastPos.y !== -1) {
 
-          let offsetTop = this.$refs.canvasContainer.offsetTop
-          let offsetLeft = this.$refs.canvasContainer.offsetLeft
+          let offsetTop = this.$refs.canvasContainer.offsetTop / this.cssToCanvasRatio
+          let offsetLeft = this.$refs.canvasContainer.offsetLeft / this.cssToCanvasRatio
 
           // CHECK IF FINGER MOVED
           let dist = this.getDistance({
-            x: event.clientX - offsetLeft,
-            y: event.clientY - offsetTop
+            x: clientX - offsetLeft,
+            y: clientY - offsetTop
           }, this.lastPos)
 
           if (dist > 0) {
             // MOVE CANVAS
             let diff = {
-              x: event.clientX - offsetLeft - this.lastPos.x,
-              y: event.clientY - offsetTop - this.lastPos.y,
+              x: clientX - offsetLeft - this.lastPos.x,
+              y: clientY - offsetTop - this.lastPos.y,
             }
             if (this.moveTarget === 'stage') this.updateCanavsPosition(diff)
             else if (this.moveTarget) {
@@ -451,8 +461,8 @@
             }
 
             this.lastPos = {
-              x: event.clientX - offsetLeft,
-              y: event.clientY - offsetTop
+              x: clientX - offsetLeft,
+              y: clientY - offsetTop
             }
           }
         }
@@ -480,8 +490,8 @@
 
         // SET SCALE CENTER RELATIVE TO CANVAS POSITION
         scaleCenter = {
-          x: scaleCenter.x - this.$refs.canvasContainer.offsetLeft,
-          y: scaleCenter.y - this.$refs.canvasContainer.offsetTop
+          x: scaleCenter.x - this.$refs.canvasContainer.offsetLeft / this.cssToCanvasRatio,
+          y: scaleCenter.y - this.$refs.canvasContainer.offsetTop / this.cssToCanvasRatio
         }
 
         const oldScale = this.scale
@@ -500,7 +510,6 @@
 
         await this.updateBackgroundOnZoom()
 
-
       },
 
       // EVENT HANDLER METHODS FOR MOVEMENTS
@@ -513,17 +522,18 @@
         let touch2 = event.touches[1]
 
         if (touch1 && touch2) {
+
           let dist = this.getDistance({
-            x: touch1.clientX,
-            y: touch1.clientY
+            x: touch1.clientX / this.cssToCanvasRatio,
+            y: touch1.clientY / this.cssToCanvasRatio
           }, {
-            x: touch2.clientX,
-            y: touch2.clientY
+            x: touch2.clientX / this.cssToCanvasRatio,
+            y: touch2.clientY / this.cssToCanvasRatio
           })
 
           let center = {
-            x: (touch1.clientX + touch2.clientX) / 2,
-            y: (touch1.clientY + touch2.clientY) / 2
+            x: ((touch1.clientX + touch2.clientX) / this.cssToCanvasRatio) / 2,
+            y: ((touch1.clientY + touch2.clientY) / this.cssToCanvasRatio) / 2
           }
 
           let newScale = this.scale * dist / this.lastDist
@@ -532,7 +542,10 @@
           this.lastDist = dist
 
         } else if (touch1) {
-          this.onMoveEvent(touch1)
+          this.onMoveEvent({
+            clientX: touch1.clientX / this.cssToCanvasRatio,
+            clientY: touch1.clientY / this.cssToCanvasRatio
+          })
         }
       },
       onTouchEndEvent (event) {
@@ -552,17 +565,17 @@
 
         if (event.touches.length === 1) {
           this.lastPos = {
-            x: touch1.clientX - this.$refs.canvasContainer.offsetLeft,
-            y: touch1.clientY - this.$refs.canvasContainer.offsetTop
+            x: touch1.clientX / this.cssToCanvasRatio - this.$refs.canvasContainer.offsetLeft / this.cssToCanvasRatio,
+            y: touch1.clientY / this.cssToCanvasRatio - this.$refs.canvasContainer.offsetTop / this.cssToCanvasRatio
           }
         } else if (event.touches.length === 2) {
           let touch2 = event.touches[1]
           this.lastDist = this.getDistance({
-            x: touch1.clientX,
-            y: touch1.clientY
+            x: touch1.clientX / this.cssToCanvasRatio,
+            y: touch1.clientY / this.cssToCanvasRatio
           }, {
-            x: touch2.clientX,
-            y: touch2.clientY
+            x: touch2.clientX / this.cssToCanvasRatio,
+            y: touch2.clientY / this.cssToCanvasRatio
           })
         }
 
@@ -579,8 +592,8 @@
         const scaleBy = 1.1
 
         const cursorPosOnStart = {
-          x: event.clientX,
-          y: event.clientY
+          x: event.clientX / this.cssToCanvasRatio,
+          y: event.clientY / this.cssToCanvasRatio
         }
 
         const newScale = event.deltaY > 0 ? this.scale * scaleBy : this.scale / scaleBy
@@ -591,12 +604,15 @@
       onMouseDownEvent (event) {
 
         this.lastPos = {
-          x: event.clientX - this.$refs.canvasContainer.offsetLeft,
-          y: event.clientY - this.$refs.canvasContainer.offsetTop
+          x: (event.clientX - this.$refs.canvasContainer.offsetLeft) / this.cssToCanvasRatio,
+          y: (event.clientY - this.$refs.canvasContainer.offsetTop) / this.cssToCanvasRatio
         }
 
         // CHECK IF USER IS CLICKING ON OVERLAY
-        const target = this.renderQueue.overlay.find(imageObject => this.isUserClickingOnOverlay(imageObject, event))
+        const target = this.renderQueue.overlay.find(imageObject => this.isUserClickingOnOverlay(imageObject, {
+          clientX: event.clientX / this.cssToCanvasRatio,
+          clientY: event.clientY / this.cssToCanvasRatio
+        }))
         if (target) {
           this.moveTarget = target
         } else {
@@ -612,20 +628,26 @@
       },
       onMouseMoveEvent (event) {
         event.preventDefault()
-        this.onMoveEvent(event)
+        this.onMoveEvent({
+          clientX: event.clientX / this.cssToCanvasRatio,
+          clientY: event.clientY / this.cssToCanvasRatio
+        })
       },
     }
     ,
     async mounted () {
       // SET STAGE WIDTH
-      const width = window.innerWidth
-      const height = Number(this.height) ? Number(this.height) : 300
+      this.width = window.innerWidth
+      //this.height = Number(this.height) ? Number(this.height) : 300
 
-      this.$refs.overlayCanvas.width = width
-      this.$refs.overlayCanvas.height = height
+      this.$refs.overlayCanvas.width = this.canvasSettings.width
+      this.$refs.overlayCanvas.height = this.canvasSettings.width * (this.height / this.width)
 
-      this.$refs.backgroundCanvas.width = width
-      this.$refs.backgroundCanvas.height = height
+      this.$refs.backgroundCanvas.width = this.canvasSettings.width
+      this.$refs.backgroundCanvas.height = this.canvasSettings.width * (this.height / this.width)
+
+      this.cssToCanvasRatio = this.width / this.canvasSettings.width
+      this.canvasToWallRation = this.canvasSettings.width / 3300
 
       this.backgroundContext = this.$refs.backgroundCanvas.getContext('2d')
       this.overlayContext = this.$refs.overlayCanvas.getContext('2d')
