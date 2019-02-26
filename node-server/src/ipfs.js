@@ -20,7 +20,7 @@ ipfsWrap.checkFileExists = async (hash) => {
         })
     ]);
 
-    if(result.hash !== hash) console.warn(`IPFS ${hash} stats timed out`);
+    if(!result || result.hash !== hash) console.warn(`IPFS ${hash} stats timed out`);
 
     return result.hash === hash;
 };

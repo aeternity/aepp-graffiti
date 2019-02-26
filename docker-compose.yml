@@ -19,7 +19,7 @@ services:
       - "3001:3001"
     volumes:
       - ./aeternity-nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on: 
+    depends_on:
       - "aeternity"
 
   ipfs:
@@ -41,7 +41,7 @@ services:
       - S3_SECRET=secret-key
       - S3_REGION=bucket-name
       - S3_BUCKET=region-code
-    depends_on: 
+    depends_on:
       - "aeternity"
       - "ipfs"
     links:
@@ -50,7 +50,7 @@ services:
     volumes:
       - "./.docker/rendered:/app/data/rendered"
       - "./.docker/backup:/app/data/backup"
-      
+
   server-proxy:
     image: nginx:latest
     ports:
@@ -59,22 +59,22 @@ services:
       - ./.docker/rendered:/usr/share/nginx/html/rendered
       - ./server-nginx.conf:/etc/nginx/conf.d/default.conf
       - ./server-nginx-cors.conf:/etc/nginx/cors.conf
-    depends_on: 
+    depends_on:
       - "server"
 
   base-aepp:
     image: dronegraffiti/demo-base-aepp:latest
     ports:
       - "8084:80"
-      
+
   aepp:
     image: dronegraffiti/aepp:latest
-    depends_on: 
+    depends_on:
       - "server"
       - "base-aepp"
     ports:
       - "8085:80"
-      
+
   matomo:
     image: crazymax/matomo:latest
     container_name: matomo

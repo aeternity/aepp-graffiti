@@ -20,7 +20,7 @@ app.use(fileUpload({
     files: 1
 }));
 
-app.use('/rendered', express.static(__dirname + '/rendered'));
+app.use('/rendered', express.static(__dirname + '/data/rendered'));
 
 app.get('/ipfs/:hash.svg', logic.ipfs);
 
@@ -44,6 +44,13 @@ app.use((req, res) => {
     res.sendStatus(404);
 });
 
-setTimeout(() => canvas.init(), 30000);
+try {
+    canvas.init()
+} catch (e) {
+    console.warn("First canvas.init call failed, trying again in 30 seconds");
+    setTimeout(() => canvas.init(), 30000);
+}
+
+
 storage.init();
 app.listen(3000);
