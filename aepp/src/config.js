@@ -14,6 +14,7 @@ export default {
     width: 3300,
     height: 5000,
     pixelToMM: 10, // Pixel * pixelToMM = mm
+    shardURL: API_URL + '/rendered/shards/'
   },
   droneSettings: {
     wallId: 'MX19-001',

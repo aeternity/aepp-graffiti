@@ -50,8 +50,11 @@
         currentStatus: STATUS_LOADING,
         shards: {
           horizontal: 1,
-          vertical: 1
-        }
+          vertical: 1,
+          svg: false
+        },
+        backgroundUrl: config.canvas.urlSmall,
+        cacheTimestamp: Date.now()
       }
     },
     computed: {
@@ -132,24 +135,6 @@
       async addBackgroundImage () {
         try {
 
-          /*
-          const src = (this.smallBackground ? this.canvasSettings.urlSmall : this.canvasSettings.url) + '?date=' + Math.round(Date.now())
-
-          const windowImage = await this.createWindowImage(src)
-          const imageData = {
-            position: { x: 0, y: 0 },
-            width: this.canvasSettings.width,
-            height: this.canvasSettings.height,
-            renderPosition: { x: 0, y: 0 },
-            windowImage: windowImage
-          }
-          this.renderQueue.background.push(imageData)
-          this.$emit('load')
-          */
-
-          const src = this.canvasSettings.urlSmall
-
-          const windowImage = await this.createWindowImage(src)
           let xOffset = 0, yOffset = 0
           if(this.renderQueue.background.length > 0) {
             // RETRIEVE POSITION AND SET NEW BACKGROUND ACCORDINGLY
@@ -160,15 +145,28 @@
 
           this.renderQueue.background = []
 
+          const shardWidth = this.canvasSettings.width / this.shards.horizontal
+          const shardHeight = this.canvasSettings.height / this.shards.vertical
 
           for (let i = 0; i < this.shards.horizontal * this.shards.vertical; i++) {
+
+            const horizontalIndex = i % this.shards.horizontal;
+            const verticalIndex = Math.floor(i / this.shards.vertical);
+
+            let src = this.canvasSettings.shardURL + `${this.shards.horizontal}${this.shards.vertical}_${horizontalIndex}_${verticalIndex}.png`
+
+            if(this.shards.horizontal === 1 && this.shards.vertical === 1) {
+              src = this.shards.svg ? this.canvasSettings.url : this.canvasSettings.urlSmall
+            }
+
+            const windowImage = await this.createWindowImage(src)
             const imageData = {
               position: {
-                x: (this.canvasSettings.width / this.shards.horizontal * (i % this.shards.horizontal)) * this.scale + xOffset,
-                y: (this.canvasSettings.height / this.shards.vertical * Math.floor(i / this.shards.vertical)) * this.scale + xOffset
+                x: (shardWidth * horizontalIndex) * this.scale + xOffset,
+                y: (shardHeight * verticalIndex) * this.scale + yOffset
               },
-              width: this.canvasSettings.width / this.shards.horizontal,
-              height: this.canvasSettings.height / this.shards.vertical,
+              width: shardWidth,
+              height: shardHeight,
               renderPosition: { x: 0, y: 0 },
               windowImage: windowImage
             }
