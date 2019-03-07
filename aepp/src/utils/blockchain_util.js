@@ -1,4 +1,5 @@
-const Crypto = require('@aeternity/aepp-sdk').Crypto;
+import * as Crypto from '@aeternity/aepp-sdk/es/utils/crypto'
+
 const BigNumber = require('bignumber.js');
 
 const coordinatesType = '(int, int)';

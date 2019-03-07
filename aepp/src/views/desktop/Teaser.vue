@@ -116,7 +116,8 @@
   import { AeButton, AeCard } from '@aeternity/aepp-components'
   import BiggerLoader from '../../components/BiggerLoader'
   import TeaserUtil from '~/utils/blockchain_teaser_utils'
-  import { ChainNode, ContractNodeAPI } from '@aeternity/aepp-sdk'
+  import ChainNode from '@aeternity/aepp-sdk/es/chain/node'
+  import ContractNodeAPI from '@aeternity/aepp-sdk/es/contract/node'
   import AeLoader from '@aeternity/aepp-components/src/components/aeLoader/aeLoader'
 
   export default {

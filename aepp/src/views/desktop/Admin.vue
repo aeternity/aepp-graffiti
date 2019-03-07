@@ -157,7 +157,8 @@
 </template>
 
 <script>
-  import { ChainNode, ContractNodeAPI } from '@aeternity/aepp-sdk'
+  import ChainNode from '@aeternity/aepp-sdk/es/chain/node'
+  import ContractNodeAPI from '@aeternity/aepp-sdk/es/contract/node'
   import Util from '~/utils/blockchain_util'
   import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components'
   import BiggerLoader from '~/components/BiggerLoader'

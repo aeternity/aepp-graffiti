@@ -211,6 +211,10 @@
       },
 
       runRenderQueue () {
+
+        // If there is no background canvas, dont render on it
+        if(!this.$refs.backgroundCanvas) return;
+
         if (this.renderBackground && this.renderQueue.background.length > 0) {
           this.clearContext(this.backgroundContext)
 

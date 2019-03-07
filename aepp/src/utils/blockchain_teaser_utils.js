@@ -1,4 +1,4 @@
-const Crypto = require('@aeternity/aepp-sdk').Crypto;
+import * as Crypto from '@aeternity/aepp-sdk/es/utils/crypto'
 
 const artworkType = '(address, int, string, int)';
 const geolocationType = 'string';

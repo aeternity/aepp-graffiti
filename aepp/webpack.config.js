@@ -79,12 +79,19 @@ module.exports = env => {
     ],
     module: {
       rules: [
+        // this will apply to both plain `.js` files
+        // AND `<script>` blocks in `.vue` files
         {
           test: /\.js$/,
-          exclude: [/node_modules/],
-          include: [/node_modules\/@aeternity/, /node_modules\/rlp/],
+          include: [
+            path.resolve(__dirname, "src"),
+            path.resolve(__dirname, "node_modules/@aeternity"),
+            path.resolve(__dirname, "node_modules/rlp"),
+          ],
           loader: 'babel-loader'
         },
+        // this will apply to both plain `.css` files
+        // AND `<style>` blocks in `.vue` files
         {
           test: /\.css$/,
           use: [
