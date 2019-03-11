@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack -p --env.NODE_ENV=prod",
     "dev": "webpack-dev-server --env.NODE_ENV=dev --config ./webpack.config.js --verbose",
-    "build:stats": "webpack --env.NODE_ENV=prod --profile --json > stats.json"
+    "build:stats": "webpack --env.NODE_ENV=prod --profile --json > stats.json",
+    "check:es5": "es-check es5 './dist/*.js'"
   },
   "dependencies": {
     "@aeternity/aepp-components": "https://github.com/aeternity/aepp-components.git#develop",
@@ -43,6 +44,7 @@
     "clean-webpack-plugin": "^1.0.1",
     "css-loader": "^2.1.0",
     "cssnano": "^4.1.10",
+    "es-check": "^5.0.0",
     "eslint": "^5.14.0",
     "file-loader": "^3.0.1",
     "glob-all": "^3.1.0",
