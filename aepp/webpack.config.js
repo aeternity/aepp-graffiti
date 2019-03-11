@@ -87,12 +87,20 @@ module.exports = env => {
             path.resolve(__dirname, "src"),
             path.resolve(__dirname, "node_modules/@aeternity"),
             path.resolve(__dirname, "node_modules/rlp"),
-            // Contains "const"
+            // Contains "const" or "let"
             path.resolve(__dirname, "node_modules/base-x"),
-            path.resolve(__dirname, "node_modules/@jimp"),
+            path.resolve(__dirname, "node_modules/@jimp/core"),
             path.resolve(__dirname, "node_modules/dronetracer"),
             path.resolve(__dirname, "node_modules/vuex-persist"),
-            path.resolve(__dirname, "node_modules/@download/blockies/dist"),
+            path.resolve(__dirname, "node_modules/file-type"),
+          ],
+          loader: 'babel-loader'
+        },
+        {
+          type: 'javascript/auto',
+          test: /\.mjs$/,
+          include: [
+            path.resolve(__dirname, "node_modules/@download/blockies")
           ],
           loader: 'babel-loader'
         },

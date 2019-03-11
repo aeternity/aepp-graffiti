@@ -263,6 +263,7 @@
 
       },
       setScaleToFill () {
+        if(!this.$refs.backgroundCanvas) return;
 
         const containerWidth = this.$refs.backgroundCanvas.width
 

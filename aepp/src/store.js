@@ -166,8 +166,8 @@ const store = new Vuex.Store({
       if(firstRun) {
         try {
           await dispatch('updatePosition', {
-            x: Math.round(Math.random() * (config.canvas.width - ((dronePaint.paintingWidth * 4) / 10))),
-            y: Math.round(Math.random() * (config.canvas.height - ((dronePaint.paintingHeight * 4) / 10)))
+            x: Math.round(Math.random() * (config.canvas.width - ((dronePaint.paintingWidth * state.settings.scaleFactor) / 10))),
+            y: Math.round(Math.random() * (config.canvas.height - ((dronePaint.paintingHeight * state.settings.scaleFactor) / 10)))
           })
         } catch (e) {
           await dispatch('updatePosition', {
