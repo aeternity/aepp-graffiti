@@ -87,6 +87,12 @@ module.exports = env => {
             path.resolve(__dirname, "src"),
             path.resolve(__dirname, "node_modules/@aeternity"),
             path.resolve(__dirname, "node_modules/rlp"),
+            // Contains "const"
+            path.resolve(__dirname, "node_modules/base-x"),
+            path.resolve(__dirname, "node_modules/@jimp"),
+            path.resolve(__dirname, "node_modules/dronetracer"),
+            path.resolve(__dirname, "node_modules/vuex-persist"),
+            path.resolve(__dirname, "node_modules/@download/blockies/dist"),
           ],
           loader: 'babel-loader'
         },
