@@ -64,13 +64,14 @@ contract DroneGraffitiAuction =
 
   public stateful function add_auction_slot(time_capacity' : int,
                                             start_block_height' : int,
-                                            block_duration : int,
+                                            end_block_height' : int,
                                             minimum_time_per_bid' : int,
                                             maximum_time_per_bid' : int) : int =
     require(is_admin(Call.caller), "add_auction_slot caller has to be admin")
     require(in_future(start_block_height'), "add_auction_slot start_block_height' has to be in future")
+    require(in_future(end_block_height'), "add_auction_slot end_block_height' has to be in future")
+    require(start_block_height' < end_block_height', "add_auction_slot start_block_height' has to be earlier than end_block_height'")
     require(is_greater_zero(time_capacity'), "add_auction_slot time_capacity' has to be greater than 0")
-    require(is_greater_zero(block_duration), "add_auction_slot block_duration has to be greater than 0")
     require(is_greater_zero(minimum_time_per_bid'), "add_auction_slot minimum_time_per_bid' has to be greater than 0")
     require(is_greater_zero(maximum_time_per_bid'), "add_auction_slot maximum_time_per_bid' has to be greater than 0")
 
@@ -83,7 +84,7 @@ contract DroneGraffitiAuction =
                              successful_bids = [],
                              failed_bids = [],
                              start_block_height = start_block_height',
-                             end_block_height = start_block_height' + block_duration }
+                             end_block_height = end_block_height' }
 
     put(state{ latest_auction_slot_id = next_auction_slot_id, auction_slots[next_auction_slot_id] = new_auction_slot })
     next_auction_slot_id
