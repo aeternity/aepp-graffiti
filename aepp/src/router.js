@@ -11,8 +11,7 @@ import Canvas from './views/desktop/Canvas'
 import Admin from './views/desktop/Admin'
 import Teaser from './views/desktop/Teaser'
 import Amount from './views/Amount'
-import NativeCanvas from './components/NativeCanvas'
-import CSSCanvas from './components/CSSCanvas'
+import Bid from './views/Bid'
 
 const routes = [
   {
@@ -88,16 +87,10 @@ const routes = [
     meta: { title: `Teaser` },
   },
   {
-    path: '/canvastest',
-    name: 'c1',
-    component: NativeCanvas,
-    meta: { title: `Teaser` },
-  },
-  {
-    path: '/csscanvas',
-    name: 'c2',
-    component: CSSCanvas,
-    meta: { title: `Teaser` },
+    path: '/bid/:id',
+    name: 'bid',
+    component: Bid,
+    meta: { title: `Bid` },
   }
 ]
 

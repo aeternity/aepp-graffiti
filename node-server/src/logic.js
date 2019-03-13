@@ -24,7 +24,7 @@ logic.upload = async (req, res) => {
     }
 
     const sanityCheck = await svgUtil.sanityCheckFileOnly({filebuffer: file.data}, 'upload');
-    if(!sanityCheck.checkPassed) {
+    if (!sanityCheck.checkPassed) {
         return res.status(422).json({
             error: sanityCheck.dataFails.upload,
         });
@@ -169,6 +169,44 @@ logic.teaserJson = async (req, res) => {
             artworks: artworks
         }
     });
+};
+
+logic.getSingleBid = async (req, res) => {
+    try {
+        const searchId = req.params.id;
+        const slots = await blockchain.auctionSlots();
+        const currentHeight = await blockchain.height();
+
+
+        const allBids = slots
+            .reduce((acc, slot) => acc.concat(
+                slot.successfulBids.map(b => Object.assign(b, {
+                    slot: Object.assign({}, slot, {
+                        successfulBids: null,
+                        failedBids: null,
+                        active: currentHeight > slot.startBlockHeight && currentHeight <= slot.endBlockHeight
+                    }),
+                    success: true
+                }))
+            ).concat(
+                slot.failedBids.map(b => Object.assign(b, {
+                    slot: Object.assign({}, slot, {
+                        successfulBids: null,
+                        failedBids: null,
+                        active: currentHeight > slot.startBlockHeight && currentHeight <= slot.endBlockHeight
+                    }),
+                    success: false
+                }))
+            ), []);
+
+        const bid = allBids.find(bid => Number(bid.seqId) === Number(searchId));
+
+        if (!bid) return res.sendStatus(404);
+        return res.json(bid);
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+
 };
 
 module.exports = logic;

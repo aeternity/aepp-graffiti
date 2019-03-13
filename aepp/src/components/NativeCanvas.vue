@@ -646,6 +646,8 @@
       this.width = window.innerWidth
       //this.height = Number(this.height) ? Number(this.height) : 300
 
+      if(!this.$refs.overlayCanvas || this.$refs.backgroundCanvas) return;
+
       this.$refs.overlayCanvas.width = this.canvasSettings.width
       this.$refs.overlayCanvas.height = this.canvasSettings.width * (this.height / this.width)
 
@@ -671,7 +673,7 @@
       // this.setScaleToFill()
       if (this.fillScale) this.setScaleToFill()
 
-      if (this.draggable) {
+      if (this.draggable && this.$refs.stageWrapper) {
         /*
         MOBILE DRAG AND ZOOM HANDLER
          */

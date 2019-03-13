@@ -11,7 +11,7 @@
       <div class="w-full text-center font-mono text-xl text-red mt-2">
         {{error}}
       </div>
-      </div>
+    </div>
 
     <div class="w-full p-4" v-if="isShowListState">
       <div v-for="bid in bids" :key='bid.seqId'>
@@ -23,7 +23,7 @@
               <BiggerLoader></BiggerLoader>
             </div>
           </template>
-          <div class="w-full">
+          <div class="w-full relative">
             <div class="flex flex-row justify-between">
               <div class="flex flex-col mt-2">
                 <span>
@@ -61,9 +61,14 @@
                   <span v-if="!bid.finished && bid.successful"> (Pending)</span>
               </span>
             </div>
+            <div class="absolute pin-b pin-r rounded-full btn-primary-round"
+                 @click="shareBid(bid.seqId)">
+              <div class="flex items-center justify-center p-4">
+                <img src="../assets/share.svg" alt="share">
+              </div>
+            </div>
           </div>
         </ae-card>
-
       </div>
     </div>
     <div class="w-full p-4" v-if="isEmptyListState">
@@ -92,7 +97,7 @@
         bids: [],
         state: INITAL_STATE,
         address: null,
-        error: null
+        error: null,
       }
     },
     computed: {
@@ -108,16 +113,19 @@
       isEmptyListState () {
         return this.state === EMPTY_LIST
       },
-      isErrorState() {
+      isErrorState () {
         return this.state === ERROR_STATE
       }
     },
     methods: {
+      shareBid(id) {
+        window.open(`https://aepp.dronegraffiti.com/bid/${id}`)
+      },
       async updateMyBids () {
         try {
           const calledAllBids = await this.client.contractNodeCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
 
-          if(!calledAllBids) {
+          if (!calledAllBids) {
             this.error = 'Could not retrieve data from contract. Are you online?'
             bugsnagClient.notify('calledAllBids is undefined')
             return this.state = ERROR_STATE
@@ -127,7 +135,7 @@
 
           const decodedAllBids = await this.client.contractNodeDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
 
-          if(!decodedAllBids) {
+          if (!decodedAllBids) {
             this.error = 'Could not decode data from contract.'
             bugsnagClient.notify('decodedAllBids is undefined')
             return this.state = ERROR_STATE
@@ -189,5 +197,11 @@
 <style scoped>
   .bid-image {
     max-height: 200px;
+  }
+
+  .btn-primary-round {
+    background: #ff0d6a;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(0, 33, 87, .4);
   }
 </style>

@@ -60,3 +60,9 @@
   * @import "utilities/background-patterns";
   * @import "utilities/skew-transforms";
   */
+
+
+.max-w-desktop {
+  max-width: 1000px;
+  width: 100%;
+}

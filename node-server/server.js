@@ -33,6 +33,8 @@ app.get('/slots/:id', logic.getSlots);
 // get data for teaser event
 app.get('/teaser.json', logic.teaserJson);
 
+app.get('/bid/:id', logic.getSingleBid);
+
 app.get('/health/ipfsNode', health.ipfsNode);
 app.get('/health/blockchainNode', health.blockchainNode);
 app.get('/health/teaserFiles', health.teaserIPFSFiles);

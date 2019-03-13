@@ -220,11 +220,6 @@
     padding: 50px;
   }
 
-  .max-w-desktop {
-    max-width: 1000px;
-    width: 100%;
-  }
-
   .field {
     padding: 1em 0;
   }

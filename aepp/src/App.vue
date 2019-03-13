@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="min-h-screen">
     <div class="content min-h-screen">
-      <ae-main class="min-h-screen" >
+      <ae-main class="min-h-screen">
         <router-view></router-view>
       </ae-main>
       <!-- Find the docs for the component here: http://aeternity.com/aepp-components/ -->
@@ -22,7 +22,7 @@
   export default {
     name: 'app',
     components: { CriticalErrorOverlay, AeMain },
-    data() {
+    data () {
       return {
         error: null,
         errorCTA: null,
@@ -30,8 +30,8 @@
         errorClick: () => {}
       }
     },
-    created() {
-      if(window.parent === window && !this.ignoreErrors && !this.$route.path.includes('desktop')) {
+    created () {
+      if (window.parent === window && !this.ignoreErrors && !this.$route.path.includes('desktop') && !this.$route.path.includes('bid')) {
         // SET ERROR
         this.error = 'Could not connect to your wallet. Please make sure you run this application inside the base aepp.'
         this.errorCTA = 'Go to Base Aepp'
