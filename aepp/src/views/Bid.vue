@@ -88,7 +88,7 @@
       seeImageOnCanvas() {
         if(window.parent.location.hostname !== 'base-aepp.dronegraffiti.com') {
           // Not in base-aepp
-          this.$router.push('desktop/canvas')
+          this.$router.push('/desktop/canvas')
         } else {
           this.$router.push('/')
         }

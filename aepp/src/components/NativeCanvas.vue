@@ -646,7 +646,7 @@
       this.width = window.innerWidth
       //this.height = Number(this.height) ? Number(this.height) : 300
 
-      if(!this.$refs.overlayCanvas || this.$refs.backgroundCanvas) return;
+      if(!this.$refs.overlayCanvas || !this.$refs.backgroundCanvas) return;
 
       this.$refs.overlayCanvas.width = this.canvasSettings.width
       this.$refs.overlayCanvas.height = this.canvasSettings.width * (this.height / this.width)
