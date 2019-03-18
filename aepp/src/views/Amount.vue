@@ -9,7 +9,7 @@
         </span>
       </div>
       <div class="mt-8">
-        <ae-input type="number" label="Amount per Minute" step="0.01" placeholder="1" min="0" aemount :value="amount"
+        <ae-input type="number" label="Total Bid" step="0.01" placeholder="1" min="0" aemount :value="amount"
                   @input="updateData" :error="!!error">
           <template slot="header">
             <span class="text-grey">AE</span>
@@ -17,7 +17,7 @@
           <ae-toolbar slot="footer">
             <div class="w-full flex justify-between">
               <span>{{transformedImage.dronetime}} Minutes</span>
-              <span class="bold-info">~{{total.toLocaleString('en-US')}} AE in total</span>
+              <span class="bold-info">~{{perMinute.toLocaleString('en-US')}} AE per minute</span>
             </div>
           </ae-toolbar>
         </ae-input>
@@ -46,8 +46,8 @@
     components: { AeInput, WhiteHeader, AeToolbar, AeButton },
     data () {
       return {
-        amount: 0.1,
-        total: 0,
+        amount: 10,
+        perMinute: 0,
         error: null,
         balance: null
       }
@@ -64,11 +64,11 @@
       updateData (e) {
         if (e === '') {
           this.amount = null
-          this.total = 0
         } else {
           this.amount = e
-          this.total = this.amount * this.transformedImage.dronetime
+          this.perMinute = this.amount / this.transformedImage.dronetime
         }
+        this.error = null
       },
       back () {
         this.$router.push('slots')
@@ -77,21 +77,21 @@
 
         this.error = null
 
-        if (this.remainingDronetime < this.transformedImage.dronetime && this.amount < this.slotObject.minimumBid) {
+        if (this.remainingDronetime < this.transformedImage.dronetime && this.perMinute < this.slotObject.minimumBid) {
           this.error = `The minimum bid for this slot is ${this.slotObject.minimumBid.toFixed(5)} AE per minute`
         }
 
-        if (this.total < 0.001) {
+        if (this.amount < 0.001) {
           this.error = `The minimum bidding amount is 0.001 AE.`
         }
 
-        if (this.balance.lt(this.total)) {
-          this.error = `Your bid total (${this.total} AE) exceeds your balance (${this.balance} AE).`
+        if (this.balance.lt(this.amount)) {
+          this.error = `Your bid total (${this.amount} AE) exceeds your balance (${this.balance} AE).`
         }
 
         if (!this.error) {
           this.$store.dispatch('updateBidding', {
-            amount: this.total
+            amount: this.amount
           })
           this.$router.push('confirm')
         }
@@ -100,7 +100,7 @@
     },
     async mounted () {
       try {
-        this.total = this.amount * this.transformedImage.dronetime
+        this.perMinute = this.amount / this.transformedImage.dronetime
         this.client = await Aepp()
         const pub = await this.client.address()
         this.balance = Utils.atomsToAe(await this.client.balance(pub, {format:false}))
