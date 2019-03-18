@@ -155,9 +155,6 @@ contract DroneGraffitiAuction =
 
   // internal functions //
 
-  private function list_slots() : list(auction_slot) =
-    map(tuple_second, Map.to_list(state.auction_slots))
-
   // processes bids for if they are still considered successful
   private function process_bids(time_capacity : int, bids_to_reprocess : list(bid)) : (list(bid), list(bid)) =
     let filter_by_capacity = (bid : bid, acc_bids) =>
@@ -200,7 +197,7 @@ contract DroneGraffitiAuction =
   // doesn't allow withdraw of amount in active slots
   private stateful function admin_withdraw(to_address : address) : int =
     require(is_admin(Call.caller), "admin_withdraw caller has to be admin")
-    let slots_ending_in_futue = filter((slot) => in_future(slot.end_block_height), list_slots())
+    let slots_ending_in_futue = filter((slot) => in_future(slot.end_block_height), all_auction_slots())
     let bids_in_future_ending_slots = foldr((slot, acc_bids) => acc_bids ++ slot.successful_bids, [], slots_ending_in_futue)
     let amount_in_future_ending_slots = sum((bid) => bid.amount, bids_in_future_ending_slots)
     let balance_to_withdraw = Contract.balance - amount_in_future_ending_slots
