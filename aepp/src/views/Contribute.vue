@@ -20,6 +20,7 @@
             <div v-if="isInitial" class="p-4 text-center text-grey-dark">
               <h3>Place your art here</h3><br>
               <span>Upload an JPEG or PNG image. <br> Click to browse.</span>
+              <div class="mt-16"><strong>Hint:</strong> Illustrations and photos of<br>drawings give the best results.</div>
             </div>
           </div>
         </form>

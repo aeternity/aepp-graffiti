@@ -26,7 +26,7 @@
       return {
         error: null,
         errorCTA: null,
-        ignoreErrors: (window.location.host.includes('localhost')),
+        ignoreErrors: (window.location.host.includes('localhost') || window.location.host.includes('0.0.0.0')),
         errorClick: () => {}
       }
     },
