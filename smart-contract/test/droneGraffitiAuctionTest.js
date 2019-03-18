@@ -234,7 +234,7 @@ describe('DroneGraffitiAuction', () => {
 
     it('Call DroneGraffitiAuction Contract; admin_withdraw_to_address closed slot', async () => {
         await owner.awaitHeight(openHeight + 25);
-        const toAddress = "ak_twR4h7dEcUtc2iSEDv8kB7UFJJDGiEDQCXr85C3fYF8FdVdyo";
+        const toAddress = Crypto.generateKeyPair().publicKey;
 
         const callWithdraw = await contract.call('admin_withdraw_to_address', {
             args: `(${decodeAddress(toAddress)})`,
