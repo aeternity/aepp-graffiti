@@ -59,7 +59,7 @@
   import AeButton from '@aeternity/aepp-components/src/components/aeButton/aeButton'
 
   export default {
-    name: 'MicroView',
+    name: 'Bid',
     components: { AeButton, AeIdenticon, AeIdentity, BiggerLoader, AeCard, WhiteHeader },
     data () {
       return {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="onboardingWrapper">
     <OnboardingStep
       v-if="view === 1"
       key="v1"
@@ -39,10 +39,11 @@
           <ae-text face="uppercase-base" weight=700>SKIP</ae-text>
         </div>
         <div class="w-1/3 flex flex-row justify-center p-2">
-          <div v-for="step in MAX_VIEW" :class="step !== view ? 'ae-step-indicator' : 'ae-step-indicator-active'" :key="step">
+          <div v-for="step in MAX_VIEW" :class="step !== view ? 'ae-step-indicator' : 'ae-step-indicator-active'"
+               :key="step">
           </div>
         </div>
-        <div class="w-1/3 flex justify-end p-2" @click="next"  v-if="nextText">
+        <div class="w-1/3 flex justify-end p-2" @click="next" v-if="nextText">
           <ae-text face="uppercase-base" weight=700>{{nextText}}</ae-text>
         </div>
       </div>
@@ -60,7 +61,12 @@
       return {
         view: 1,
         MIN_VIEW: 1,
-        MAX_VIEW: 4
+        MAX_VIEW: 4,
+        currentlyTouching: false,
+        touchStartPos: {
+          x: 0,
+          y: 0
+        }
       }
     },
     components: {
@@ -68,25 +74,60 @@
       AeText
     },
     computed: {
-      nextText() {
-        if(this.view === 4) return 'START'
+      nextText () {
+        if (this.view === 4) return 'START'
         else return 'NEXT'
       }
     },
     methods: {
-      quit(){
+      quit () {
         this.$router.push('/')
       },
-      next() {
-        if(this.view === this.MAX_VIEW)  {
-          return this.$router.push('/');
+      next () {
+        if (this.view === this.MAX_VIEW) {
+          return this.$router.push('/')
         }
         this.view += 1
+      },
+      prev () {
+        if(this.view !== this.MIN_VIEW) this.view -= 1
+      },
+      onTouchStartEvent (event) {
+        if(event.touches.length === 1) {
+          this.touchStartPos = {
+            x: event.touches[0].clientX,
+            y: event.touches[0].clientY
+          }
+          this.currentlyTouching = true
+        }
+      },
+      onTouchMoveEvent (event) {
+        if(this.currentlyTouching) {
+          let dist = event.touches[0].clientX - this.touchStartPos.x
+          if(dist > 200) {
+            this.prev();
+            this.currentlyTouching = false
+          } else if(dist < -200) {
+            this.next();
+            this.currentlyTouching = false
+          }
+        }
+      },
+      onTouchEndEvent () {
+        this.currentlyTouching = false
       }
-
     },
-    mounted() {
+    mounted () {
       this.$store.dispatch('setFirstTimeOpenedFalse')
+
+      this.$refs.onboardingWrapper.addEventListener('touchstart', this.onTouchStartEvent)
+      this.$refs.onboardingWrapper.addEventListener('touchmove', this.onTouchMoveEvent)
+      this.$refs.onboardingWrapper.addEventListener('touchend', this.onTouchEndEvent)
+    },
+    beforeDestroy () {
+      this.$refs.onboardingWrapper.removeEventListener('touchstart', this.onTouchStartEvent)
+      this.$refs.onboardingWrapper.removeEventListener('touchmove', this.onTouchMoveEvent)
+      this.$refs.onboardingWrapper.removeEventListener('touchend', this.onTouchEndEvent)
     }
   }
 </script>
