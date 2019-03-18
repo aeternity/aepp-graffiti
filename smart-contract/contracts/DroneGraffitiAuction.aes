@@ -145,16 +145,12 @@ contract DroneGraffitiAuction =
     refund_new_to_low_bids(split_successful_bids_tuple)
     updated_auction_slot
 
-  // TODO: only let a special key withdraw, not every admin
-  // doesn't allow withdraw of amount in active slots
-  public stateful function admin_withdraw() =
-    require(is_admin(Call.caller), "admin_withdraw caller has to be admin")
-    let slots_ending_in_futue = filter((slot) => in_future(slot.end_block_height), list_slots())
-    let bids_in_future_ending_slots = foldr((slot, acc_bids) => acc_bids ++ slot.successful_bids, [], slots_ending_in_futue)
-    let amount_in_future_ending_slots = sum((bid) => bid.amount, bids_in_future_ending_slots)
-    let balance_to_withdraw = Contract.balance - amount_in_future_ending_slots
-    Chain.spend(Call.caller, balance_to_withdraw)
-    balance_to_withdraw
+
+  public stateful function admin_withdraw_to_address(to_address : address) : int =
+    admin_withdraw(to_address)
+
+  public stateful function admin_withdraw_to_admin() : int =
+    admin_withdraw(Call.caller)
 
 
   // internal functions //
@@ -200,6 +196,17 @@ contract DroneGraffitiAuction =
 
   private function is_admin(address : address) : bool =
     Map.lookup_default(address, state.is_admin, false)
+
+  // doesn't allow withdraw of amount in active slots
+  private stateful function admin_withdraw(to_address : address) : int =
+    require(is_admin(Call.caller), "admin_withdraw caller has to be admin")
+    let slots_ending_in_futue = filter((slot) => in_future(slot.end_block_height), list_slots())
+    let bids_in_future_ending_slots = foldr((slot, acc_bids) => acc_bids ++ slot.successful_bids, [], slots_ending_in_futue)
+    let amount_in_future_ending_slots = sum((bid) => bid.amount, bids_in_future_ending_slots)
+    let balance_to_withdraw = Contract.balance - amount_in_future_ending_slots
+
+    Chain.spend(to_address, balance_to_withdraw)
+    balance_to_withdraw
 
 
   // general helper functions //

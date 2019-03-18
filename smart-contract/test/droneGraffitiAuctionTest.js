@@ -1,5 +1,6 @@
 const Ae = require('@aeternity/aepp-sdk').Universal;
 const Utils = require('../deployment/auctionUtils');
+const Crypto = require('@aeternity/aepp-sdk').Crypto;
 
 const config = {
     host: "http://localhost:3001/",
@@ -16,6 +17,11 @@ describe('DroneGraffitiAuction', () => {
         console.error(e);
         if (e.rawTx) console.error('decodeError', await owner.unpackAndVerify(e.rawTx));
         if (e.returnValue) console.error('decodedError', await owner.contractDecodeData('string', e.returnValue).catch(e => console.error(e)));
+    };
+
+    const decodeAddress = (key) => {
+        const decoded58address = Crypto.decodeBase58Check(key.split('_')[1]).toString('hex');
+        return `0x${decoded58address}`;
     };
 
     before(async () => {
@@ -128,8 +134,8 @@ describe('DroneGraffitiAuction', () => {
         assert.isEmpty(auctionSlot.failedBids);
     });
 
-    it('Call DroneGraffitiAuction Contract; admin_withdraw', async () => {
-        const callWithdraw = await contract.call('admin_withdraw', {args: `()`, options: {amount: 0}});
+    it('Call DroneGraffitiAuction Contract; admin_withdraw_to_admin', async () => {
+        const callWithdraw = await contract.call('admin_withdraw_to_admin', {args: `()`, options: {amount: 0}});
         const decodedWithdraw = await callWithdraw.decode('int');
         assert.equal(decodedWithdraw.value, 0);
     });
@@ -226,11 +232,17 @@ describe('DroneGraffitiAuction', () => {
         }).catch(decodeError);
     });
 
-    it('Call DroneGraffitiAuction Contract; admin_withdraw closed slot', async () => {
+    it('Call DroneGraffitiAuction Contract; admin_withdraw_to_address closed slot', async () => {
         await owner.awaitHeight(openHeight + 25);
+        const toAddress = "ak_twR4h7dEcUtc2iSEDv8kB7UFJJDGiEDQCXr85C3fYF8FdVdyo";
 
-        const callWithdraw = await contract.call('admin_withdraw', {args: `()`, options: {amount: 0}});
+        const callWithdraw = await contract.call('admin_withdraw_to_address', {
+            args: `(${decodeAddress(toAddress)})`,
+            options: {amount: 0}
+        });
         const decodedWithdraw = await callWithdraw.decode('int');
+
         assert.equal(decodedWithdraw.value, 5000 + 5000);
+        assert.equal(await owner.balance(toAddress), 5000 + 5000);
     });
 });
