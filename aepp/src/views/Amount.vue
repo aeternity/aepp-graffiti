@@ -46,7 +46,7 @@
     components: { AeInput, WhiteHeader, AeToolbar, AeButton },
     data () {
       return {
-        amount: 10,
+        amount: 4,
         perMinute: 0,
         error: null,
         balance: null
