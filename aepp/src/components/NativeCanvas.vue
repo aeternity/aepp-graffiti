@@ -655,7 +655,7 @@
       this.$refs.backgroundCanvas.height = this.canvasSettings.width * (this.height / this.width)
 
       this.cssToCanvasRatio = this.width / this.canvasSettings.width
-      this.canvasToWallRation = this.canvasSettings.width / 3300
+      this.canvasToWallRation = this.canvasSettings.width / this.canvasSettings.realWidth
 
       this.backgroundContext = this.$refs.backgroundCanvas.getContext('2d')
       this.overlayContext = this.$refs.overlayCanvas.getContext('2d')

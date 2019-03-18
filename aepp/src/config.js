@@ -13,6 +13,8 @@ export default {
     urlSmall: API_URL + '/rendered/latest_small.png',
     width: 990,
     height: 1500,
+    realWidth: 3300,
+    realHeight: 5000,
     pixelToMM: 10, // Pixel * pixelToMM = mm
     shardURL: API_URL + '/rendered/shards/'
   },
