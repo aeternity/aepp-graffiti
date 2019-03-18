@@ -27,7 +27,7 @@
         </div>
       </div>
     </div>
-    <ae-backdrop class="p-6" v-show="backDropVisible" @click.native.self="showBackdrop">
+    <ae-backdrop class="p-6 ae-backdrop" v-show="backDropVisible" @click.native.self="showBackdrop">
       <ae-card>
         <div class="w-full">
           <div class="text-center">
@@ -262,5 +262,9 @@
 
   .ae-preview-wrap {
     height: 70vh;
+  }
+
+  .ae-backdrop {
+    background-color: rgba(237,243,247,.95);
   }
 </style>
