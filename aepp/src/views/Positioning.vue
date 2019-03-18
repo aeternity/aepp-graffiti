@@ -10,11 +10,16 @@
         the X and Y coordinates in the in put fields below.
       </p>
     </WhiteHeader>
-    <div class="w-full h-full">
+    <div class="w-full h-full relative">
       <CanvasWithControlls :height=height :draggable=true :greyed-out=true ref="canvas"></CanvasWithControlls>
     </div>
     <div class="w-full absolute pin-b">
-      <div class="m-8 mb-6 mt-0 flex flex-row items-center justify-between">
+      <div class="w-full flex justify-center mb-6" v-show="error" @click="error = false">
+        <div class="toaster rounded-full py-2 px-4">
+          Scaling failed. Are you too close to the edge?
+        </div>
+      </div>
+      <div class="mx-8 mb-6 flex flex-row items-center justify-between">
         <div class="flex flex-row">
           <div @click="minus" class="rounded-full w-12 h-12 ae-color-secondary flex justify-center items-center mr-4">
             <span class="text-2xl text-white">&minus;</span>
@@ -41,18 +46,25 @@
     data () {
       return {
         scale: 1,
-        height: window.innerHeight - 64
+        height: window.innerHeight - 64,
+        error: false
       }
     },
     methods: {
-      minus () {
-        this.$refs.canvas.changeOverlayScale(-0.1)
+      async minus () {
+        const success = await this.$refs.canvas.changeOverlayScale(-0.1)
+        if(!success) this.showError()
       },
-      plus () {
-        this.$refs.canvas.changeOverlayScale(0.1)
+      async plus () {
+        const success = await this.$refs.canvas.changeOverlayScale(0.1)
+        if(!success) this.showError()
       },
       back () {
         this.$router.push('render')
+      },
+      showError() {
+        this.error = true
+        setTimeout(() => this.error = false, 2000)
       },
       next () {
         const { x, y } = this.$refs.canvas.getOverlayPosition()
@@ -66,6 +78,11 @@
 <style scoped>
   .ae-color-secondary {
     background: #6948a1
+  }
+
+  .toaster {
+    color: white;
+    background: rgba(0,0,0,0.5)
   }
 
 </style>

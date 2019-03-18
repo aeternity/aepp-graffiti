@@ -58,6 +58,7 @@
       },
       async changeOverlayScale (scaleDiff) {
         const pos = this.getOverlayPosition()
+        const scaleFactor = this.settings.scaleFactor
         await this.$store.dispatch('updatePosition', {
           x: pos.x,
           y: pos.y
@@ -70,6 +71,8 @@
           width: this.transformedImage.width,
           height: this.transformedImage.height
         })
+        return this.settings.scaleFactor === scaleFactor + scaleDiff
+        && this.position.x === pos.x && this.position.y === pos.y
       }
     },
     mounted () {
