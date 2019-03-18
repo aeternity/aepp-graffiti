@@ -10,15 +10,22 @@
         <!-- TODO Describe what the options do-->
       </p>
     </WhiteHeader>
-    <div v-show="isLoading" class="ae-preview-wrap flex justify-center items-center">
-      <BiggerLoader></BiggerLoader>
-    </div>
-    <div class="w-full p-8 ae-preview-wrap">
-      <div v-show="isReady" class="h-full">
+
+    <!-- IMAGE -->
+    <div class="w-full p-8 ae-preview-wrap relative h-full">
+      <div class="absolute pin">
+        <div v-show="isLoading" class="flex justify-center items-center bg-half-transparent h-full">
+          <BiggerLoader></BiggerLoader>
+        </div>
+      </div>
+      <div class="h-full">
         <div v-if="transformedImage.width > 0" class="w-full h-full ae-image-preview flex justify-center items-center">
           <img ref="previewImage" :src="transformedImage.src" alt="Rendered Image"/>
         </div>
-        <div v-else>
+        <div v-if="!transformedImage.width && oldImage" class="w-full h-full ae-image-preview flex justify-center items-center">
+          <img ref="previewImage" :src="oldImage" alt="Rendered Image"/>
+        </div>
+        <div v-if="!isLoading && !transformedImage.width">
           <h1 class="text-red font-mono text-center">Sorry!
           </h1>
           <p class="text-red mt-2 text-base">We could not create a drone flyable image from the source image and
@@ -27,6 +34,8 @@
         </div>
       </div>
     </div>
+    <!-- / IMAGE -->
+    <!-- OVERLAY -->
     <ae-backdrop class="p-6 ae-backdrop" v-show="backDropVisible" @click.native.self="showBackdrop">
       <ae-card>
         <div class="w-full">
@@ -117,9 +126,9 @@
         </div>
       </ae-card>
     </ae-backdrop>
-
+    <!-- / OVERLAY -->
     <div class="w-full absolute pin-b mb-6">
-      <ae-button-group class="mr-4 ml-4">
+      <ae-button-group class="mx-4" v-show="isReady">
         <ae-button face="round" fill="secondary" @click="showBackdrop">
           Edit Artwork
         </ae-button>
@@ -127,6 +136,12 @@
           Set Position
         </ae-button>
       </ae-button-group>
+      <div class="w-full px-4" v-show="isLoading">
+        <ae-button face="round" disabled extend>
+          Loading..
+        </ae-button>
+      </div>
+
     </div>
   </div>
 </template>
@@ -162,7 +177,8 @@
         dilationRadius: 4,
         status: STATUS_LOADING,
         progress: -1,
-        backDropVisible: false
+        backDropVisible: false,
+        oldImage: null
       }
     },
     computed: {
@@ -203,10 +219,11 @@
       },
       closeBackdropAndUpdatePreview() {
         this.backDropVisible = false
-        setTimeout(this.updatePreview, 0);
+        setTimeout(this.updatePreview, 200);
       },
       async updatePreview() {
         this.status = STATUS_LOADING
+        this.oldImage = this.transformedImage.src;
         console.log('loading')
         await this.$store.dispatch(`updateSettings`, {
           color: Number(this.currentColor),
@@ -218,6 +235,7 @@
           dilationRadius: Number(this.dilationRadius)
         })
         this.status = STATUS_READY
+        this.oldImage = null
       },
       changeColor(index) {
         this.currentColor = index
@@ -266,5 +284,9 @@
 
   .ae-backdrop {
     background-color: rgba(237,243,247,.95);
+  }
+
+  .bg-half-transparent {
+    background-color: rgba(237,243,247,.5);
   }
 </style>
