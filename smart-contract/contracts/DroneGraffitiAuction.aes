@@ -64,13 +64,14 @@ contract DroneGraffitiAuction =
 
   public stateful function add_auction_slot(time_capacity' : int,
                                             start_block_height' : int,
-                                            block_duration : int,
+                                            end_block_height' : int,
                                             minimum_time_per_bid' : int,
                                             maximum_time_per_bid' : int) : int =
     require(is_admin(Call.caller), "add_auction_slot caller has to be admin")
     require(in_future(start_block_height'), "add_auction_slot start_block_height' has to be in future")
+    require(in_future(end_block_height'), "add_auction_slot end_block_height' has to be in future")
+    require(start_block_height' < end_block_height', "add_auction_slot start_block_height' has to be earlier than end_block_height'")
     require(is_greater_zero(time_capacity'), "add_auction_slot time_capacity' has to be greater than 0")
-    require(is_greater_zero(block_duration), "add_auction_slot block_duration has to be greater than 0")
     require(is_greater_zero(minimum_time_per_bid'), "add_auction_slot minimum_time_per_bid' has to be greater than 0")
     require(is_greater_zero(maximum_time_per_bid'), "add_auction_slot maximum_time_per_bid' has to be greater than 0")
 
@@ -83,7 +84,7 @@ contract DroneGraffitiAuction =
                              successful_bids = [],
                              failed_bids = [],
                              start_block_height = start_block_height',
-                             end_block_height = start_block_height' + block_duration }
+                             end_block_height = end_block_height' }
 
     put(state{ latest_auction_slot_id = next_auction_slot_id, auction_slots[next_auction_slot_id] = new_auction_slot })
     next_auction_slot_id
@@ -144,12 +145,12 @@ contract DroneGraffitiAuction =
     refund_new_to_low_bids(split_successful_bids_tuple)
     updated_auction_slot
 
-  // TODO: only let a special key withdraw, not every admin
-  public stateful function admin_withdraw() =
-    require(is_admin(Call.caller), "admin_withdraw caller has to be admin")
-    let balance_to_withdraw = Contract.balance
-    Chain.spend(Call.caller, balance_to_withdraw)
-    balance_to_withdraw
+
+  public stateful function admin_withdraw_to_address(to_address : address) : int =
+    admin_withdraw(to_address)
+
+  public stateful function admin_withdraw_to_admin() : int =
+    admin_withdraw(Call.caller)
 
 
   // internal functions //
@@ -159,7 +160,8 @@ contract DroneGraffitiAuction =
     let filter_by_capacity = (bid : bid, acc_bids) =>
      switch(acc_bids)
        (sufficient, to_low) =>
-         if(time_capacity >= sum(sufficient, (x) => x.time) + bid.time)
+         let sufficient_time_sum = sum((x) => x.time, sufficient)
+         if(time_capacity >= sufficient_time_sum + bid.time)
            (bid :: sufficient, to_low)
          else
            (sufficient, bid :: to_low)
@@ -192,10 +194,21 @@ contract DroneGraffitiAuction =
   private function is_admin(address : address) : bool =
     Map.lookup_default(address, state.is_admin, false)
 
+  // doesn't allow withdraw of amount in active slots
+  private stateful function admin_withdraw(to_address : address) : int =
+    require(is_admin(Call.caller), "admin_withdraw caller has to be admin")
+    let slots_ending_in_futue = filter((slot) => in_future(slot.end_block_height), all_auction_slots())
+    let bids_in_future_ending_slots = foldr((slot, acc_bids) => acc_bids ++ slot.successful_bids, [], slots_ending_in_futue)
+    let amount_in_future_ending_slots = sum((bid) => bid.amount, bids_in_future_ending_slots)
+    let balance_to_withdraw = Contract.balance - amount_in_future_ending_slots
+
+    Chain.spend(to_address, balance_to_withdraw)
+    balance_to_withdraw
+
 
   // general helper functions //
 
-  private function sum(l : list('a), f : 'a => int) : int =
+  private function sum(f : 'a => int, l : list('a)) : int =
     foldr((x, y) => x + y, 0, map(f, l))
 
   private function map(f : 'a => 'b, l : list('a)) : list('b) =
@@ -216,6 +229,17 @@ contract DroneGraffitiAuction =
           e :: insert_by(f, x, l')
         else
           x :: l
+
+  function filter(f : ('a) => bool, l : list('a)) = filter'(f, l, [])
+  private function filter'(f : ('a) => bool, l : list('a), acc : list('a)) =
+    switch(l)
+      [] => acc
+      e :: l' =>
+        if(f(e))
+          filter'(f, l', e :: acc)
+        else
+          filter'(f, l', acc)
+
 
   private function is_greater_zero(x : int) : bool = x > 0
 

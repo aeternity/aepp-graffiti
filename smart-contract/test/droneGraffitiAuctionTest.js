@@ -1,5 +1,6 @@
 const Ae = require('@aeternity/aepp-sdk').Universal;
 const Utils = require('../deployment/auctionUtils');
+const Crypto = require('@aeternity/aepp-sdk').Crypto;
 
 const config = {
     host: "http://localhost:3001/",
@@ -10,14 +11,17 @@ const config = {
 
 describe('DroneGraffitiAuction', () => {
 
-    let owner;
-    let contract;
-    let publicKey;
+    let owner, contract, publicKey, openHeight;
 
     const decodeError = async (e) => {
         console.error(e);
-        if(e.rawTx) console.error('decodeError', await owner.unpackAndVerify(e.rawTx));
-        if(e.returnValue) console.error('decodedError', await owner.contractDecodeData('string', e.returnValue).catch(e => console.error(e)));
+        if (e.rawTx) console.error('decodeError', await owner.unpackAndVerify(e.rawTx));
+        if (e.returnValue) console.error('decodedError', await owner.contractDecodeData('string', e.returnValue).catch(e => console.error(e)));
+    };
+
+    const decodeAddress = (key) => {
+        const decoded58address = Crypto.decodeBase58Check(key.split('_')[1]).toString('hex');
+        return `0x${decoded58address}`;
     };
 
     before(async () => {
@@ -63,12 +67,20 @@ describe('DroneGraffitiAuction', () => {
         assert.equal(auctionSlot.canvasHeight, 5000);
     });
 
-    it('Call DroneGraffitiAuction Contract; add auction slot', async () => {
+    it('Call DroneGraffitiAuction Contract; add_auction_slot', async () => {
+        openHeight = (await owner.height()) + 2;
+
         const callAddAuction = await contract.call('add_auction_slot', {
-            args: `(100, ${(await owner.height()) + 2}, 200, 1, 100)`,
+            args: `(100, ${openHeight}, ${openHeight + 200}, 1, 100)`,
+            options: {amount: 0}
+        }).catch(decodeError);
+
+        const callAddSecondAuction = await contract.call('add_auction_slot', {
+            args: `(100, ${openHeight}, ${openHeight + 25}, 1, 100)`,
             options: {amount: 0}
         }).catch(decodeError);
         assert.isTrue(!!callAddAuction, 'Could not call the DroneGraffitiAuction add auction slot');
+        assert.isTrue(!!callAddSecondAuction, 'Could not call the DroneGraffitiAuction add auction slot');
     });
 
     it('Static Call and Decode DroneGraffitiAuction Contract; get_auction_slot', async () => {
@@ -101,13 +113,7 @@ describe('DroneGraffitiAuction', () => {
         assert.isNumber(auctionSlot.endBlockHeight);
     });
 
-    it('Call DroneGraffitiAuction Contract; admin_withdraw', async () => {
-        const callWithdraw = await contract.call('admin_withdraw', {args: `()`, options: {amount: 0}});
-        const decodedWithdraw = await callWithdraw.decode('int');
-        assert.equal(decodedWithdraw.value, 0);
-    });
-
-    it('Call DroneGraffitiAuction Contract; place bid', async () => {
+    it('Call DroneGraffitiAuction Contract; place_bid', async () => {
         await owner.awaitHeight(await owner.height() + 3);
         const amount = 10000;
         const called = await contract.call('place_bid', {
@@ -126,6 +132,12 @@ describe('DroneGraffitiAuction', () => {
         assert.equal(auctionSlot.successfulBids[0].data.coordinates.x, 30);
         assert.equal(auctionSlot.successfulBids[0].data.coordinates.y, 40);
         assert.isEmpty(auctionSlot.failedBids);
+    });
+
+    it('Call DroneGraffitiAuction Contract; admin_withdraw_to_admin', async () => {
+        const callWithdraw = await contract.call('admin_withdraw_to_admin', {args: `()`, options: {amount: 0}});
+        const decodedWithdraw = await callWithdraw.decode('int');
+        assert.equal(decodedWithdraw.value, 0);
     });
 
     it('Call DroneGraffitiAuction Contract; place multiple bid', async () => {
@@ -171,7 +183,11 @@ describe('DroneGraffitiAuction', () => {
 
     it('Call DroneGraffitiAuction Contract; place lots of bid', async () => {
         await contract.call('place_bid', {
-            args: `(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            args: `(2, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+            options: {amount: 5000}
+        }).catch(decodeError);
+        await contract.call('place_bid', {
+            args: `(2, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
             options: {amount: 5000}
         }).catch(decodeError);
         await contract.call('place_bid', {
@@ -181,10 +197,6 @@ describe('DroneGraffitiAuction', () => {
         await contract.call('place_bid', {
             args: `(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
             options: {amount: 12000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 5000}
         }).catch(decodeError);
         await contract.call('place_bid', {
             args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
@@ -220,4 +232,17 @@ describe('DroneGraffitiAuction', () => {
         }).catch(decodeError);
     });
 
+    it('Call DroneGraffitiAuction Contract; admin_withdraw_to_address closed slot', async () => {
+        await owner.awaitHeight(openHeight + 25);
+        const toAddress = Crypto.generateKeyPair().publicKey;
+
+        const callWithdraw = await contract.call('admin_withdraw_to_address', {
+            args: `(${decodeAddress(toAddress)})`,
+            options: {amount: 0}
+        });
+        const decodedWithdraw = await callWithdraw.decode('int');
+
+        assert.equal(decodedWithdraw.value, 5000 + 5000);
+        assert.equal(await owner.balance(toAddress), 5000 + 5000);
+    });
 });
