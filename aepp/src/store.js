@@ -159,11 +159,9 @@ const store = new Vuex.Store({
           dilationRadius: state.settings.dilationRadius
         })
 
-      const firstRun = state.droneObject === null
-
       commit('modifyDroneObject', dronePaint)
 
-      if(firstRun) {
+      if (state.droneObject === null) {
         try {
           await dispatch('updatePosition', {
             x: Math.round(Math.random() * (config.canvas.realWidth - ((dronePaint.paintingWidth * state.settings.scaleFactor) / 10))),
@@ -186,7 +184,7 @@ const store = new Vuex.Store({
           await dispatch('updateScaleFactor', {
             scaleFactor: Math.max(state.settings.scaleFactor - 1, 1) // 1 as fallback
           })
-        } else if(e.message.includes('Position out of bound')) {
+        } else if (e.message.includes('Position out of bound')) {
           await dispatch('updatePosition', {
             x: Math.max(state.settings.scaleFactor - 100, 0),
             y: Math.max(state.settings.scaleFactor - 100, 0) // 0 as fallback
@@ -199,9 +197,17 @@ const store = new Vuex.Store({
       }
 
     },
-    async applyPostRenderingChanges ({ commit, state }) {
+    async applyPostRenderingChanges ({ commit, state, dispatch }) {
 
       //TODO rerender image on error
+
+      if(
+        typeof state.droneObject.setPaintingPosition !== 'function'
+        || typeof state.droneObject.setPaintingScale !== 'function'
+        || typeof state.droneObject.setPaintingColor !== 'function'
+      ) {
+        return dispatch('transformImage')
+      }
 
       let result = state.droneObject.setPaintingPosition(state.position.x * config.canvas.pixelToMM, state.position.y * config.canvas.pixelToMM)
       if (!result) {
