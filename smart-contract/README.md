@@ -66,57 +66,57 @@ This section describes the smart contracts data types and its public methods.
 
 ### `state`
 
-| Property      | Description   | Type          | Default       |
-| ------------- | ------------- | ------------- | ------------- |
-| `is_admin`                        | A key value store of admin addresses.  | `map(address, bool)`  | `(deployers_address, true)`  |
-| `auction_metadata`                |                                     | `auction_metadata`    |   |
-| `latest_auction_slot_id`          |   | `int`       | `0` |
-| `latest_bid_seq_id`          |   | `int`       | `0` |
-| `auction_slots `          |   | `map(int, auction_slot)`       | `{}` |
+| Property      | Description   | Type          |
+| ------------- | ------------- | ------------- |
+| `is_admin`                        | A key value store of admin addresses.  | `map(address, bool)`  |
+| `auction_metadata`                |                                     | `auction_metadata`   |
+| `latest_auction_slot_id`          |   | `int`       |
+| `latest_bid_seq_id`          |   | `int`       |
+| `auction_slots `          |   | `map(int, auction_slot)`       |
 
 
 ### `auction_metadata`
 
-| Property      | Description   | Type          | Default       |
-| ------------- | ------------- | ------------- | ------------- |
-| `geolocation`    |                                     | `string`    |   |
-| `canvas_width`   |  The width of the canvas in pixel.  | `int`       |   |
-| `canvas_height`  | The height of the canvas in pixel.  | `int`       |   |
+| Property      | Description   | Type          |
+| ------------- | ------------- | ------------- |
+| `geolocation`    |                                     | `string`    |
+| `canvas_width`   |  The width of the canvas in pixel.  | `int`       |
+| `canvas_height`  | The height of the canvas in pixel.  | `int`       |
 
 ### `auction_slot`
 
-| Property      | Description   | Type          | Default       |
-| ------------- | ------------- | ------------- | ------------- |
-| `id`          | sequencial id for each slot, starting from 1  | `int`       |   |
-| `time_capacity`          | time is the unit to be bid off, this defined the availability for this slot  | `int`       |   |
-| `minimum_time_per_bid`          | minimum time that has to be bid for  | `int`       |   |
-| `maximum_time_per_bid`          | maximum time that has to be bid for  | `int`       |   |
-| `successful_bids` | all bids that are still considered successfull, can change until end_block_height is reached  | `list(bid)`  |   |
-| `failed_bids`                   | all bids that are considered failed, were overbid  | `list(bid)`       |   |
-| `start_block_height`            | start block height from which bids can be placed in this block  | `int`       |   |
-| `end_block_height`              | end block height after which bids can no longer be placed in this block  | `int`       |   |
+| Property      | Description   | Type          |
+| ------------- | ------------- | ------------- |
+| `id`          | sequencial id for each slot, starting from 1  | `int`       |
+| `time_capacity`          | time is the unit to be bid off, this defined the availability for this slot  | `int`       |
+| `minimum_time_per_bid`          | minimum time that has to be bid for  | `int`       |
+| `maximum_time_per_bid`          | maximum time that has to be bid for  | `int`       |
+| `successful_bids` | all bids that are still considered successfull, can change until end_block_height is reached  | `list(bid)`  |
+| `failed_bids`                   | all bids that are considered failed, were overbid  | `list(bid)`       |
+| `start_block_height`            | start block height from which bids can be placed in this block  | `int`       |
+| `end_block_height`              | end block height after which bids can no longer be placed in this block  | `int`       |
 
 ### `bid`
 
-| Property      | Description   | Type          | Default       |
-| ------------- | ------------- | ------------- | ------------- |
-| `seq_id `          | sequencial id for each bid, starting from 1  | `int`       |  |
-| `user  `          | user address placing the bid  | `address `       |   |
-| `amount  `          | total amount that is payed for this bid  | `int`       |   |
-| `time  `          | time that is bid for (unit to be bid off)  | `int`       |   |
-| `amount_per_time`          | amount that is payed per time  | `int`       |   |
-| `data   `          | reference to metadata that is included in the bid  | `artwork_data`       |   |
+| Property      | Description   | Type          |
+| ------------- | ------------- | ------------- |
+| `seq_id `          | sequencial id for each bid, starting from 1  | `int`       |
+| `user  `          | user address placing the bid  | `address `       |
+| `amount  `          | total amount that is payed for this bid  | `int`       |
+| `time  `          | time that is bid for (unit to be bid off)  | `int`       |
+| `amount_per_time`          | amount that is payed per time  | `int`       |
+| `data   `          | reference to metadata that is included in the bid  | `artwork_data`       |
 
 ### `artwork_data`
 
-| Property      | Description   | Type          | Default       |
-| ------------- | ------------- | ------------- | ------------- |
-| `artwork_reference`          | IPFS id of the artworks svg | `string`       |  |
-| `coordinates`          | coordinates of the artwork on the canvas | `coordinates`       |   |
+| Property      | Description   | Type          |
+| ------------- | ------------- | ------------- |
+| `artwork_reference`          | IPFS id of the artworks svg | `string`       |
+| `coordinates`          | coordinates of the artwork on the canvas | `coordinates`       |
 
 ### `coordinates`
 
-| Property      | Description   | Type          | Default       |
-| ------------- | ------------- | ------------- | ------------- |
-| `x`          | x coordinate in the same unit as `canvas_width` | `int`       |  |
-| `y`          | y coordinate in the same unit as `canvas_height` | `int`       |   |
+| Property      | Description   | Type          |
+| ------------- | ------------- | ------------- |
+| `x`          | x coordinate in the same unit as `canvas_width` | `int`       |
+| `y`          | y coordinate in the same unit as `canvas_height` | `int`       |
