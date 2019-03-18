@@ -28,7 +28,7 @@
         </span>
       </div>
       <div class="w-full mt-8 flex justify-center">
-        <ae-button face="round" fill="primary" @click="next" extend>Place Bid</ae-button>
+        <ae-button face="round" fill="primary" :disabled="error" @click="next" extend>Place Bid</ae-button>
       </div>
     </div>
   </div>
@@ -82,7 +82,7 @@
         }
 
         if (this.amount < 0.001) {
-          this.error = `The minimum bidding amount is 0.001 AE.`
+          this.error = `The minimum bid is 0.001 AE.`
         }
 
         if (this.balance.lt(this.amount)) {

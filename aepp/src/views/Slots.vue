@@ -63,7 +63,8 @@
             <ae-card>
               <div class="flex flex-col relative w-full">
                 <div>
-                  <h2 class="text-black">Slot {{slot.id}} ({{slot.successfulBids.length + slot.failedBids.length}} Bids)</h2>
+                  <h2 class="text-black">Slot {{slot.id}} ({{slot.successfulBids.length + slot.failedBids.length}}
+                    Bids)</h2>
                 </div>
                 <div class="flex flex-col text-black text-base mt-2">
                 <span>
@@ -86,7 +87,7 @@
                   <span class="font-mono text-black text-xl" v-else>
                     {{slot.minimumBid.toFixed(5)}} AE
                   </span>
-                    <span v-if="slot.remainingDronetime > 0" class="font-sans text-grey-darker text-base">{{slot.remainingDronetime}} unclaimed Minutes</span>
+                  <span v-if="slot.remainingDronetime > 0" class="font-sans text-grey-darker text-base">{{slot.remainingDronetime}} unclaimed Minutes</span>
                 </div>
 
 
@@ -106,8 +107,15 @@
           </div>
         </swiper-slide>
       </swiper>
-      <div class="w-full mt-6 flex justify-center">
-        <ae-button class="ae-max-width" face="round" fill="primary" @click="next" extend>Bid in this slot</ae-button>
+      <div class="w-full mt-6 mb-8 flex justify-center">
+        <transition>
+          <ae-button class="ae-max-width" face="round" fill="primary" @click="next" extend v-if="!nextButtonDisabled">
+            Bid in this slot
+          </ae-button>
+          <ae-button class="ae-max-width" face="round" fill="neutral" extend disabled v-if="nextButtonDisabled">
+            CAN NOT BID ON THIS SLOT
+          </ae-button>
+        </transition>
       </div>
     </div>
   </div>
@@ -161,6 +169,15 @@
       },
       transformedImage () {
         return this.$store.state.transformedImage
+      },
+      nextButtonDisabled () {
+        let slot = this.slots.find(slot => slot.id === this.choice)
+        return !this.choice
+          || !this.slots
+          || !slot
+          || slot.artworkToBig
+          || slot.artworkToSmall
+          || !Util.slotIsActive(slot, this.height)
       }
     },
     methods: {
