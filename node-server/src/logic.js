@@ -7,7 +7,7 @@ const svgUtil = require('./svg_util.js');
 const fs = require('fs');
 const path = require('path');
 
-logic.upload = async (req, res) => {
+logic.upload = async (req, res, next) => {
     if (Object.keys(req.files).length === 0) {
         return res.status(422).json({
             error: 'File needs to be provided.',
@@ -40,11 +40,11 @@ logic.upload = async (req, res) => {
             hash: result[0].hash,
         });
     } catch (e) {
-        return res.status(500).json({error: e});
+        return next(e);
     }
 };
 
-logic.ipfs = async (req, res) => {
+logic.ipfs = async (req, res, next) => {
     if (!req.params.hash) return res.sendStatus(400);
     const hash = req.params.hash;
 
@@ -91,7 +91,7 @@ logic.ipfs = async (req, res) => {
 
 };
 
-logic.getSlots = async (req, res) => {
+logic.getSlots = async (req, res, next) => {
 
     if (!req.params.id) return res.sendStatus(400);
 
@@ -154,24 +154,28 @@ logic.getSlots = async (req, res) => {
         });
         res.end(buffer);
     } catch (e) {
-        res.status(500).send(e.message);
+        return next(e);
     }
 
 };
 
-logic.teaserJson = async (req, res) => {
-    const artworks = await blockchain.teaserArtworks();
-    const geolocation = await blockchain.teaserGeolocation();
-    res.json({
-        contractAddress: blockchain.teaserContractAddress,
-        contractData: {
-            geolocation: geolocation,
-            artworks: artworks
-        }
-    });
+logic.teaserJson = async (req, res, next) => {
+    try {
+        const artworks = await blockchain.teaserArtworks();
+        const geolocation = await blockchain.teaserGeolocation();
+        res.json({
+            contractAddress: blockchain.teaserContractAddress,
+            contractData: {
+                geolocation: geolocation,
+                artworks: artworks
+            }
+        });
+    } catch (e) {
+        return next(e);
+    }
 };
 
-logic.getSingleBid = async (req, res) => {
+logic.getSingleBid = async (req, res, next) => {
     try {
         const searchId = req.params.id;
         const slots = await blockchain.auctionSlots();
@@ -204,9 +208,8 @@ logic.getSingleBid = async (req, res) => {
         if (!bid) return res.sendStatus(404);
         return res.json(bid);
     } catch (e) {
-        return res.status(500).send(e.message);
+        return next(e);
     }
-
 };
 
 module.exports = logic;
