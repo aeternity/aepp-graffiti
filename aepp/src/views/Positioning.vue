@@ -15,9 +15,9 @@
     </div>
     <div class="w-full absolute pin-b">
       <div class="w-full flex justify-center mb-6" v-show="error" @click="error = false">
-        <div class="toaster rounded-full py-2 px-4">
-          Scaling failed. Are you too close to the edge?
-        </div>
+        <Toast>
+            Scaling failed. Are you too close to the edge?
+        </Toast>
       </div>
       <div class="mx-8 mb-6 flex flex-row items-center justify-between">
         <div class="flex flex-row">
@@ -39,10 +39,11 @@
   import CanvasWithControlls from '../components/CanvasWithControlls.vue'
   import WhiteHeader from '~/components/WhiteHeader'
   import { AeButton } from '@aeternity/aepp-components'
+  import Toast from '../components/Toast'
 
   export default {
     name: 'Positioning',
-    components: { WhiteHeader, CanvasWithControlls, AeButton },
+    components: { Toast, WhiteHeader, CanvasWithControlls, AeButton },
     data () {
       return {
         scale: 1,
@@ -78,11 +79,6 @@
 <style scoped>
   .ae-color-secondary {
     background: #6948a1
-  }
-
-  .toaster {
-    color: white;
-    background: rgba(0,0,0,0.5)
   }
 
 </style>

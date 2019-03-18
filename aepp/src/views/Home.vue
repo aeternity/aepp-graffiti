@@ -5,11 +5,17 @@
     <div class="w-full h-full">
       <NativeCanvas
         @error="showConnectionError"
-        @reloadSuccess="reloadSuccess"
+        @reloadSuccess="reloadingDone(true)"
+        @reloadFail="reloadingDone(false)"
         :height="height"
         :draggable=true
         :fill-scale=true
         ref="canvas"></NativeCanvas>
+    </div>
+    <div class="absolute pin-b mb-8 flex justify-center w-full" @click="reloadingResult = null" v-show="reloadingResult">
+      <Toast>
+        {{reloadingResult}}
+      </Toast>
     </div>
     <div @click="$router.push('contribute')" class="absolute pin-b pin-r p-8">
       <ae-icon name="plus" fill="primary" face="round"
@@ -36,10 +42,11 @@
   import bugsnagClient from '~/utils/bugsnag'
   import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
   import NativeCanvas from '../components/NativeCanvas'
+  import Toast from '../components/Toast'
 
   export default {
     name: 'Home',
-    components: { NativeCanvas, CriticalErrorOverlay, AeIcon, WhiteHeader },
+    components: { Toast, NativeCanvas, CriticalErrorOverlay, AeIcon, WhiteHeader },
     data () {
       return {
         height: window.innerHeight - 64,
@@ -47,7 +54,8 @@
         error: null,
         errorCTA: null,
         ignoreErrors: (window.location.host.includes('localhost')),
-        isReloading: false
+        isReloading: false,
+        reloadingResult: null
       }
     },
     computed: {
@@ -61,8 +69,10 @@
         this.isReloading = true
         this.$refs.canvas.reloadBackgroundImage()
       },
-      reloadSuccess() {
+      reloadingDone(success) {
         this.isReloading = false
+        this.reloadingResult = success ? 'Reload successful' : 'Reload failed';
+        setTimeout(() => this.reloadingResult = null, 2000)
       },
       showConnectionError () {
         // ALREADY SHOWED AN ERROR?

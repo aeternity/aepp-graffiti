@@ -169,9 +169,15 @@
       },
 
       async reloadBackgroundImage () {
-        this.cacheTimestamp = Date.now()
-        await this.updateBackgroundImage()
-        this.$emit('reloadSuccess')
+        try {
+          this.cacheTimestamp = Date.now()
+          await this.updateBackgroundImage()
+          this.$emit('reloadSuccess')
+        } catch (e) {
+          console.error(e);
+          this.$emit('reloadFail')
+        }
+
       },
 
       async addOverlayImage (imageObject) {
