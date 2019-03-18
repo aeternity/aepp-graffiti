@@ -146,21 +146,29 @@ contract DroneGraffitiAuction =
     updated_auction_slot
 
   // TODO: only let a special key withdraw, not every admin
+  // doesn't allow withdraw of amount in active slots
   public stateful function admin_withdraw() =
     require(is_admin(Call.caller), "admin_withdraw caller has to be admin")
-    let balance_to_withdraw = Contract.balance
+    let slots_ending_in_futue = filter((slot) => in_future(slot.end_block_height), list_slots())
+    let bids_in_future_ending_slots = foldr((slot, acc_bids) => acc_bids ++ slot.successful_bids, [], slots_ending_in_futue)
+    let amount_in_future_ending_slots = sum((bid) => bid.amount, bids_in_future_ending_slots)
+    let balance_to_withdraw = Contract.balance - amount_in_future_ending_slots
     Chain.spend(Call.caller, balance_to_withdraw)
     balance_to_withdraw
 
 
   // internal functions //
 
+  private function list_slots() : list(auction_slot) =
+    map(tuple_second, Map.to_list(state.auction_slots))
+
   // processes bids for if they are still considered successful
   private function process_bids(time_capacity : int, bids_to_reprocess : list(bid)) : (list(bid), list(bid)) =
     let filter_by_capacity = (bid : bid, acc_bids) =>
      switch(acc_bids)
        (sufficient, to_low) =>
-         if(time_capacity >= sum(sufficient, (x) => x.time) + bid.time)
+         let sufficient_time_sum = sum((x) => x.time, sufficient)
+         if(time_capacity >= sufficient_time_sum + bid.time)
            (bid :: sufficient, to_low)
          else
            (sufficient, bid :: to_low)
@@ -196,7 +204,7 @@ contract DroneGraffitiAuction =
 
   // general helper functions //
 
-  private function sum(l : list('a), f : 'a => int) : int =
+  private function sum(f : 'a => int, l : list('a)) : int =
     foldr((x, y) => x + y, 0, map(f, l))
 
   private function map(f : 'a => 'b, l : list('a)) : list('b) =
@@ -217,6 +225,17 @@ contract DroneGraffitiAuction =
           e :: insert_by(f, x, l')
         else
           x :: l
+
+  function filter(f : ('a) => bool, l : list('a)) = filter'(f, l, [])
+  private function filter'(f : ('a) => bool, l : list('a), acc : list('a)) =
+    switch(l)
+      [] => acc
+      e :: l' =>
+        if(f(e))
+          filter'(f, l', e :: acc)
+        else
+          filter'(f, l', acc)
+
 
   private function is_greater_zero(x : int) : bool = x > 0
 
