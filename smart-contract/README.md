@@ -32,7 +32,7 @@ place_bid \
  1,10,"QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd",30,40
 -u https://sdk-testnet.aepps.com 
 --internalUrl https://sdk-testnet.aepps.com 
---networkId ae_testnet
+--networkId ae_uat
 ```
 
 or the [js-sdk](https://github.com/aeternity/aepp-sdk-js/)
@@ -48,7 +48,7 @@ let client = await Ae({
     "secretKey": "7c6e602a94f30e4e..."
    },
   nativeMode: true,
-  networkId: 'ae_testnet'
+  networkId: 'ae_uat'
 });
 
 const contractAddress = 'ct_2KtGYFX1RTX5LZjasbjusZuMuL6KdddtDPND5Bd84G7TnF7oSv';
