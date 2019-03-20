@@ -11,7 +11,6 @@ const reject = (reason) => {
     }
 };
 
-
 const accept = () => {
     return {
         passed: true,
@@ -59,7 +58,11 @@ sanity.checkIfFileIsInIPFS = async (bid) => {
 
 sanity.checkIfSVGIsOk = async (req) => {
     if (req.files && Object.keys(req.files).length !== 0) {
-        const file = req.files[0];
+
+        if(!req.files.image)
+            return reject("Found a file but not under the from field 'image'.");
+
+        const file = req.files.image;
         const mime = file.mimetype;
 
         if (mime !== 'image/svg+xml') {
@@ -156,7 +159,7 @@ sanity.runCheck = async (req, res) => {
             return res.send({
                 bidDataValid: await runSingleCheck(sanity.checkIfBidIsOkay, req.body),
                 couldRetrieveFileFromIPFS: await runSingleCheck(sanity.checkIfFileIsInIPFS, req.body),
-                retrievedFileIsAValidSVG: await runSingleCheck(sanity.checkIfSVGIsOk, req)
+                fileIsValidSVG: await runSingleCheck(sanity.checkIfSVGIsOk, req)
             });
         case 'bidDataValid':
             return res.send({
@@ -166,9 +169,9 @@ sanity.runCheck = async (req, res) => {
             return res.send({
                 couldRetrieveFileFromIPFS: await runSingleCheck(sanity.checkIfFileIsInIPFS, req.body),
             });
-        case 'retrievedFileIsAValidSVG':
+        case 'fileIsValidSVG':
             return res.send({
-                retrievedFileIsAValidSVG: await runSingleCheck(sanity.checkIfSVGIsOk, req)
+                fileIsValidSVG: await runSingleCheck(sanity.checkIfSVGIsOk, req)
             });
         default:
             return res.status(400).send(`We could not find a check titled ${req.params.check}`);
