@@ -7,6 +7,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const storage = require('./src/storage');
 const health = require('./src/health');
+const sanity = require('./src/sanity');
 
 // HELPER FUNCTIONS
 
@@ -34,6 +35,7 @@ app.use(fileUpload({
 
 app.use('/rendered', express.static(__dirname + '/data/rendered'));
 
+// get image from ipfs / local cache
 app.get('/ipfs/:hash.svg', errorHandler(logic.ipfs));
 
 // upload form-data image key
@@ -45,8 +47,10 @@ app.get('/slots/:id', errorHandler(logic.getSlots));
 // get data for teaser event
 app.get('/teaser.json', errorHandler(logic.teaserJson));
 
+// retreive single bid data
 app.get('/bid/:id', errorHandler(logic.getSingleBid));
 
+// Health checks
 app.get('/health/ipfsNode', errorHandler(health.ipfsNode));
 app.get('/health/blockchainNode', errorHandler(health.blockchainNode));
 app.get('/health/teaserFiles', errorHandler(health.teaserIPFSFiles));
@@ -54,11 +58,17 @@ app.get('/health/teaserContract', errorHandler(health.teaserSmartContract));
 app.get('/health/testFiles', errorHandler(health.normalIPFSFiles));
 app.get('/health/testContract', errorHandler(health.normalSmartContract));
 
+// expose sanity checks
+app.post('/sanity/:check', errorHandler(sanity.runCheck));
+
+
+// general helpers for all routes
 app.use((err, req, res) => {
     console.error(err.stack);
     if(res.headersSent) return;
     res.status(500).send(e.message);
 });
+
 
 app.use((req, res) => {
     res.sendStatus(404);

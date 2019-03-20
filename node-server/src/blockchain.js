@@ -33,6 +33,15 @@ blockchain.height = async () => {
     return await client.height().catch(console.error);
 };
 
+blockchain.getMetaData = async () => {
+    if (!client) await blockchain.init();
+
+    const called = await client.contractNodeCall(contractAddress, 'sophia-address', 'get_auction_metadata', '()').catch(console.error);
+    const decoded = await client.contractNodeDecodeData(Util.auctionMetaDataType, called.out).catch(console.error);
+
+    return Util.auctionMetaDataToObject(decoded);
+};
+
 blockchain.auctionSlots = async () => {
     if (!client) await blockchain.init();
 

@@ -3,7 +3,7 @@ const blockchain = require('./blockchain.js');
 const JSZip = require('jszip');
 const logic = {};
 const storage = require('./storage.js');
-const svgUtil = require('./svg_util.js');
+const svgUtil = require('./util/svg');
 const fs = require('fs');
 const path = require('path');
 
@@ -44,7 +44,7 @@ logic.upload = async (req, res, next) => {
     }
 };
 
-logic.ipfs = async (req, res, next) => {
+logic.ipfs = async (req, res) => {
     if (!req.params.hash) return res.sendStatus(400);
     const hash = req.params.hash;
 

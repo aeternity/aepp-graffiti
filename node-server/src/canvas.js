@@ -4,7 +4,7 @@ const svg2png = require('svg2png');
 const blockchain = require('./blockchain.js');
 const ipfsWrapper = require('./ipfs.js');
 const storage = require('./storage.js');
-const svgUtil = require('./svg_util.js');
+const svgUtil = require('./util/svg');
 const svgstore = require('svgstore');
 const SVGO = require('svgo');
 
