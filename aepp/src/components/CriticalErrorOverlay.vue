@@ -7,7 +7,7 @@
           {{error}}
         </p>
         <div class="flex justify-center mt-6">
-          <ae-button fill="primary" face="round" @click="errorClick">{{errorCTA}}</ae-button>
+          <ae-button fill="primary" face="round" @click="ctaClick">{{errorCTA}}</ae-button>
         </div>
       </div>
     </ae-card>
@@ -20,7 +20,12 @@
   export default {
     name: 'CriticalErrorOverlay',
     components: { AeBackdrop, AeButton, AeCard },
-    props: [ 'error', 'errorCTA', 'errorClick']
+    props: [ 'error', 'errorCTA', 'errorClick'],
+    methods: {
+      ctaClick() {
+        this.$emit('continue')
+      }
+    }
   }
 </script>
 

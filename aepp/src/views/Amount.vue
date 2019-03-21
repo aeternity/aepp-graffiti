@@ -22,15 +22,15 @@
           </ae-toolbar>
         </ae-input>
       </div>
-      <div class="pt-4 pb-4" v-if="error">
-        <span class="text-red">
-          {{error}}
-        </span>
-      </div>
       <div class="w-full mt-8 flex justify-center">
         <ae-button face="round" fill="primary" :disabled="error" @click="next" extend>Place Bid</ae-button>
       </div>
     </div>
+    <CriticalErrorOverlay
+      @continue="error = null"
+      :error="error"
+      errorCTA="Okay"
+    ></CriticalErrorOverlay>
   </div>
 </template>
 
@@ -40,10 +40,11 @@
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
   import Utils from '~/utils/blockchain_util'
   import bugsnagClient from '~/utils/bugsnag'
+  import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
 
   export default {
     name: 'Amount',
-    components: { AeInput, WhiteHeader, AeToolbar, AeButton },
+    components: { CriticalErrorOverlay, AeInput, WhiteHeader, AeToolbar, AeButton },
     data () {
       return {
         amount: 4,

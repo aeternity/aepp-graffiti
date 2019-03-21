@@ -27,7 +27,7 @@
     </div>
     <CriticalErrorOverlay
       :error="error"
-      :errorClick="errorClick"
+      @continue="errorClick"
       :errorCTA="errorCTA"
     ></CriticalErrorOverlay>
   </div>
