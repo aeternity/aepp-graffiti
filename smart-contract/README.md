@@ -21,43 +21,47 @@ file in the IPFS network is provided. You can obtain this reference by hosting y
 
 Next you need to call the smart contracts public function `place_bid` with the `auction_slot_id`, your `estimatedTime`, the `IPFS_hash` and 
 the `x` and `y` coordinates. The full signature of the function is listed in the reference below. Here an example using 
-[aecli](https://github.com/aeternity/aepp-cli-js):
-
-```
-# aecli contract call ./my-ae-wallet 
---password 12345 
---contractAddress ct_2KtGYFX1RTX5LZjasbjusZuMuL6KdddtDPND5Bd84G7TnF7oSv 
-place_bid \
- "(int,int,int,int,list((int,address,int,int,int,(string,(int,int))),list((int,address,int,int,int,(string,(int,int))),int,int)" \
- 1,10,"QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd",30,40
--u https://sdk-testnet.aepps.com 
---internalUrl https://sdk-testnet.aepps.com 
---networkId ae_uat
-```
-
-or the [js-sdk](https://github.com/aeternity/aepp-sdk-js/)
+the [js-sdk](https://github.com/aeternity/aepp-sdk-js/)
 
 ```
 const Ae = require('@aeternity/aepp-sdk').Universal;
 
-let client = await Ae({
-  url: 'https://sdk-testnet.aepps.com',
-  internalUrl: 'https://sdk-testnet.aepps.com',
-  keypair: {
-    "publicKey": "ak_fUq2NesPXcYZe...",
-    "secretKey": "7c6e602a94f30e4e..."
-   },
-  nativeMode: true,
-  networkId: 'ae_uat'
-});
+const runBid = async () =>  {
 
-const contractAddress = 'ct_2KtGYFX1RTX5LZjasbjusZuMuL6KdddtDPND5Bd84G7TnF7oSv';
+    // Create the test-net client to interact with the blockchain
+    let client = await Ae({
+      url: 'https://sdk-testnet.aepps.com',
+      internalUrl: 'https://sdk-testnet.aepps.com',
+      keypair: {
+        "publicKey": "ak_fUq2NesPXcYZe...",
+        "secretKey": "7c6e602a94f30e4e..."
+       },
+      nativeMode: true,
+      networkId: 'ae_uat'
+    });
 
-await client.contractCall(contractAddress, 'sophia-address', contractAddress, 'place_bid', {
-    // auction_slot_id, estimatedTime, ipfs_hash, x, y
-    args: `(1, 10, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-    options: { amount: 10000}
-});
+    // Helper function to decode possible errors
+    const decodeError = async (e) => {
+        console.error(e);
+        if (e.rawTx) console.error('decodeError', await client.unpackAndVerify(e.rawTx));
+        if (e.returnValue) {
+            const decodedError = await client.contractDecodeData('string', e.returnValue).catch(e => console.error(e));
+            console.error('decodedError', decodedError);
+        }
+    };
+    
+    const contractAddress = 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
+
+    // Call the contract from the client defined above
+    client.contractCall(contractAddress, 'sophia-address', contractAddress, 'place_bid', {
+        // auction_slot_id, estimatedTime, ipfs_hash, x, y
+        args: `(19, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
+        options: { amount: 10000}
+    }).catch(decodeError).then(_ => console.log("Bid Successful"));
+}
+
+runBid();
+
 ```
 
 ## Reference
