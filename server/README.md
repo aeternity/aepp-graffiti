@@ -1,18 +1,18 @@
 # Drone Graffiti Backend Server
 
 This server provides the required backend services for the 
-[drone graffiti vue.js frontend](https://github.com/aeternity/aepp-drone-painting/tree/master/aepp) and allows for 
-[sanity checking bids](https://github.com/aeternity/aepp-drone-painting/blob/master/node-server/docs/SANITY.md).
+[drone graffiti vue.js frontend](https://github.com/aeternity/aepp-drone-graffiti/tree/master/aepp) and allows for 
+[sanity checking bids](https://github.com/aeternity/aepp-drone-graffiti/blob/master/server/docs/SANITY.md).
 
 ## Setup
 
 Clone this repository by running
 ```
-git clone git@github.com:aeternity/aepp-drone-painting.git
+git clone git@github.com:aeternity/aepp-drone-graffiti.git
 ```
 Install the dependencies
 ```
-cd aepp-drone-painting/node-server && npm install
+cd aepp-drone-graffiti/server && npm install
 ```
 Setup an [aeternity node](https://github.com/aeternity/aeternity) and an 
 [ipfs node](https://docs.ipfs.io/introduction/install/). This can be easily done using docker. Check the 
@@ -23,7 +23,7 @@ environment variables:
 ```
 S3_KEY=YOURKEY;
 S3_SECRET=YOURSECRET;
-S3_REGION=us-west-2;
+S3_REGION=your-bucket-region;
 S3_BUCKET=your-bucket-name;
 ```
 Once the setup is completed you can simply run

@@ -19,7 +19,7 @@ file in the IPFS network is provided. You can obtain this reference by hosting y
 
 ### 2.1 Verify your bid (optional)
 
-The node-js server provides an API for you to check your bid against. [Read the documentation here.](https://github.com/aeternity/aepp-drone-painting/tree/master/node-server/docs/SANITY.md)
+The node-js server provides an API for you to check your bid against. [Read the documentation here.](https://github.com/aeternity/aepp-drone-graffiti/tree/master/server/docs/SANITY.md)
 
 ### 3. Call the contract
 
