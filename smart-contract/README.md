@@ -17,6 +17,10 @@ As with good practice the images are not stored in the contract state but rather
 file in the IPFS network is provided. You can obtain this reference by hosting your own
  [IPFS node](https://docs.ipfs.io/introduction/install/) or by using one of the many gateways or upload providers.
 
+### 2.1 Verify your bid (optional)
+
+The node-js server provides an API for you to check your bid against. [Read the documentation here.](https://github.com/aeternity/aepp-drone-painting/tree/master/node-server/docs/SANITY.md)
+
 ### 3. Call the contract
 
 Next you need to call the smart contracts public function `place_bid` with the `auction_slot_id`, your `estimatedTime`, the `IPFS_hash` and 
