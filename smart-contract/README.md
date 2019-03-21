@@ -72,6 +72,42 @@ runBid();
 
 This section describes the smart contracts data types and its public methods.
 
+### Methods
+
+### `get_auction_metadata`
+
+| | |
+| ------------- | ------------- |
+| Parameters | `()` |
+| Returns | `auction_metadata` |
+| Description | Returns the auction meta data defined during contract init. |
+
+### `all_auction_slots`
+
+| | |
+| ------------- | ------------- |
+| Parameters | `()` |
+| Returns | `list(auction_slot)` |
+| Description | Returns all active and inactive auction slots. |
+
+### `get_auction_slot`
+
+| | |
+| ------------- | ------------- |
+| Parameters | `(id: int)` |
+| Returns | `auction_slot` |
+| Description | Returns the requested auction slot. |
+
+### `place_bid`
+
+| | |
+| ------------- | ------------- |
+| Parameters | `(auction_slot_id : int, time' : int, artwork_reference' : string, x' : int, y' : int)` |
+| Returns | `auction_slot` |
+| Description | Places a bid in the defined slot and returns the updated auction slot including your bid. |
+
+### Data Types
+
 ### `state`
 
 | Property      | Description   | Type          |
