@@ -202,11 +202,11 @@
         return config.apiUrl
       },
       timeZoneString() {
-        if (!this.timezone || this.timezone === 0) return '';
-        return this.timezone > 0 ? 'GMT +' + this.timezone : 'GMT ' + this.timezone
+        if (!this.timezone || this.timezone === 0) return null;
+        return (this.timezone < 0 ? '-' : '+') + ('0000' + String(Math.abs(this.timezone * 100))).substr(-4, 4);
       },
       block() {
-        const target = Date.parse(`${this.date || ' '} ${this.time || ' '} ${this.timeZoneString || ' '}`);
+        const target = Date.parse(`${this.date || ' '} ${this.time || ' '}${this.timeZoneString || ' '}`.trim());
         const current = Date.now();
         const diff = target - current;
         const goalBlock = parseInt(this.height + diff / 180000);
