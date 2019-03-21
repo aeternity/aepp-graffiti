@@ -41,7 +41,14 @@ const sanityCheckFileOnly = (data, id) => {
     }
 
     const svgString = data.filebuffer.toString('utf8');
-    const result = convert.xml2js(svgString, {compact: true});
+    let result = null;
+    try {
+        result = convert.xml2js(svgString, {compact: true});
+    } catch (e) {
+        sanityFails[id] = 'Could not parse file';
+        console.error(id + ': Could not parse file');
+        return {checkPassed: false, data: data, dataFails: sanityFails, result: null}
+    }
 
     let height = String(result.svg._attributes.height);
     let width = String(result.svg._attributes.width);
