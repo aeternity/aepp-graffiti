@@ -20,8 +20,8 @@ blockchain.init = async () => {
     }).catch(console.error);
 
     mainnetClient = await ChainNode.compose(ContractNodeAPI)({
-        url: "https://sdk-mainnet.aepps.com",
-        internalUrl:  "https://sdk-mainnet.aepps.com",
+        url: "https://ae.piwo.app",
+        internalUrl:  "https://ae.piwo.app",
     }).catch(console.error);
 
     console.log('initialized aeternity sdk');
