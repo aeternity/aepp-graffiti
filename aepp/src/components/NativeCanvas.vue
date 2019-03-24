@@ -432,9 +432,11 @@
       },
 
       isUserClickingOnOverlay (overlay, { clientX, clientY }) {
+        // Click coordinates get scaled with CSS scaling
+        // Also the offsetParent has changed so now getBoundingClientRect is used
         const currentClick = {
-          x: (clientX - this.$refs.canvasContainer.offsetLeft) / this.cssToCanvasRatio,
-          y: (clientY - this.$refs.canvasContainer.offsetTop) / this.cssToCanvasRatio
+          x: clientX - (this.$el.getBoundingClientRect().left + window.scrollX) / this.cssToCanvasRatio,
+          y: clientY - (this.$el.getBoundingClientRect().top + window.scrollY) / this.cssToCanvasRatio
         }
 
         const localCoords = {
