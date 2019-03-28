@@ -435,13 +435,13 @@
         // Click coordinates get scaled with CSS scaling
         // Also the offsetParent has changed so now getBoundingClientRect is used
         const currentClick = {
-          x: clientX - (this.$el.getBoundingClientRect().left + window.scrollX) / this.cssToCanvasRatio,
-          y: clientY - (this.$el.getBoundingClientRect().top + window.scrollY) / this.cssToCanvasRatio
+          x: clientX - (this.$el.getBoundingClientRect().left + window.scrollX),
+          y: clientY - (this.$el.getBoundingClientRect().top + window.scrollY)
         }
 
         const localCoords = {
-          x: currentClick.x / this.scale - overlay.position.x / this.scale,
-          y: currentClick.y / this.scale - overlay.position.y / this.scale,
+          x: currentClick.x / this.cssToCanvasRatio / this.scale - overlay.position.x / this.scale,
+          y: currentClick.y / this.cssToCanvasRatio / this.scale - overlay.position.y / this.scale,
         }
 
         return localCoords.x > 0
