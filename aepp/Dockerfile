@@ -14,6 +14,8 @@ USER app
 
 RUN git init
 
+RUN sed -i -e "s/https:\/\/backend.dronegraffiti.com/http:\/\/localhost:3002/g" src/config.js
+
 RUN npm install
 RUN npm run build
 

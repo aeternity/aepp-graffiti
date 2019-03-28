@@ -15,6 +15,7 @@ services:
 
   aeternity-proxy:
     image: nginx:latest
+    container_name: aeternity-proxy
     ports:
       - "3001:3001"
     volumes:
@@ -39,8 +40,8 @@ services:
       - AETERNITY_URL=http://aeternity-proxy:3001
       - S3_KEY=access-key
       - S3_SECRET=secret-key
-      - S3_REGION=bucket-name
-      - S3_BUCKET=region-code
+      - S3_REGION=region-code
+      - S3_BUCKET=bucket-name
     depends_on:
       - "aeternity-proxy"
       - "ipfs"
@@ -53,6 +54,7 @@ services:
 
   server-proxy:
     image: nginx:latest
+    container_name: server-proxy
     ports:
       - "3002:3002"
     volumes:

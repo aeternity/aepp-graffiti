@@ -32,6 +32,7 @@ const shardSettings = {
 let current_height = 0;
 
 canvas.latestSeqId = -1;
+canvas.lastRenderSuccessfull = false;
 
 intervalJob = async () => {
     current_height = await blockchain.height().catch(console.error);
@@ -163,7 +164,7 @@ canvas.render = async () => {
 
     const latestSeqId = Math.max(...successfulBids.map(x => x.seqId).concat([0]));
 
-    if (canvas.latestSeqId === latestSeqId) {
+    if (canvas.latestSeqId === latestSeqId && canvas.lastRenderSuccessfull) {
         console.log('will not rerender, latest seqId', latestSeqId, 'timing', new Date().getTime() - start, 'ms');
         return;
     } else {
@@ -188,7 +189,7 @@ canvas.render = async () => {
 
     // filter files unable to be fetched and failing sanity checks, map to base64 encoding with coordinates included
     const transformedSources = await Promise.all(ipfsSources
-        .filter(data => !!data.filebuffer)
+        .filter(data => !!data && !!data.filebuffer)
         .filter(data => svgUtil.sanityCheck(data).checkPassed)
         .map(async data => {
             const {width, height, svg} = svgUtil.getSVGDimensions(data.filebuffer.toString('utf8'));
@@ -212,6 +213,7 @@ canvas.render = async () => {
     const svg = await canvas.mergeSVG(transformedSources);
 
     canvas.mergePNG(svg);
+    canvas.lastRenderSuccessfull = true;
     console.log('did merge and write', transformedSources.length, 'timing', new Date().getTime() - start, 'ms');
 };
 
