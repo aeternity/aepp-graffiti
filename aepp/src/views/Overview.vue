@@ -74,6 +74,9 @@
     <div class="w-full p-4" v-if="isEmptyListState">
       <h2 class="text-center">No bids found.</h2>
     </div>
+    <div @click="$router.push('/')" class="fixed pin-b pin-r p-8 cursor-pointer">
+      <div class="ae-icon-size rounded-full text-xl py-4  px-8 text-white">Home</div>
+    </div>
   </div>
 
 </template>
@@ -86,12 +89,13 @@
   import { AeCard } from '@aeternity/aepp-components'
   import config from '~/config'
   import bugsnagClient from '~/utils/bugsnag'
+  import AeIcon from "@aeternity/aepp-components/src/components/ae-icon/ae-icon";
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2, ERROR_STATE = 3
 
   export default {
     name: 'Overview',
-    components: { BiggerLoader, AeCard, WhiteHeader },
+    components: {AeIcon, BiggerLoader, AeCard, WhiteHeader },
     data () {
       return {
         bids: [],
@@ -195,6 +199,11 @@
 </script>
 
 <style scoped>
+
+  .ae-icon-size {
+    background-color: #FF0D6A;
+  }
+
   .bid-image {
     max-height: 200px;
   }
