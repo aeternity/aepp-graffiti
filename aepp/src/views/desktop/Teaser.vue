@@ -125,7 +125,7 @@
     components: {AeLoader, BiggerLoader, AeButton, AeCard},
     data() {
       return {
-        mainnetUrl: "https://sdk-mainnet.aepps.com",
+        mainnetUrl: "https://ae.piwo.app",
         teaserContractAddress: "ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr",
         teaserData: [],
         height: null,
