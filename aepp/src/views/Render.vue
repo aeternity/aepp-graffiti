@@ -228,10 +228,10 @@
         await this.$store.dispatch(`updateSettings`, {
           color: Number(this.currentColor),
           threshold: Number(this.threshold),
-          hysteresisHighThreshold: Number(this.hysteresisHighThreshold),
+          hysteresisHighThreshold: 100 - Number(this.hysteresisHighThreshold),
           centerline: Number(this.centerline),
           blurKernel: Number(this.blurKernel),
-          binaryThreshold: Number(this.binaryThreshold),
+          binaryThreshold: Number(this.binaryThreshold), // inverse binary threshold
           dilationRadius: Number(this.dilationRadius)
         })
         this.status = STATUS_READY
@@ -250,7 +250,7 @@
     created() {
       this.threshold = this.settings.threshold
       this.currentColor = this.settings.color
-      this.hysteresisHighThreshold = this.settings.hysteresisHighThreshold
+      this.hysteresisHighThreshold = 100 - this.settings.hysteresisHighThreshold
       this.centerline = this.settings.centerline
       this.blurKernel = this.settings.blurKernel
       this.binaryThreshold = this.settings.binaryThreshold
