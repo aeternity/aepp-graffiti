@@ -45,11 +45,11 @@ describe('DroneGraffitiAuction', () => {
     it('Call DroneGraffitiAuction Contract; add_auction_slot', async () => {
         openHeight = (await owner.height()) + 5;
 
-        const callAddAuction = await contract.methods.add_auction_slot(100, openHeight, openHeight + 200, 1, 100);
-        const callAddSecondAuction = await contract.methods.add_auction_slot(100, openHeight, openHeight + 25, 1, 100);
+        const addAuction = await contract.methods.add_auction_slot(100, openHeight, openHeight + 200, 1, 100);
+        const addSecondAuction = await contract.methods.add_auction_slot(100, openHeight, openHeight + 25, 1, 100);
 
-        assert.isTrue(!!callAddAuction, 'Could not call the DroneGraffitiAuction add auction slot');
-        assert.isTrue(!!callAddSecondAuction, 'Could not call the DroneGraffitiAuction add auction slot');
+        assert.equal(addAuction.result.returnType, 'ok');
+        assert.equal(addSecondAuction.result.returnType, 'ok');
     });
 
     it('Static Call and Decode DroneGraffitiAuction Contract; get_auction_slot', async () => {
@@ -66,16 +66,16 @@ describe('DroneGraffitiAuction', () => {
     });
 
     it('Static Call and Decode DroneGraffitiAuction Contract; all_auction_slots', async () => {
-        const auctionSlot = await contract.methods.all_auction_slots();
+        const auctionSlots = await contract.methods.all_auction_slots();
 
-        assert.equal(auctionSlot.decodedResult[0].id, 1);
-        assert.equal(auctionSlot.decodedResult[0].time_capacity, 100);
-        assert.equal(auctionSlot.decodedResult[0].minimum_time_per_bid, 1);
-        assert.equal(auctionSlot.decodedResult[0].maximum_time_per_bid, 100);
-        assert.isEmpty(auctionSlot.decodedResult[0].successful_bids);
-        assert.isEmpty(auctionSlot.decodedResult[0].failed_bids);
-        assert.isNumber(auctionSlot.decodedResult[0].start_block_height);
-        assert.isNumber(auctionSlot.decodedResult[0].end_block_height);
+        assert.equal(auctionSlots.decodedResult[0].id, 1);
+        assert.equal(auctionSlots.decodedResult[0].time_capacity, 100);
+        assert.equal(auctionSlots.decodedResult[0].minimum_time_per_bid, 1);
+        assert.equal(auctionSlots.decodedResult[0].maximum_time_per_bid, 100);
+        assert.isEmpty(auctionSlots.decodedResult[0].successful_bids);
+        assert.isEmpty(auctionSlots.decodedResult[0].failed_bids);
+        assert.isNumber(auctionSlots.decodedResult[0].start_block_height);
+        assert.isNumber(auctionSlots.decodedResult[0].end_block_height);
     });
 
     it('Call DroneGraffitiAuction Contract; place_bid', async () => {
@@ -100,7 +100,7 @@ describe('DroneGraffitiAuction', () => {
     });
 
     it('Call DroneGraffitiAuction Contract; place multiple bid', async () => {
-        await contract.methods.place_bid(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40,{amount: 5000});
+        await contract.methods.place_bid(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 5000});
         await contract.methods.place_bid(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 20000});
 
         const auctionSlot = await contract.methods.place_bid(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 12000});
@@ -111,7 +111,7 @@ describe('DroneGraffitiAuction', () => {
         assert.equal(auctionSlot.decodedResult.failed_bids[0].amount, 5000);
         assert.equal(auctionSlot.decodedResult.failed_bids[0].time, 30);
 
-        await contract.methods.place_bid(1, 10, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40,{amount: 5000});
+        await contract.methods.place_bid(1, 10, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 5000});
         const auctionSlot2 = await contract.methods.place_bid(1, 10, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 4000});
 
         assert.equal(auctionSlot2.decodedResult.successful_bids.length, 4);
@@ -135,6 +135,10 @@ describe('DroneGraffitiAuction', () => {
         await contract.methods.place_bid(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 5000});
         await contract.methods.place_bid(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 20000});
         await contract.methods.place_bid(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 12000});
+
+        const auctionSlots = await contract.methods.all_auction_slots();
+        const bidsCount = auctionSlots.decodedResult.map(slot => slot.failed_bids.length + slot.successful_bids.length).reduce((x, y) => x + y, 0);
+        assert.equal(bidsCount, 18);
     });
 
     it('Call DroneGraffitiAuction Contract; admin_withdraw_to_address closed slot', async () => {
