@@ -47,7 +47,7 @@ contract DroneGraffitiAuction =
     { x : int
     , y : int }
 
-  public function init(geolocation' : string,
+  entrypoint init(geolocation' : string,
                        canvas_width' : int,
                        canvas_height' : int) : state =
     let auction_metadata' = { geolocation = geolocation',
@@ -59,10 +59,10 @@ contract DroneGraffitiAuction =
       latest_bid_seq_id = 0,
       auction_slots = {} }
 
-  public function get_auction_metadata() : auction_metadata =
+  entrypoint get_auction_metadata() : auction_metadata =
     state.auction_metadata
 
-  public stateful function add_auction_slot(time_capacity' : int,
+  stateful entrypoint add_auction_slot(time_capacity' : int,
                                             start_block_height' : int,
                                             end_block_height' : int,
                                             minimum_time_per_bid' : int,
@@ -89,11 +89,11 @@ contract DroneGraffitiAuction =
     put(state{ latest_auction_slot_id = next_auction_slot_id, auction_slots[next_auction_slot_id] = new_auction_slot })
     next_auction_slot_id
 
-  public function all_auction_slots() : list(auction_slot) =
+  entrypoint all_auction_slots() : list(auction_slot) =
     let auction_slot_list = Map.to_list(state.auction_slots)
     map(tuple_second, auction_slot_list)
 
-  public function get_auction_slot(id : int) : auction_slot =
+  entrypoint get_auction_slot(id : int) : auction_slot =
     switch(Map.lookup(id, state.auction_slots))
       Some(auction_slot) => auction_slot
       None => abort("auction_slot does not exist")
@@ -101,7 +101,7 @@ contract DroneGraffitiAuction =
   // trying to place a bid
   // multiple validity checks are done on the auction slot data and bid itself
   // failing bids still lead to a successfull execution and will be persisted in state
-  public stateful function place_bid(auction_slot_id : int,
+  stateful entrypoint place_bid(auction_slot_id : int,
                                      time' : int,
                                      artwork_reference' : string,
                                      x' : int,
@@ -146,10 +146,10 @@ contract DroneGraffitiAuction =
     updated_auction_slot
 
 
-  public stateful function admin_withdraw_to_address(to_address : address) : int =
+  stateful entrypoint admin_withdraw_to_address(to_address : address) : int =
     admin_withdraw(to_address)
 
-  public stateful function admin_withdraw_to_admin() : int =
+  stateful entrypoint admin_withdraw_to_admin() : int =
     admin_withdraw(Call.caller)
 
 
@@ -242,6 +242,3 @@ contract DroneGraffitiAuction =
 
 
   private function is_greater_zero(x : int) : bool = x > 0
-
-  private function require(b : bool, err : string) =
-    if(!b) abort(err)
