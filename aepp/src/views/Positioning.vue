@@ -13,7 +13,7 @@
     <div class="w-full h-full relative">
       <CanvasWithControlls :height=height :draggable=true :greyed-out=true ref="canvas"></CanvasWithControlls>
     </div>
-    <div class="w-full absolute pin-b">
+    <div class="w-full absolute bottom-0">
       <div class="w-full flex justify-center mb-6" v-show="error" @click="error = false">
         <Toast>
             Scaling failed. Are you too close to the edge?

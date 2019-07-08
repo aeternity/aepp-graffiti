@@ -33,7 +33,7 @@
     >
     </OnboardingStep>
 
-    <footer class="w-full fixed pin-b">
+    <footer class="w-full fixed bottom-0">
       <div class="w-full flex flex-row p-4">
         <div @click="quit" class="w-1/3 p-2">
           <ae-text face="uppercase-base" weight=700>SKIP</ae-text>

@@ -117,7 +117,7 @@
   import BiggerLoader from '../../components/BiggerLoader'
   import TeaserUtil from '~/utils/blockchain_teaser_utils'
   import ChainNode from '@aeternity/aepp-sdk/es/chain/node'
-  import ContractNodeAPI from '@aeternity/aepp-sdk/es/contract/node'
+  import ContractNodeAPI from '@aeternity/aepp-sdk/es/contract/'
   import AeLoader from '@aeternity/aepp-components/src/components/aeLoader/aeLoader'
 
   export default {

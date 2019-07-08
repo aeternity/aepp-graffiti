@@ -186,6 +186,7 @@
         this.choice = this.slots.find(slot => slot.index === realIndex).id
       },
       async updateMyBids () {
+        //TODO change to contractInstances
         const calledAllBids = await this.client.contractNodeCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '')
         const decodedAllBids = await this.client.contractNodeDecodeData(Util.auctionSlotListType, calledAllBids.out)
 

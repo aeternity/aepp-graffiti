@@ -158,7 +158,7 @@
 
 <script>
   import ChainNode from '@aeternity/aepp-sdk/es/chain/node'
-  import ContractNodeAPI from '@aeternity/aepp-sdk/es/contract/node'
+  import ContractNodeAPI from '@aeternity/aepp-sdk/es/contract'
   import Util from '~/utils/blockchain_util'
   import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components'
   import BiggerLoader from '~/components/BiggerLoader'

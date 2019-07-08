@@ -157,8 +157,8 @@ canvas.render = async () => {
     // get all files from ipfs that were included in bids
     const auctionSlots = await blockchain.auctionSlots().catch(console.error);
     const successfulBids = auctionSlots
-        .sort((a, b) => a.endBlockHeight - b.endBlockHeight) // sort slots ascending by end block height
-        .map(slot => slot.successfulBids.sort((a, b) => a.seqId - b.seqId)) // sort bids in slot ascending
+        .sort((a, b) => a.end_block_height - b.end_block_height) // sort slots ascending by end block height
+        .map(slot => slot.successful_bids.sort((a, b) => a.seq_id - b.seq_id)) // sort bids in slot ascending
         .reduce((acc, val) => acc.concat(val), []); // flatten inner arrays
 
     const latestSeqId = Math.max(...successfulBids.map(x => x.seqId).concat([0]));

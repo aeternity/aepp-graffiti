@@ -1,5 +1,5 @@
-const API_URL = 'https://backend.dronegraffiti.com'
-// const API_URL = 'http://localhost:3000';
+// const API_URL = 'https://backend.dronegraffiti.com'
+ const API_URL = 'http://localhost:3000';
 // const API_URL = 'http://192.168.0.157:3000';
 
 export default {

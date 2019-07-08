@@ -5,18 +5,24 @@
         <h1 class="w-full text-center">Processing Bid</h1>
       </div>
       <div class="w-full p-4 flex flex-col">
-        <LoadingStep :currentStep="currentLoadingStep" :activeStep="0"  :errorStep="errorStep">Processing Data</LoadingStep>
-        <LoadingStep :currentStep="currentLoadingStep" :active-step="1" :errorStep="errorStep">Uploading to IPFS</LoadingStep>
-        <LoadingStep :currentStep="currentLoadingStep" :active-step="2" :errorStep="errorStep">Running Smart Contract</LoadingStep>
+        <LoadingStep :currentStep="currentLoadingStep" :activeStep="0" :errorStep="errorStep">Processing Data
+        </LoadingStep>
+        <LoadingStep :currentStep="currentLoadingStep" :active-step="1" :errorStep="errorStep">Uploading to IPFS
+        </LoadingStep>
+        <LoadingStep :currentStep="currentLoadingStep" :active-step="2" :errorStep="errorStep">Running Smart Contract
+        </LoadingStep>
 
         <div class="w-full p-4 text-center">
           <div v-if="currentLoadingStep === 3" class="font-mono text-lg text-grey-darkest">
-            <span>Congratulations<br />Bid Successful</span>
-            <ae-button extend class="mt-8" face="round" fill="neutral" @click="$router.push('overview')">Continue to Bid Status</ae-button>
+            <span>Congratulations<br/>Bid Successful</span>
+            <ae-button extend class="mt-8" face="round" fill="neutral" @click="$router.push('overview')">Continue to Bid
+              Status
+            </ae-button>
           </div>
           <div v-if="errorStep" class="font-mono text-lg text-red">
-            <span>Oh no :(<br />Bid Failed</span>
-            <ae-button extend class="mt-8" face="round" fill="neutral" @click="$router.push('amount')">Try again</ae-button>
+            <span>Oh no :(<br/>Bid Failed</span>
+            <ae-button extend class="mt-8" face="round" fill="neutral" @click="$router.push('amount')">Try again
+            </ae-button>
           </div>
         </div>
       </div>
@@ -56,13 +62,14 @@
   import Util from '~/utils/blockchain_util'
   import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
   import config from '~/config'
+  import contractSourceCode from '~/contractInterface.aes'
 
-  const STATUS_INITIAL = 1, STATUS_LOADING = 2;
-  const LOADING_DATA = 0, LOADING_IPFS = 1, LOADING_CONTRACT = 2, LOADING_FINISHED = 3;
+  const STATUS_INITIAL = 1, STATUS_LOADING = 2
+  const LOADING_DATA = 0, LOADING_IPFS = 1, LOADING_CONTRACT = 2, LOADING_FINISHED = 3
 
   export default {
     name: 'Confirm',
-    components: { LoadingStep, CanvasWithControlls,  AeText, AeList, AeListItem, AeButton },
+    components: { LoadingStep, CanvasWithControlls, AeText, AeList, AeListItem, AeButton },
     data () {
       return {
         pub: 'ak_QY8VNEkhj7omMUjAvfVBq2NjTDy895LBYbk7qVxQo1qT8VqfE',
@@ -84,13 +91,13 @@
       blockchainSettings () {
         return config.blockchainSettings
       },
-      isInitial() {
+      isInitial () {
         return this.currentStatus === STATUS_INITIAL
       },
       isLoading () {
         return this.currentStatus === STATUS_LOADING
       },
-      bid() {
+      bid () {
         return this.$store.state.bid
       }
     },
@@ -98,11 +105,12 @@
       back () {
         this.$router.push('slots')
       },
-      async resetView() {
-        this.currentStatus = STATUS_LOADING;
-        this.currentLoadingStep = LOADING_DATA;
-        this.errorStep = null;
-        await this.next();
+
+      async resetView () {
+        this.currentStatus = STATUS_LOADING
+        this.currentLoadingStep = LOADING_DATA
+        this.errorStep = null
+        await this.next()
       },
       async next () {
         try {
@@ -158,24 +166,25 @@
         // args: hash, x, y, time
         // amount: ae to contract amount
         try {
-          await this.client.contractCall(this.blockchainSettings.contractAddress, 'sophia-address', this.blockchainSettings.contractAddress, 'place_bid', {
-            args: `(${this.bid.slotId}, ${Math.round(this.transformedImage.dronetime)}, "${this.ipfsAddr}", ${this.position.x}, ${this.position.y})`,
-            options: { amount: Util.aeToAtoms(this.bid.amount ).toFixed()}
-          })
-        } catch(e) {
-          const decodedError = await this.client.contractDecodeData('string', e.returnValue).catch(e => {
-            console.error(e);
-            throw Error('Could not decode error data');
-          })
-          console.log('decodedError', decodedError)
-          throw Error(JSON.stringify(decodedError))
+          const contract = await this.client.getContractInstance(contractSourceCode, { contractAddress: this.contractAddress })
+          const callResult = await contract.call('place_bid', [
+              this.bid.slotId,
+              Math.round(this.transformedImage.dronetime),
+              this.ipfsAddr,
+              this.position.x,
+              this.position.y
+            ],
+            { opt: { amount: Util.aeToAtoms(this.bid.amount).toFixed() } })
+        } catch (e) {
+          console.log(e.decodedResult)
+          throw Error(JSON.stringify(e.decodedResult))
         }
       }
     },
     created () {
       Aepp().then(async ae => {
         this.client = ae
-        await this.next();
+        await this.next()
       })
     }
   }

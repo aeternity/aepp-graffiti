@@ -10,7 +10,7 @@
           width: cssWidth,
           height: cssHeight
         }"></canvas>
-        <div v-show="isLoading" class="absolute pin h-full w-full">
+        <div v-show="isLoading" class="absolute inset-0 h-full w-full">
           <div class="flex justify-center items-center">
             <BiggerLoader></BiggerLoader>
           </div>

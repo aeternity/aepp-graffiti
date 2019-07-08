@@ -61,7 +61,7 @@
                   <span v-if="!bid.finished && bid.successful"> (Pending)</span>
               </span>
             </div>
-            <div class="absolute pin-b pin-r rounded-full btn-primary-round"
+            <div class="absolute bottom-0 right-0 rounded-full btn-primary-round"
                  @click="shareBid(bid.seqId)">
               <div class="flex items-center justify-center p-4">
                 <img src="../assets/share.svg" alt="share">
@@ -74,7 +74,7 @@
     <div class="w-full p-4" v-if="isEmptyListState">
       <h2 class="text-center">No bids found.</h2>
     </div>
-    <div @click="$router.push('/')" class="fixed pin-b pin-r p-8 cursor-pointer">
+    <div @click="$router.push('/')" class="fixed bottom-0 right-0 p-8 cursor-pointer">
       <div class="ae-icon-size rounded-full text-xl py-4  px-8 text-white">Home</div>
     </div>
   </div>
