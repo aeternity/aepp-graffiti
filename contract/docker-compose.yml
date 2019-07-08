@@ -50,6 +50,12 @@ services:
       - ./docker/nginx-cors.conf:/etc/nginx/cors.conf
       - ./docker/nginx-ws.conf:/etc/nginx/ws.conf
 
+  compiler:
+    image: aeternity/aesophia_http:v3.2.0
+    restart: always
+    ports:
+      - "3081:3080"
+
 volumes:
   node1_db:
   node1_keys:
@@ -57,4 +63,3 @@ volumes:
   node2_keys:
   node3_db:
   node3_keys:
-    

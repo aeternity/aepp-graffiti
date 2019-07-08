@@ -3,7 +3,6 @@
 // bids that are paying lower than the sufficient amount are refunded, once higher bids get included
 contract DroneGraffitiAuction =
 
-  // TODO: split admins that are allowed to create slots from admins that are allowed to withdraw
   type is_admin = map(address, bool)
 
   type auction_slots_map = map(int, auction_slot)
@@ -48,8 +47,8 @@ contract DroneGraffitiAuction =
     , y : int }
 
   entrypoint init(geolocation' : string,
-                       canvas_width' : int,
-                       canvas_height' : int) : state =
+                  canvas_width' : int,
+                  canvas_height' : int) : state =
     let auction_metadata' = { geolocation = geolocation',
                               canvas_width = canvas_width',
                               canvas_height = canvas_height' }
@@ -63,10 +62,10 @@ contract DroneGraffitiAuction =
     state.auction_metadata
 
   stateful entrypoint add_auction_slot(time_capacity' : int,
-                                            start_block_height' : int,
-                                            end_block_height' : int,
-                                            minimum_time_per_bid' : int,
-                                            maximum_time_per_bid' : int) : int =
+                                       start_block_height' : int,
+                                       end_block_height' : int,
+                                       minimum_time_per_bid' : int,
+                                       maximum_time_per_bid' : int) : int =
     require(is_admin(Call.caller), "add_auction_slot caller has to be admin")
     require(in_future(start_block_height'), "add_auction_slot start_block_height' has to be in future")
     require(in_future(end_block_height'), "add_auction_slot end_block_height' has to be in future")
@@ -102,10 +101,10 @@ contract DroneGraffitiAuction =
   // multiple validity checks are done on the auction slot data and bid itself
   // failing bids still lead to a successfull execution and will be persisted in state
   stateful entrypoint place_bid(auction_slot_id : int,
-                                     time' : int,
-                                     artwork_reference' : string,
-                                     x' : int,
-                                     y' : int) =
+                                time' : int,
+                                artwork_reference' : string,
+                                x' : int,
+                                y' : int) : auction_slot =
     require(is_greater_zero(Call.value), "place_bid call value has to be greater than 0")
     let auction_slot = get_auction_slot(auction_slot_id)
     require(auction_slot.time_capacity >= time', "place_bid time_capacity of auction_slot has to be greater or equals time bid for")
