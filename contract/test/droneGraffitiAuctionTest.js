@@ -3,10 +3,9 @@ const Utils = require('../deployment/auctionUtils');
 const Crypto = require('@aeternity/aepp-sdk').Crypto;
 
 const config = {
-    host: "http://localhost:3001/",
-    internalHost: "http://localhost:3001/internal/",
-    gas: 200000,
-    ttl: 55
+    host: 'http://localhost:3001/',
+    internalHost: 'http://localhost:3001/internal/',
+    compilerUrl: 'https://ae-compiler.piwo.app'
 };
 
 describe('DroneGraffitiAuction', () => {
@@ -31,7 +30,8 @@ describe('DroneGraffitiAuction', () => {
             internalUrl: config.internalHost,
             keypair: ownerKeyPair,
             nativeMode: true,
-            networkId: 'ae_devnet'
+            networkId: 'ae_devnet',
+            compilerUrl: config.compilerUrl
         });
 
         publicKey = wallets[0].publicKey;
