@@ -1,27 +1,16 @@
 const Ae = require('@aeternity/aepp-sdk').Universal;
-const Utils = require('../deployment/auctionUtils');
 const Crypto = require('@aeternity/aepp-sdk').Crypto;
 
 const config = {
     host: 'http://localhost:3001/',
     internalHost: 'http://localhost:3001/internal/',
-    compilerUrl: 'https://ae-compiler.piwo.app'
+    compilerUrl: 'http://localhost:3081'
 };
 
 describe('DroneGraffitiAuction', () => {
 
     let owner, contract, publicKey, openHeight;
 
-    const decodeError = async (e) => {
-        console.error(e);
-        if (e.rawTx) console.error('decodeError', await owner.unpackAndVerify(e.rawTx));
-        if (e.returnValue) console.error('decodedError', await owner.contractDecodeData('string', e.returnValue).catch(e => console.error(e)));
-    };
-
-    const decodeAddress = (key) => {
-        const decoded58address = Crypto.decodeBase58Check(key.split('_')[1]).toString('hex');
-        return `0x${decoded58address}`;
-    };
 
     before(async () => {
         const ownerKeyPair = wallets[0];
@@ -40,209 +29,121 @@ describe('DroneGraffitiAuction', () => {
     it('Deploying DroneGraffitiAuction Contract; initialize', async () => {
         let contractSource = utils.readFileRelative('./contracts/DroneGraffitiAuction.aes', "utf-8"); // Read the aes file
 
-        const compiledContract = await owner.contractCompile(contractSource, { // Compile it
-            gas: config.gas
-        }).catch(console.error);
-
-        const deployPromise = compiledContract.deploy({ // Deploy it
-            initState: '("0.000000,-0.000000", 3300, 5000)',
-            options: {
-                ttl: config.ttl,
-                amount: 0,
-                verify: true
-            }
-        }).catch(console.error);
-
-        assert.isFulfilled(deployPromise, 'Could not deploy the DroneGraffitiAuction Contract'); // Check it is deployed
-        contract = await deployPromise;
+        contract = await owner.getContractInstance(contractSource);
+        const deploy = await contract.deploy(['0.000000,-0.000000', 3300, 5000]);
+        assert.equal(deploy.result.returnType, 'ok');
     });
 
     it('Static Call and Decode DroneGraffitiAuction Contract; get_auction_metadata', async () => {
-        const staticCallAuctionSlot = await contract.callStatic('get_auction_metadata', {args: '()'});
-        const decodedAuctionSlot = await staticCallAuctionSlot.decode(Utils.auctionMetaDataType);
+        const auctionSlot = await contract.methods.get_auction_metadata();
 
-        const auctionSlot = Utils.auctionMetaDataToObject(decodedAuctionSlot);
-        assert.equal(auctionSlot.geolocation, "0.000000,-0.000000");
-        assert.equal(auctionSlot.canvasWidth, 3300);
-        assert.equal(auctionSlot.canvasHeight, 5000);
+        assert.equal(auctionSlot.decodedResult.geolocation, "0.000000,-0.000000");
+        assert.equal(auctionSlot.decodedResult.canvas_width, 3300);
+        assert.equal(auctionSlot.decodedResult.canvas_height, 5000);
     });
 
     it('Call DroneGraffitiAuction Contract; add_auction_slot', async () => {
-        openHeight = (await owner.height()) + 2;
+        openHeight = (await owner.height()) + 5;
 
-        const callAddAuction = await contract.call('add_auction_slot', {
-            args: `(100, ${openHeight}, ${openHeight + 200}, 1, 100)`,
-            options: {amount: 0}
-        }).catch(decodeError);
+        const callAddAuction = await contract.methods.add_auction_slot(100, openHeight, openHeight + 200, 1, 100);
+        const callAddSecondAuction = await contract.methods.add_auction_slot(100, openHeight, openHeight + 25, 1, 100);
 
-        const callAddSecondAuction = await contract.call('add_auction_slot', {
-            args: `(100, ${openHeight}, ${openHeight + 25}, 1, 100)`,
-            options: {amount: 0}
-        }).catch(decodeError);
         assert.isTrue(!!callAddAuction, 'Could not call the DroneGraffitiAuction add auction slot');
         assert.isTrue(!!callAddSecondAuction, 'Could not call the DroneGraffitiAuction add auction slot');
     });
 
     it('Static Call and Decode DroneGraffitiAuction Contract; get_auction_slot', async () => {
-        const staticCallAuctionSlot = await contract.callStatic('get_auction_slot', {args: '(1)'});
-        const decodedAuctionSlot = await staticCallAuctionSlot.decode(Utils.auctionSlotType);
+        const auctionSlot = await contract.methods.get_auction_slot(1);
 
-        const auctionSlot = Utils.auctionSlotToObject(decodedAuctionSlot);
-        assert.equal(auctionSlot.id, 1);
-        assert.equal(auctionSlot.timeCapacity, 100);
-        assert.equal(auctionSlot.minimumTimePerBid, 1);
-        assert.equal(auctionSlot.maximumTimePerBid, 100);
-        assert.isEmpty(auctionSlot.successfulBids);
-        assert.isEmpty(auctionSlot.failedBids);
-        assert.isNumber(auctionSlot.startBlockHeight);
-        assert.isNumber(auctionSlot.endBlockHeight);
+        assert.equal(auctionSlot.decodedResult.id, 1);
+        assert.equal(auctionSlot.decodedResult.time_capacity, 100);
+        assert.equal(auctionSlot.decodedResult.minimum_time_per_bid, 1);
+        assert.equal(auctionSlot.decodedResult.maximum_time_per_bid, 100);
+        assert.isEmpty(auctionSlot.decodedResult.successful_bids);
+        assert.isEmpty(auctionSlot.decodedResult.failed_bids);
+        assert.isNumber(auctionSlot.decodedResult.start_block_height);
+        assert.isNumber(auctionSlot.decodedResult.end_block_height);
     });
 
     it('Static Call and Decode DroneGraffitiAuction Contract; all_auction_slots', async () => {
-        const staticCallAuctionSlot = await contract.callStatic('all_auction_slots', {args: '()'});
-        const decodedAuctionSlot = await staticCallAuctionSlot.decode(Utils.auctionSlotListType);
+        const auctionSlot = await contract.methods.all_auction_slots();
 
-        const [auctionSlot] = Utils.auctionSlotListToObject(decodedAuctionSlot);
-        assert.equal(auctionSlot.id, 1);
-        assert.equal(auctionSlot.timeCapacity, 100);
-        assert.equal(auctionSlot.minimumTimePerBid, 1);
-        assert.equal(auctionSlot.maximumTimePerBid, 100);
-        assert.isEmpty(auctionSlot.successfulBids);
-        assert.isEmpty(auctionSlot.failedBids);
-        assert.isNumber(auctionSlot.startBlockHeight);
-        assert.isNumber(auctionSlot.endBlockHeight);
+        assert.equal(auctionSlot.decodedResult[0].id, 1);
+        assert.equal(auctionSlot.decodedResult[0].time_capacity, 100);
+        assert.equal(auctionSlot.decodedResult[0].minimum_time_per_bid, 1);
+        assert.equal(auctionSlot.decodedResult[0].maximum_time_per_bid, 100);
+        assert.isEmpty(auctionSlot.decodedResult[0].successful_bids);
+        assert.isEmpty(auctionSlot.decodedResult[0].failed_bids);
+        assert.isNumber(auctionSlot.decodedResult[0].start_block_height);
+        assert.isNumber(auctionSlot.decodedResult[0].end_block_height);
     });
 
     it('Call DroneGraffitiAuction Contract; place_bid', async () => {
-        await owner.awaitHeight(await owner.height() + 3);
+        await owner.awaitHeight(await owner.height() + 5);
         const amount = 10000;
-        const called = await contract.call('place_bid', {
-            args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: amount}
-        }).catch(decodeError);
-        assert.isTrue(!!called, 'Could not call the DroneGraffitiAuction place bid');
-        const decoded = await called.decode(Utils.auctionSlotType);
-        const auctionSlot = Utils.auctionSlotToObject(decoded);
-        assert.equal(auctionSlot.successfulBids.length, 1);
-        assert.equal(auctionSlot.successfulBids[0].seqId, 1);
-        assert.equal(auctionSlot.successfulBids[0].user, publicKey);
-        assert.equal(auctionSlot.successfulBids[0].amount, amount);
-        assert.equal(auctionSlot.successfulBids[0].time, 20);
-        assert.equal(auctionSlot.successfulBids[0].data.artworkReference, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd");
-        assert.equal(auctionSlot.successfulBids[0].data.coordinates.x, 30);
-        assert.equal(auctionSlot.successfulBids[0].data.coordinates.y, 40);
-        assert.isEmpty(auctionSlot.failedBids);
+        const auctionSlot = await contract.methods.place_bid(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: amount});
+
+        assert.equal(auctionSlot.decodedResult.successful_bids.length, 1);
+        assert.equal(auctionSlot.decodedResult.successful_bids[0].seq_id, 1);
+        assert.equal(auctionSlot.decodedResult.successful_bids[0].user, publicKey);
+        assert.equal(auctionSlot.decodedResult.successful_bids[0].amount, amount);
+        assert.equal(auctionSlot.decodedResult.successful_bids[0].time, 20);
+        assert.equal(auctionSlot.decodedResult.successful_bids[0].data.artwork_reference, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd");
+        assert.equal(auctionSlot.decodedResult.successful_bids[0].data.coordinates.x, 30);
+        assert.equal(auctionSlot.decodedResult.successful_bids[0].data.coordinates.y, 40);
+        assert.isEmpty(auctionSlot.decodedResult.failed_bids);
     });
 
     it('Call DroneGraffitiAuction Contract; admin_withdraw_to_admin', async () => {
-        const callWithdraw = await contract.call('admin_withdraw_to_admin', {args: `()`, options: {amount: 0}});
-        const decodedWithdraw = await callWithdraw.decode('int');
-        assert.equal(decodedWithdraw.value, 0);
+        const withdraw = await contract.methods.admin_withdraw_to_admin();
+        assert.equal(withdraw.decodedResult, 0);
     });
 
     it('Call DroneGraffitiAuction Contract; place multiple bid', async () => {
-        await contract.call('place_bid', {
-            args: `(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 5000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 20000}
-        }).catch(decodeError);
+        await contract.methods.place_bid(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40,{amount: 5000});
+        await contract.methods.place_bid(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 20000});
 
-        const called = await contract.call('place_bid', {
-            args: `(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 12000}
-        }).catch(decodeError);
+        const auctionSlot = await contract.methods.place_bid(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 12000});
 
-        const decoded = await called.decode(Utils.auctionSlotType);
-        const auctionSlot = Utils.auctionSlotToObject(decoded);
-        assert.equal(auctionSlot.successfulBids.length, 3);
-        assert.equal(auctionSlot.failedBids.length, 1);
-        assert.equal(auctionSlot.failedBids[0].seqId, 2);
-        assert.equal(auctionSlot.failedBids[0].amount, 5000);
-        assert.equal(auctionSlot.failedBids[0].time, 30);
+        assert.equal(auctionSlot.decodedResult.successful_bids.length, 3);
+        assert.equal(auctionSlot.decodedResult.failed_bids.length, 1);
+        assert.equal(auctionSlot.decodedResult.failed_bids[0].seq_id, 2);
+        assert.equal(auctionSlot.decodedResult.failed_bids[0].amount, 5000);
+        assert.equal(auctionSlot.decodedResult.failed_bids[0].time, 30);
 
-        await contract.call('place_bid', {
-            args: `(1, 10, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 5000}
-        }).catch(decodeError);
-        const called2 = await contract.call('place_bid', {
-            args: `(1, 10, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 4000}
-        }).catch(decodeError);
+        await contract.methods.place_bid(1, 10, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40,{amount: 5000});
+        const auctionSlot2 = await contract.methods.place_bid(1, 10, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 4000});
 
-        const decoded2 = await called2.decode(Utils.auctionSlotType);
-        const auctionSlot2 = Utils.auctionSlotToObject(decoded2);
-        assert.equal(auctionSlot2.successfulBids.length, 4);
-        assert.equal(auctionSlot2.failedBids.length, 2);
-        const contractBalance = await owner.balance(contract.address);
-        const successfulAmount = auctionSlot2.successfulBids.map(bid => parseInt(bid.amount)).reduce((x, y) => x + y, 0);
+        assert.equal(auctionSlot2.decodedResult.successful_bids.length, 4);
+        assert.equal(auctionSlot2.decodedResult.failed_bids.length, 2);
+
+        const contractBalance = await owner.balance(contract.deployInfo.address);
+        const successfulAmount = auctionSlot2.decodedResult.successful_bids.map(bid => parseInt(bid.amount)).reduce((x, y) => x + y, 0);
         assert.equal(successfulAmount, contractBalance);
     });
 
     it('Call DroneGraffitiAuction Contract; place lots of bid', async () => {
-        await contract.call('place_bid', {
-            args: `(2, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 5000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(2, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 5000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 20000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 12000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 20000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 12000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 5000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 20000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 12000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 5000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 20000}
-        }).catch(decodeError);
-        await contract.call('place_bid', {
-            args: `(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-            options: {amount: 12000}
-        }).catch(decodeError);
+        await contract.methods.place_bid(2, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 5000});
+        await contract.methods.place_bid(2, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 5000});
+        await contract.methods.place_bid(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 20000});
+        await contract.methods.place_bid(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 12000});
+        await contract.methods.place_bid(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 20000});
+        await contract.methods.place_bid(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 12000});
+        await contract.methods.place_bid(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 5000});
+        await contract.methods.place_bid(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 20000});
+        await contract.methods.place_bid(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 12000});
+        await contract.methods.place_bid(1, 30, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 5000});
+        await contract.methods.place_bid(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 20000});
+        await contract.methods.place_bid(1, 50, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: 12000});
     });
 
     it('Call DroneGraffitiAuction Contract; admin_withdraw_to_address closed slot', async () => {
         await owner.awaitHeight(openHeight + 25);
         const toAddress = Crypto.generateKeyPair().publicKey;
 
-        const callWithdraw = await contract.call('admin_withdraw_to_address', {
-            args: `(${decodeAddress(toAddress)})`,
-            options: {amount: 0}
-        });
-        const decodedWithdraw = await callWithdraw.decode('int');
+        const withdraw = await contract.methods.admin_withdraw_to_address(toAddress, {amount: 0});
 
-        assert.equal(decodedWithdraw.value, 5000 + 5000);
+        assert.equal(withdraw.decodedResult, 5000 + 5000);
         assert.equal(await owner.balance(toAddress), 5000 + 5000);
     });
 });
