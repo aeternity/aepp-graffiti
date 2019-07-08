@@ -4,6 +4,13 @@ namespace List =
   function sum(f : 'a => int, l : list('a)) : int =
     foldr((x, y) => x + y, 0, map(f, l))
 
+  function foreach(f : 'a => 'b, l : list('a)) =
+    switch(l)
+     [] => []
+     e :: l' =>
+       f(e)
+       foreach(f, l')
+
   function map(f : 'a => 'b, l : list('a)) : list('b) =
     switch(l)
      [] => []
@@ -214,12 +221,13 @@ contract DroneGraffitiAuction =
     switch(bids_tuple)
       (_, new_failed_bids) =>
         let refund_function = (bid : bid) => Chain.spend(bid.user, bid.amount)
-        List.map(refund_function, new_failed_bids)
+        List.foreach(refund_function, new_failed_bids)
 
   // comperator for bidding amount per time
-  private function bid_amount_comperator(a : bid, b : bid) = a.amount_per_time > b.amount_per_time
+  private function bid_amount_comperator(a : bid, b : bid) : bool =
+    a.amount_per_time > b.amount_per_time
 
-  private function tuple_second(tuple) =
+  private function tuple_second(tuple : ('a, 'b)) : 'b =
     switch(tuple)
       (_, e) => e
 
