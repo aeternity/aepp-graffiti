@@ -88,7 +88,6 @@
   import WhiteHeader from '~/components/WhiteHeader'
   import { AeCard } from '@aeternity/aepp-components'
   import config from '~/config'
-  import bugsnagClient from '~/utils/bugsnag'
   import AeIcon from "@aeternity/aepp-components/src/components/ae-icon/ae-icon";
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2, ERROR_STATE = 3
@@ -131,7 +130,6 @@
 
           if (!calledAllBids) {
             this.error = 'Could not retrieve data from contract. Are you online?'
-            bugsnagClient.notify('calledAllBids is undefined')
             return this.state = ERROR_STATE
           }
 
@@ -141,7 +139,6 @@
 
           if (!decodedAllBids) {
             this.error = 'Could not decode data from contract.'
-            bugsnagClient.notify('decodedAllBids is undefined')
             return this.state = ERROR_STATE
           }
 
@@ -183,7 +180,6 @@
           this.error = e.message
           console.error(e)
           this.state = ERROR_STATE
-          bugsnagClient.notify(e)
         }
 
       }

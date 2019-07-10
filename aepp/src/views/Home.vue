@@ -39,7 +39,6 @@
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
   import Util from '~/utils/blockchain_util'
   import axios from 'axios'
-  import bugsnagClient from '~/utils/bugsnag'
   import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
   import NativeCanvas from '../components/NativeCanvas'
   import Toast from '../components/Toast'
@@ -86,25 +85,13 @@
     },
     async mounted () {
       if (this.firstTimeOpened) return this.$router.push('onboarding')
-      try {
-        const client = await Aepp()
-        const address = await client.address()
-        const balance = await client.balance(address, { format: false }).then(Util.atomsToAe).catch(() => 0)
-        console.log('balance', balance)
-        if (balance <= 5) {
-          await axios.post(`https://testnet.faucet.aepps.com/account/${address}`, {}, { headers: { 'content-type': 'application/x-www-form-urlencoded' } })
-        }
-        try {
-          this.$matomo.setUserId(address)
-          bugsnagClient.user = { address }
-        } catch (e) {
-          console.error('Tracking failed')
-          console.error(e)
-        }
 
-      } catch (e) {
-        console.error(e)
-        bugsnagClient.notify(e)
+      const client = await Aepp()
+      const address = await client.address()
+      const balance = await client.balance(address, { format: false }).then(Util.atomsToAe).catch(() => 0)
+      console.log('balance', balance)
+      if (balance <= 5) {
+        await axios.post(`https://testnet.faucet.aepps.com/account/${address}`, {}, { headers: { 'content-type': 'application/x-www-form-urlencoded' } }).catch(console.error)
       }
     }
   }
