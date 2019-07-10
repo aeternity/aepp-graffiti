@@ -16,7 +16,7 @@
           <div class="dropbox border-4 border-grey border-dashed relative flex justify-center items-center h-64 bg-grey-light rounded-lg">
             <input type="file" name="image" ref="uploadInput"
                    @change="filesChange($event.target.files)"
-                   accept="image/*" class="absolute pin opacity-0 w-full h-full">
+                   accept="image/*" class="absolute inset-0 opacity-0 w-full h-full">
             <div v-if="isInitial" class="p-4 text-center text-grey-dark">
               <h3>Place your art here</h3><br>
               <span>Upload an JPEG or PNG image. <br> Click to browse.</span>

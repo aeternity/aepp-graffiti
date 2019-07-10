@@ -77,7 +77,7 @@ const sanityCheck = (dataToCheck) => {
     try {
         // SANITY CHECK
 
-        const checkedFile = sanityCheckFileOnly(dataToCheck, dataToCheck.bid.seqId);
+        const checkedFile = sanityCheckFileOnly(dataToCheck, dataToCheck.bid.seq_id);
         const data = checkedFile.data;
         const sanityFails = checkedFile.dataFails;
         const result = checkedFile.result;
@@ -92,10 +92,10 @@ const sanityCheck = (dataToCheck) => {
         const y = Number(origin.split(" ")[1]);
 
         if (x !== data.bid.data.coordinates.x * centimeterToMillimeter || y !== data.bid.data.coordinates.y * centimeterToMillimeter) {
-            sanityFails[data.bid.seqId] = 'Contract coordinates is not equal to svg data';
-            console.error(data.bid.seqId + ': Contract coordinates is not equal to svg data');
-            console.error(data.bid.seqId + `: Contract: x:${data.bid.data.coordinates.x * centimeterToMillimeter} y:${data.bid.data.coordinates.y * centimeterToMillimeter}`);
-            console.error(data.bid.seqId + `: SVG-Data: x:${x} y:${y}`);
+            sanityFails[data.bid.seq_id] = 'Contract coordinates is not equal to svg data';
+            console.error(data.bid.seq_id + ': Contract coordinates is not equal to svg data');
+            console.error(data.bid.seq_id + `: Contract: x:${data.bid.data.coordinates.x * centimeterToMillimeter} y:${data.bid.data.coordinates.y * centimeterToMillimeter}`);
+            console.error(data.bid.seq_id + `: SVG-Data: x:${x} y:${y}`);
 
             data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));
             return {checkPassed: false, data: data, dataFails: sanityFails}
@@ -104,11 +104,11 @@ const sanityCheck = (dataToCheck) => {
         data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));
         return {checkPassed: true, data: data, dataFails: sanityFails}
     } catch (e) {
-        console.error(dataToCheck.bid.seqId + ': Sanity Check failed');
+        console.error(dataToCheck.bid.seq_id + ': Sanity Check failed');
         console.error(e);
 
         const sanityFails = {};
-        sanityFails[dataToCheck.bid.seqId] = 'Sanity Check failed: ' + e.message;
+        sanityFails[dataToCheck.bid.seq_id] = 'Sanity Check failed: ' + e.message;
         return {checkPassed: false, data: data, dataFails: sanityFails}
 
     }

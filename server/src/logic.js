@@ -106,8 +106,8 @@ logic.getSlots = async (req, res, next) => {
         }
 
         // GET ALL IMAGES
-        const ipfsSources = await Promise.all(selectedSlot.successfulBids.map(bid => {
-            return ipfsWrapper.getFile(bid.data.artworkReference).then(filebuffer => {
+        const ipfsSources = await Promise.all(selectedSlot.successful_bids.map(bid => {
+            return ipfsWrapper.getFile(bid.data.artwork_reference).then(filebuffer => {
                 return {filebuffer: filebuffer, bid: bid};
             }).catch(e => console.error(e));
         }));
@@ -132,14 +132,14 @@ logic.getSlots = async (req, res, next) => {
 
         const zip = new JSZip();
         filteredSources.map(data => {
-            zip.file(`${data.bid.seqId}.svg`, data.base64, {base64: true}); //'data:image/svg+xml;base64,'
-            zip.file(`${data.bid.seqId}.json`, JSON.stringify(data.bid));
+            zip.file(`${data.bid.seq_id}.svg`, data.base64, {base64: true}); //'data:image/svg+xml;base64,'
+            zip.file(`${data.bid.seq_id}.json`, JSON.stringify(data.bid));
         });
 
         const sanityFailedFolder = zip.folder("sanity_fails");
         sanityFailedSources.map(data => {
-            sanityFailedFolder.file(`${data.bid.seqId}.svg`, data.base64, {base64: true}); //'data:image/svg+xml;base64,'
-            sanityFailedFolder.file(`${data.bid.seqId}.json`, JSON.stringify(data.bid));
+            sanityFailedFolder.file(`${data.bid.seq_id}.svg`, data.base64, {base64: true}); //'data:image/svg+xml;base64,'
+            sanityFailedFolder.file(`${data.bid.seq_id}.json`, JSON.stringify(data.bid));
         });
 
         if (Object.keys(sanityFails).length > 0) {
@@ -184,26 +184,26 @@ logic.getSingleBid = async (req, res, next) => {
 
         const allBids = slots
             .reduce((acc, slot) => acc.concat(
-                slot.successfulBids.map(b => Object.assign(b, {
+                slot.successful_bids.map(b => Object.assign(b, {
                     slot: Object.assign({}, slot, {
-                        successfulBids: null,
-                        failedBids: null,
-                        active: currentHeight > slot.startBlockHeight && currentHeight <= slot.endBlockHeight
+                        successful_bids: null,
+                        failed_bids: null,
+                        active: currentHeight > slot.start_block_height && currentHeight <= slot.end_block_height
                     }),
                     success: true
                 }))
             ).concat(
-                slot.failedBids.map(b => Object.assign(b, {
+                slot.failed_bids.map(b => Object.assign(b, {
                     slot: Object.assign({}, slot, {
-                        successfulBids: null,
-                        failedBids: null,
-                        active: currentHeight > slot.startBlockHeight && currentHeight <= slot.endBlockHeight
+                        successful_bids: null,
+                        failed_bids: null,
+                        active: currentHeight > slot.start_block_height && currentHeight <= slot.end_block_height
                     }),
                     success: false
                 }))
             ), []);
 
-        const bid = allBids.find(bid => Number(bid.seqId) === Number(searchId));
+        const bid = allBids.find(bid => Number(bid.seq_id) === Number(searchId));
 
         if (!bid) return res.sendStatus(404);
         return res.json(bid);

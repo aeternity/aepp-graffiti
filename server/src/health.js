@@ -28,7 +28,7 @@ health.teaserIPFSFiles = async (req, res) => {
     try {
         const artworks = await blockchain.teaserArtworks();
         const results = await Promise.all(artworks.map(artwork => {
-            return ipfs.checkFileExists(artwork.artworkReference)
+            return ipfs.checkFileExists(artwork.artwork_reference)
         }));
         if(results.reduce((acc, curr) => acc || curr, true)) {
             res.sendStatus(200)
@@ -54,9 +54,9 @@ health.teaserSmartContract = async (req, res) => {
 health.normalIPFSFiles = async (req, res) => {
     try {
         const slots = await blockchain.auctionSlots();
-        const bids = slots.map(slot => slot.successfulBids.concat(slot.failedBids)).reduce((acc, val) => acc.concat(val), []);
+        const bids = slots.map(slot => slot.successful_bids.concat(slot.failed_bids)).reduce((acc, val) => acc.concat(val), []);
         const results = await Promise.all(bids.map(bid=> {
-            return ipfs.checkFileExists(bid.data.artworkReference)
+            return ipfs.checkFileExists(bid.data.artwork_reference)
         }));
         if(results.reduce((acc, curr) => acc || curr, true)) {
             res.sendStatus(200)

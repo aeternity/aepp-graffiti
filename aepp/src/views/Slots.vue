@@ -63,7 +63,7 @@
             <ae-card>
               <div class="flex flex-col relative w-full">
                 <div>
-                  <h2 class="text-black">Slot {{slot.id}} ({{slot.successfulBids.length + slot.failedBids.length}}
+                  <h2 class="text-black">Slot {{slot.id}} ({{slot.successful_bids.length + slot.failed_bids.length}}
                     Bids)</h2>
                 </div>
                 <div class="flex flex-col text-black text-base mt-2">
@@ -71,7 +71,7 @@
                   Slot will be open for estimated
                 </span>
                   <span class="font-mono text-black text-xl">
-                  <Countdown :initialTime="(slot.endBlockHeight - height) * 180"></Countdown>
+                  <Countdown :initialTime="(slot.end_block_height - height) * 180"></Countdown>
                 </span>
                 </div>
 
@@ -81,7 +81,7 @@
                  current minimum bid AE / Minute
                 </span>
 
-                  <span class="font-mono text-black text-xl" v-if="slot.successfulBids.length === 0">
+                  <span class="font-mono text-black text-xl" v-if="slot.successful_bids.length === 0">
                     0 AE (No Bids)
                   </span>
                   <span class="font-mono text-black text-xl" v-else>
@@ -130,6 +130,7 @@
   import WhiteHeader from '~/components/WhiteHeader'
   import 'swiper/dist/css/swiper.css'
   import config from '~/config'
+  import contractSource from '~/assets/DroneGraffitiAuction.aes'
 
   import { swiper, swiperSlide } from 'vue-awesome-swiper'
 
@@ -151,7 +152,7 @@
           slidesPerView: 'auto',
           spaceBetween: 35,
           centeredSlides: true
-        }
+        },
       }
     },
     computed: {
@@ -186,29 +187,30 @@
         this.choice = this.slots.find(slot => slot.index === realIndex).id
       },
       async updateMyBids () {
-        const calledAllBids = await this.client.contractNodeCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '')
-        const decodedAllBids = await this.client.contractNodeDecodeData(Util.auctionSlotListType, calledAllBids.out)
+        //TODO change to contractInstances
+
+        const contractInstance = await this.client.getContractInstance(contractSource, {contractAddress: this.blockchainSettings.contractAddress})
+        const allBids = await contractInstance.methods.all_auction_slots()
 
         let slotIndex = 0
-        const slots = Util.auctionSlotListToObject(decodedAllBids)
 
-        const nextSlots = slots
+        const nextSlots = allBids.decodedResult
           .filter(slot => Util.slotIsFuture(slot, this.height))
-          .sort((a, b) => a.startBlockHeight - b.startBlockHeight)
+          .sort((a, b) => a.start_block_height - b.start_block_height)
 
-        if (nextSlots.length) this.nextSlotAtHeight = nextSlots[0].startBlockHeight
+        if (nextSlots.length) this.nextSlotAtHeight = nextSlots[0].start_block_height
 
-        this.slots = slots
+        this.slots = allBids.decodedResult
           .filter(slot => Util.slotIsActive(slot, this.height))
           .map(slot => {
             slot.index = slotIndex++
-            slot.minimumBid = Math.min.apply(Math, slot.successfulBids.map(function (bid) {
-              return bid.amountPerTime
+            slot.minimumBid = Math.min.apply(Math, slot.successful_bids.map(function (bid) {
+              return bid.amount_per_time
             }))
-            slot.minimumBid = slot.successfulBids.length === 0 ? 0 : Util.atomsToAe(slot.minimumBid)
+            slot.minimumBid = slot.successful_bids.length === 0 ? 0 : Util.atomsToAe(slot.minimumBid)
             slot.remainingDronetime = Util.slotCapacityRemaining(slot)
-            slot.artworkToBig = slot.maximumTimePerBid < this.transformedImage.dronetime
-            slot.artworkToSmall = slot.minimumTimePerBid > this.transformedImage.dronetime
+            slot.artworkToBig = slot.maximum_time_per_bid < this.transformedImage.dronetime
+            slot.artworkToSmall = slot.minimum_time_per_bid > this.transformedImage.dronetime
             return slot
           })
 

@@ -117,10 +117,10 @@ sanity.checkIfBidIsOkay = async (bid) => {
     // check if x and y lie in the canvas
 
     const auctionMetaData = await blockchain.getMetaData();
-    if (bid.x < 0 || auctionMetaData.canvasWidth < bid.x)
-        return reject(`The x-coordinate should be between 0 and ${auctionMetaData.canvasWidth}. Received: ${bid.x}`);
-    if (bid.y < 0 || auctionMetaData.canvasHeight < bid.y)
-        return reject(`The y-coordinate should be between 0 and ${auctionMetaData.canvasHeight}. Received: ${bid.y}`);
+    if (bid.x < 0 || auctionMetaData.canvas_width < bid.x)
+        return reject(`The x-coordinate should be between 0 and ${auctionMetaData.canvas_width}. Received: ${bid.x}`);
+    if (bid.y < 0 || auctionMetaData.canvas_height < bid.y)
+        return reject(`The y-coordinate should be between 0 and ${auctionMetaData.canvas_height}. Received: ${bid.y}`);
 
     // check if slot is open
     const slots = await blockchain.auctionSlots();
@@ -129,16 +129,16 @@ sanity.checkIfBidIsOkay = async (bid) => {
         return reject(`${bid.slotId} is not a valid slot id.`);
 
     const height = await blockchain.height();
-    if (selectedSlot.startBlockHeight > height)
-        return reject(`Slot ${selectedSlot.id} is not open yet. The chain is at ${height} and the slot starts at ${selectedSlot.startBlockHeight}`);
-    if (selectedSlot.endBlockHeight <= height)
-        return reject(`Slot ${selectedSlot.id} is already closed. The chain is at ${height} and the slot ends at ${selectedSlot.endBlockHeight}`);
+    if (selectedSlot.start_block_height > height)
+        return reject(`Slot ${selectedSlot.id} is not open yet. The chain is at ${height} and the slot starts at ${selectedSlot.start_block_height}`);
+    if (selectedSlot.end_block_height <= height)
+        return reject(`Slot ${selectedSlot.id} is already closed. The chain is at ${height} and the slot ends at ${selectedSlot.end_block_height}`);
 
     //check if dronetime fits minimum / maximum time of slot
-    if (selectedSlot.minimumTimePerBid > bid.droneTime)
-        return reject(`Slot ${selectedSlot.id} requires the dronetime to be larger than ${selectedSlot.minimumTimePerBid} Received: ${bid.droneTime}`);
-    if (selectedSlot.maximumTimePerBid < bid.droneTime)
-        return reject(`Slot ${selectedSlot.id} requires the dronetime to be smaller than ${selectedSlot.minimumTimePerBid} Received: ${bid.droneTime}`);
+    if (selectedSlot.minimum_time_per_bid > bid.droneTime)
+        return reject(`Slot ${selectedSlot.id} requires the dronetime to be larger than ${selectedSlot.minimum_time_per_bid} Received: ${bid.droneTime}`);
+    if (selectedSlot.maximum_time_per_bid < bid.droneTime)
+        return reject(`Slot ${selectedSlot.id} requires the dronetime to be smaller than ${selectedSlot.maximum_time_per_bid} Received: ${bid.droneTime}`);
 
     // check if ipfs hash is technically valid
     const checkedHash = validateIPFSHash(bid.ipfsHash);

@@ -12,16 +12,16 @@
         :fill-scale=true
         ref="canvas"></NativeCanvas>
     </div>
-    <div class="absolute pin-b mb-8 flex justify-center w-full" @click="reloadingResult = null" v-show="reloadingResult">
+    <div class="absolute bottom-0 mb-8 flex justify-center w-full" @click="reloadingResult = null" v-show="reloadingResult">
       <Toast>
         {{reloadingResult}}
       </Toast>
     </div>
-    <div @click="$router.push('contribute')" class="fixed pin-b pin-r p-8">
+    <div @click="$router.push('contribute')" class="fixed bottom-0 right-0 p-8">
       <ae-icon name="plus" fill="primary" face="round"
                class="ae-icon-size shadow"></ae-icon>
     </div>
-    <div @click="reloadCanvas" class="fixed pin-b p-8 " :class="{ spinning: isReloading }">
+    <div @click="reloadCanvas" class="fixed bottom-0 p-8 " :class="{ spinning: isReloading }">
       <ae-icon name="reload" fill="primary" face="round"
                class="ae-icon-size shadow"></ae-icon>
     </div>

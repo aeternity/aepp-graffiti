@@ -156,31 +156,31 @@ canvas.render = async () => {
 
     // get all files from ipfs that were included in bids
     const auctionSlots = await blockchain.auctionSlots().catch(console.error);
-    const successfulBids = auctionSlots
-        .sort((a, b) => a.endBlockHeight - b.endBlockHeight) // sort slots ascending by end block height
-        .map(slot => slot.successfulBids.sort((a, b) => a.seqId - b.seqId)) // sort bids in slot ascending
+    const successful_bids = auctionSlots
+        .sort((a, b) => a.end_block_height - b.end_block_height) // sort slots ascending by end block height
+        .map(slot => slot.successful_bids.sort((a, b) => a.seq_id - b.seq_id)) // sort bids in slot ascending
         .reduce((acc, val) => acc.concat(val), []); // flatten inner arrays
 
-    const latestSeqId = Math.max(...successfulBids.map(x => x.seqId).concat([0]));
+    const latestSeqId = Math.max(...successful_bids.map(x => x.seq_id).concat([0]));
 
 
     if (canvas.latestSeqId === latestSeqId) {
-        console.log('will not rerender, latest seqId', latestSeqId, 'timing', new Date().getTime() - start, 'ms');
+        console.log('will not rerender, latest seq_id', latestSeqId, 'timing', new Date().getTime() - start, 'ms');
         return;
     } else {
-        console.log('will rerender to seqId', latestSeqId);
+        console.log('will rerender to seq_id', latestSeqId);
         canvas.latestSeqId = latestSeqId;
     }
 
     // backup data
-    Promise.all(successfulBids
-        .map(async bid => await storage.backupBid(bid.data.artworkReference, bid)))
+    Promise.all(successful_bids
+        .map(async bid => await storage.backupBid(bid.data.artwork_reference, bid)))
         .catch((e) => console.warn('bid upload failed', e.message));
 
     const startIpfs = new Date().getTime();
     // fetching files from ipfs
-    const ipfsSources = await Promise.all(successfulBids.map(bid => {
-        return ipfsWrapper.getFile(bid.data.artworkReference).then(filebuffer => {
+    const ipfsSources = await Promise.all(successful_bids.map(bid => {
+        return ipfsWrapper.getFile(bid.data.artwork_reference).then(filebuffer => {
             return {filebuffer: filebuffer, bid: bid};
         }).catch(console.error);
     }));
@@ -193,16 +193,16 @@ canvas.render = async () => {
         .filter(data => svgUtil.sanityCheck(data).checkPassed)
         .map(async data => {
             const {width, height, svg} = svgUtil.getSVGDimensions(data.filebuffer.toString('utf8'));
-            if (!svg) return console.error('Could not get width and height from svg ' + data.bid.data.artworkReference);
+            if (!svg) return console.error('Could not get width and height from svg ' + data.bid.data.artwork_reference);
 
-            storage.backupSVG(data.bid.data.artworkReference, svg).catch((e) => {
+            storage.backupSVG(data.bid.data.artwork_reference, svg).catch((e) => {
                 console.warn('svg upload failed');
                 console.warn(e.message);
             });
 
             return {
                 svg: svg,
-                id: data.bid.seqId,
+                id: data.bid.seq_id,
                 x: data.bid.data.coordinates.x * pixelsPerCentimeter,
                 y: data.bid.data.coordinates.y * pixelsPerCentimeter,
                 width,

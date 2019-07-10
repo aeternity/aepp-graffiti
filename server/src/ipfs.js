@@ -28,7 +28,8 @@ ipfsWrap.checkFileExists = async (hash) => {
 ipfsWrap.writeFile = (buffer) => {
     if(!node) ipfsWrap.init();
     return node.add({
-        content: buffer
+        content: buffer,
+
     });
 };
 

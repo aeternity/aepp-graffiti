@@ -127,7 +127,7 @@
       </ae-card>
     </ae-backdrop>
     <!-- / OVERLAY -->
-    <div class="w-full absolute pin-b mb-6">
+    <div class="w-full absolute bottom-0 mb-6">
       <ae-button-group class="mx-4" v-show="isReady">
         <ae-button face="round" fill="secondary" @click="showBackdrop">
           Edit Artwork

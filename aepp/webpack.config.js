@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
 // Cleans dist folder before building for fresh build
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const PurgecssPlugin = require('purgecss-webpack-plugin')
@@ -74,7 +74,7 @@ module.exports = env => {
         ]
       }),
       new HtmlWebpackHarddiskPlugin(),
-      new CleanWebpackPlugin([distFolder]),
+      new CleanWebpackPlugin(),
       new VueLoaderPlugin()
     ],
     module: {
@@ -139,6 +139,12 @@ module.exports = env => {
             'vue-style-loader',
             'css-loader', // translates CSS into CommonJS
             'sass-loader' // compiles Sass to CSS, using Node Sass by default
+          ]
+        },
+        {
+          test: /\.aes$/,
+          use: [
+            'raw-loader',
           ]
         },
         {
