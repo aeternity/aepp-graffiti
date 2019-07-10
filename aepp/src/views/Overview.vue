@@ -14,7 +14,7 @@
     </div>
 
     <div class="w-full p-4" v-if="isShowListState">
-      <div v-for="bid in bids" :key='bid.seqId'>
+      <div v-for="bid in bids" :key='bid.seq_id'>
         <ae-card class="mb-4">
 
           <template slot="header">
@@ -62,7 +62,7 @@
               </span>
             </div>
             <div class="absolute bottom-0 right-0 rounded-full btn-primary-round"
-                 @click="shareBid(bid.seqId)">
+                 @click="shareBid(bid.seq_id)">
               <div class="flex items-center justify-center p-4">
                 <img src="../assets/share.svg" alt="share">
               </div>
@@ -88,7 +88,8 @@
   import WhiteHeader from '~/components/WhiteHeader'
   import { AeCard } from '@aeternity/aepp-components'
   import config from '~/config'
-  import AeIcon from "@aeternity/aepp-components/src/components/ae-icon/ae-icon";
+  import AeIcon from '@aeternity/aepp-components/src/components/ae-icon/ae-icon'
+  import contractSource from '~/DroneGraffitiAuction.aes'
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2, ERROR_STATE = 3
 
@@ -126,35 +127,29 @@
       },
       async updateMyBids () {
         try {
-          const calledAllBids = await this.client.contractNodeCall(String(this.blockchainSettings.contractAddress), 'sophia-address', 'all_auction_slots', '()', '').catch(e => console.error(e))
 
-          if (!calledAllBids) {
-            this.error = 'Could not retrieve data from contract. Are you online?'
-            return this.state = ERROR_STATE
-          }
+          const contractInstance = await this.client.getContractInstance(contractSource, {contractAddress: this.blockchainSettings.contractAddress})
+          const slots = await contractInstance.methods.all_auction_slots()
 
           const height = await this.client.height()
 
-          const decodedAllBids = await this.client.contractNodeDecodeData(Util.auctionSlotListType, calledAllBids.out).catch(e => console.error(e))
-
-          if (!decodedAllBids) {
+          if (!slots.decodedResult) {
             this.error = 'Could not decode data from contract.'
             return this.state = ERROR_STATE
           }
 
-          const slots = Util.auctionSlotListToObject(decodedAllBids)
 
-          if (slots.length === 0) return this.state = EMPTY_LIST
+          if (slots.decodedResult.length === 0) return this.state = EMPTY_LIST
 
-          const allBids = slots.map(slot => {
+          const allBids = slots.decodedResult.map(slot => {
             let allBids = []
 
-            allBids = allBids.concat(slot.successfulBids.filter(bid => bid.user === this.address).map(bid => {
+            allBids = allBids.concat(slot.successful_bids.filter(bid => bid.user === this.address).map(bid => {
               bid.successful = true
               return bid
             }))
 
-            allBids = allBids.concat(slot.failedBids.filter(bid => bid.user === this.address).map(bid => {
+            allBids = allBids.concat(slot.failed_bids.filter(bid => bid.user === this.address).map(bid => {
               bid.successful = false
               return bid
             }))
@@ -163,8 +158,8 @@
               bid.amount = Util.atomsToAe(bid.amount)
               bid.finished = Util.slotIsPast(slot, height)
               bid.slotId = slot.id
-              bid.minimumAmount = Math.min(...slot.successfulBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4)))
-              bid.url = config.apiUrl + '/ipfs/' + bid.data.artworkReference + '.svg'
+              bid.minimumAmount = Math.min(...slot.successful_bids.map(x => x.amount_per_time).map(x => Util.atomsToAe(x).toFixed(4)))
+              bid.url = config.apiUrl + '/ipfs/' + bid.data.artwork_reference + '.svg'
               return bid
             })
             return allBids
@@ -172,7 +167,7 @@
 
           if(allBids.length === 0) return this.state = EMPTY_LIST
 
-          this.bids = allBids.reduce((acc, val) => acc.concat(val), []).sort((a, b) => b.seqId - a.seqId)
+          this.bids = allBids.reduce((acc, val) => acc.concat(val), []).sort((a, b) => b.seq_id - a.seq_id)
 
           if (this.bids.length > 0) this.state = SHOW_LIST
           else return this.state = EMPTY_LIST

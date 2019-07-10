@@ -35,7 +35,8 @@
                   <div class="field">
                     <div class="text-grey">Block</div>
                     <div class="font-mono text-xl">
-                      <a target="_blank" class="text-grey-dark" :href="`https://explorer.aepps.com/#/generation/${teaser.block.key_block.height}`">
+                      <a target="_blank" class="text-grey-dark"
+                         :href="`https://explorer.aepps.com/#/generation/${teaser.block.key_block.height}`">
                         {{teaser.block && teaser.block.key_block.height}}
                       </a>
                     </div>
@@ -50,9 +51,9 @@
                     <div class="text-grey">IPFS Hash</div>
                     <div class="font-mono text-xl">
                       <a target="_blank"
-                         :href="`https://gateway.ipfs.io/ipfs/${teaser.artworkReference}`"
+                         :href="`https://gateway.ipfs.io/ipfs/${teaser.artwort_reference}`"
                          class="text-grey-dark break-words max-w-full">
-                        {{teaser.artworkReference}}
+                        {{teaser.artwort_reference}}
                       </a>
                     </div>
                   </div>
@@ -115,97 +116,101 @@
   import axios from 'axios'
   import { AeButton, AeCard } from '@aeternity/aepp-components'
   import BiggerLoader from '../../components/BiggerLoader'
-  import TeaserUtil from '~/utils/blockchain_teaser_utils'
-  import ChainNode from '@aeternity/aepp-sdk/es/chain/node'
-  import ContractNodeAPI from '@aeternity/aepp-sdk/es/contract/'
+  import { Crypto, Universal as Ae } from '@aeternity/aepp-sdk/es/'
+  import contractSource from '~/DroneGraffitiTeaser.aes'
   import AeLoader from '@aeternity/aepp-components/src/components/aeLoader/aeLoader'
 
   export default {
     name: 'Teaser',
-    components: {AeLoader, BiggerLoader, AeButton, AeCard},
-    data() {
+    components: { AeLoader, BiggerLoader, AeButton, AeCard },
+    data () {
       return {
-        mainnetUrl: "https://ae.piwo.app",
-        teaserContractAddress: "ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr",
+        mainnetUrl: 'https://ae.piwo.app',
+        teaserContractAddress: 'ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr',
         teaserData: [],
         height: null,
         currentBlock: null,
-        geolocation: null
+        geolocation: null,
+        contractInstance: null,
+        client: null
       }
     },
     computed: {
-      finishedTeaser() {
+      finishedTeaser () {
         return this.teaserData.filter(t => t && !!t.svg)
       },
-      loadingTeaser() {
+      loadingTeaser () {
         return this.teaserData.filter(t => t && !t.svg)
       },
     },
     methods: {
-      async getBlock(height) {
+      async getBlock (height) {
         return await axios.get(`${this.mainnetUrl}/v2/generations/height/${height}`)
-          .then(x => x.data);
+          .then(x => x.data)
       },
-      async teaserContractData() {
-        const client = await ChainNode.compose(ContractNodeAPI)({
-          url: this.mainnetUrl,
-          internalUrl: this.mainnetUrl,
-        })
-
-        const called = await client.contractNodeCall(this.teaserContractAddress, 'sophia-address', 'all_artworks', '()', '')
-        const decoded = await client.contractNodeDecodeData(TeaserUtil.artworkListType, called.out)
-        return TeaserUtil.artworkListToObject(decoded);
+      async teaserContractData () {
+        const data = await this.contractInstance.methods.all_artworks();
+        return data.decodedResult
       },
 
-      async teaserContractGeolocation() {
-        const client = await ChainNode.compose(ContractNodeAPI)({
-          url: this.mainnetUrl,
-          internalUrl: this.mainnetUrl,
-        })
-
-        const called = await client.contractNodeCall(this.teaserContractAddress, 'sophia-address', 'get_geolocation', '()', '')
-        const decoded = await client.contractNodeDecodeData(TeaserUtil.geolocationType, called.out)
-        return TeaserUtil.geolocationToObject(decoded);
+      async teaserContractGeolocation () {
+        const data = await this.contractInstance.methods.get_geolocation();
+        return data.decodedResult
       },
 
-      async transactionHash(height) {
-        const block = await this.getBlock(height);
+      async transactionHash (height) {
+        const block = await this.getBlock(height)
         const microblocks = await Promise.all(
           block.micro_blocks
             .map(microblock => axios.get(`${this.mainnetUrl}/v2/micro-blocks/hash/${microblock}/transactions`)
               .then(x => x.data))
-        );
+        )
         return microblocks
           .reduce((acc, val) => acc.concat(val.transactions), [])
           .filter(t => t.tx.contract_id && t.tx.contract_id === this.teaserContractAddress)
-          .map(t => t.hash)[0];
+          .map(t => t.hash)[0]
       },
-      async getHeight() {
+      async getHeight () {
         return await axios.get(`${this.mainnetUrl}/v2/key-blocks/current/height`)
           .then(x => x.data.height)
       },
-      openTransaction(id) {
+
+      openTransaction (id) {
         window.open(`https://explorer.aepps.com/#/tx/${id}`)
       },
-      openLocation() {
+      openLocation () {
         window.open(`https://www.google.com/maps/search/${this.geolocation}`)
       }
     },
-    async created() {
-      this.height = await this.getHeight();
-      this.currentBlock = await this.getBlock(this.height);
-      this.teaserData = await this.teaserContractData();
+    async created () {
+      this.height = await this.getHeight()
+      this.currentBlock = await this.getBlock(this.height)
+
+      const keypair = Crypto.generateKeyPair()
+
+      this.client = await Ae({
+        url: this.mainnetUrl,
+        internalUrl: this.mainnetUrl,
+        compilerUrl: 'https://compiler.aepps.com',
+        networkId: 'mainnet',
+        keypair: keypair
+      }).catch(console.error);
+
+      this.contractInstance = await this.client.getContractInstance(contractSource, this.teaserContractAddress)
+
+      this.teaserData = await this.teaserContractData()
+
 
       this.teaserData = await Promise.all(this.teaserData.map(async teaser => {
-        teaser.transaction = await this.transactionHash(teaser.updatedAt);
-        teaser.block = await this.getBlock(teaser.updatedAt);
-        const rawSVG = await axios.get(`https://backend.dronegraffiti.com/ipfs/${teaser.artworkReference}.svg`).then(x => x.data);
-        teaser.title = rawSVG.match(/<title>(.*)<\/title>/)[1];
-        teaser.svg = `data:image/svg+xml;base64,${btoa(rawSVG)}`;
-        return teaser;
+        teaser.transaction = await this.transactionHash(teaser.updated_at)
+        teaser.block = await this.getBlock(teaser.updated_at)
+        const rawSVG = await axios.get(`https://backend.dronegraffiti.com/ipfs/${teaser.artwort_reference}.svg`).then(x => x.data)
+        teaser.title = rawSVG.match(/<title>(.*)<\/title>/)[1]
+        teaser.svg = `data:image/svg+xml;base64,${btoa(rawSVG)}`
+        return teaser
       }))
 
-      this.geolocation = await this.teaserContractGeolocation();
+      this.geolocation = await this.teaserContractGeolocation()
     }
   }
 </script>
@@ -231,7 +236,7 @@
   }
 
   .field {
-    word-break:break-all;
+    word-break: break-all;
   }
 
 </style>

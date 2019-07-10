@@ -36,7 +36,7 @@
         this.error = 'Could not connect to your wallet. Please make sure you run this application inside the base aepp.'
         this.errorCTA = 'Go to Base Aepp'
         this.errorClick = () => {
-          window.location.href = 'https://base-aepp.dronegraffiti.com/'
+          window.location.href = 'https://base.aepps.com'
         }
       }
     }
@@ -46,6 +46,8 @@
 <style scoped>
   .min-h-screen {
     min-height: 100vh;
+    max-height: 100vh;
     padding-bottom: 0;
+    overflow-y: auto
   }
 </style>

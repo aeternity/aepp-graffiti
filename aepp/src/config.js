@@ -31,7 +31,7 @@ export default {
     minimumImageSize: [10, 10]
   },
   blockchainSettings: {
-    contractAddress: 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt'
+    contractAddress: 'ct_ycM9PMNRCg6tvaZTvtrYBpVrsahtCgLoNhiZL9UVUBxJ3wWiQ' // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
   },
   apiUrl: API_URL
 }

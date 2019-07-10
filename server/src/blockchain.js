@@ -1,7 +1,6 @@
 const fs = require('fs');
 
 const { Universal: Ae, Crypto } = require('@aeternity/aepp-sdk')
-const TeaserUtil = require('./util/blockchain_teaser_utils');
 const blockchain = {};
 
 // can eventually be called by name in the future
@@ -21,10 +20,7 @@ const aeternityInternalUrl = process.env.AETERNITY_URL || 'http://localhost:3113
 
 blockchain.init = async () => {
 
-    const keypair = {
-        publicKey: 'ak_bBMiVbnLqtjSv9zvTm2gjCKMd3Y8aejfP2568ji4MyuZe2t8K',
-        secretKey: 'd9ea0caece7cf75a8d125b6e72e889e241156573848d5318435c2b9c7daab6014d9b4bfed393c9f27c01d71963f5e0a7893e8be0a80e5ac8b0806dd01795d23b'
-    }
+    const keypair = Crypto.generateKeyPair()
 
     client = await Ae({
         url: aeternityUrl,
@@ -35,9 +31,6 @@ blockchain.init = async () => {
     }).catch(console.error);
 
     testnetContract = await client.getContractInstance(contractSource, {contractAddress})
-    //await testnetContract.methods.init('yomama', 3300, 5000)
-
-    //await testnetContract.methods.add_auction_slot(1000, 106523, 108517, 5, 500)
 
     mainnetClient = await Ae({
         url: "https://ae.piwo.app",
@@ -47,7 +40,6 @@ blockchain.init = async () => {
     }).catch(console.error);
 
     mainnetContract = await mainnetClient.getContractInstance(teaserContractSource, {contractAddress: teaserContractAddress})
-
 
     console.log('initialized aeternity sdk');
     return client;
@@ -68,7 +60,6 @@ blockchain.getMetaData = async () => {
 blockchain.auctionSlots = async () => {
     if (!client) await blockchain.init();
 
-    //const response = await testnetContract.call('all_auction_slots').catch(console.error);
     const response = await testnetContract.methods.all_auction_slots().catch(console.error);
 
     return response.decodedResult;

@@ -5,7 +5,7 @@
         <ae-card>
           <div class="flex flex-col p-4 w-full text-grey-darkest" v-if="!error">
             <h1 class="text-center mb-4">
-              Bid {{bidData.seqId}}
+              Bid {{bidData.seq_id}}
             </h1>
             <h3 class="text-center mb-4">
               <span v-if="bidData.success && !bidData.slot.active">Accepted</span>
@@ -23,7 +23,7 @@
             </div>
 
             <div v-show="imageLoaded" class="border-2 p-2 rounded">
-              <img alt="artwork" :src="`${config.apiUrl}/ipfs/${bidData.data.artworkReference}.svg`" @load="imageLoaded = true">
+              <img alt="artwork" :src="`${config.apiUrl}/ipfs/${bidData.data.artwort_reference}.svg`" @load="imageLoaded = true">
             </div>
             <div>
               <bigger-loader v-show="!imageLoaded"></bigger-loader>

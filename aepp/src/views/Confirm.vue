@@ -62,7 +62,7 @@
   import Util from '~/utils/blockchain_util'
   import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
   import config from '~/config'
-  import contractSourceCode from '~/contractInterface.aes'
+  import contractSourceCode from '~/DroneGraffitiAuction.aes'
 
   const STATUS_INITIAL = 1, STATUS_LOADING = 2
   const LOADING_DATA = 0, LOADING_IPFS = 1, LOADING_CONTRACT = 2, LOADING_FINISHED = 3
@@ -166,17 +166,16 @@
         // args: hash, x, y, time
         // amount: ae to contract amount
         try {
-          const contract = await this.client.getContractInstance(contractSourceCode, { contractAddress: this.contractAddress })
-          const callResult = await contract.call('place_bid', [
-              this.bid.slotId,
-              Math.round(this.transformedImage.dronetime),
-              this.ipfsAddr,
-              this.position.x,
-              this.position.y
-            ],
-            { opt: { amount: Util.aeToAtoms(this.bid.amount).toFixed() } })
+          const contract = await this.client.getContractInstance(contractSourceCode, { contractAddress: this.blockchainSettings.contractAddress })
+          await contract.methods.place_bid.send(
+            this.bid.slotId,
+            Math.round(this.transformedImage.dronetime),
+            this.ipfsAddr,
+            this.position.x,
+            this.position.y,
+            { amount: Util.aeToAtoms(this.bid.amount).toFixed() })
         } catch (e) {
-          console.log(e.decodedResult)
+          console.log(e)
           throw Error(JSON.stringify(e.decodedResult))
         }
       }

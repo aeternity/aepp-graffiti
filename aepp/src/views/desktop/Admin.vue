@@ -77,23 +77,23 @@
             </div>
             <div class="flex-1">
               <div class="font-bold block md:hidden mt-3 mb-1">Time Capacity</div>
-              {{slot.capacityUsed}} min used of {{slot.timeCapacity}} min
+              {{slot.capacityUsed}} min used of {{slot.time_capacity}} min
             </div>
             <div class="flex-1">
               <div class="font-bold block md:hidden mt-3 mb-1">Bid Time Bounds</div>
-              Minimum Time: {{slot.minimumTimePerBid}} min<br>
-              Maximum Time: {{slot.maximumTimePerBid}} min
+              Minimum Time: {{slot.minimum_time_per_bid}} min<br>
+              Maximum Time: {{slot.maximum_time_per_bid}} min
             </div>
             <div class="flex-1">
               <div class="font-bold block md:hidden mt-3 mb-1">Block Height Bounds</div>
-              Start height {{slot.startBlockHeight}}<br>
+              Start height {{slot.start_block_height}}<br>
               est.
-              <span>{{blockToDate(slot.startBlockHeight)}}</span>
+              <span>{{blockToDate(slot.start_block_height)}}</span>
               <br>
               <br>
-              End height&nbsp;&nbsp;{{slot.endBlockHeight}}<br>
+              End height&nbsp;&nbsp;{{slot.end_block_height}}<br>
               est.
-              <span>{{blockToDate(slot.endBlockHeight)}}</span>
+              <span>{{blockToDate(slot.end_block_height)}}</span>
             </div>
             <div class="flex-1">
               <div class="font-bold block md:hidden mt-3 mb-1">Successful Bids</div>
@@ -101,8 +101,8 @@
               Σ Amount: {{slot.success.amountSum.toFixed()}} AE<br>
               Σ Time: {{slot.success.timeSum}} min
               <div v-if="slot.success.bids.length">
-                Min: {{Math.min(...slot.success.amountPerTime)}} AE/min<br>
-                Max: {{Math.max(...slot.success.amountPerTime)}} AE/min
+                Min: {{Math.min(...slot.success.amount_per_time)}} AE/min<br>
+                Max: {{Math.max(...slot.success.amount_per_time)}} AE/min
               </div>
               <ae-button v-if="slot.success.bids.length" face="round" fill="primary"
                          @click="showBids(slot.id, 'successful', slot.success.bids)">
@@ -116,8 +116,8 @@
               Σ Amount: {{slot.failed.amountSum.toFixed()}} AE<br>
               Σ Time: {{slot.failed.timeSum}} min
               <div v-if="slot.failed.bids.length">
-                Min: {{Math.min(...slot.failed.amountPerTime)}} AE/min<br>
-                Max: {{Math.max(...slot.failed.amountPerTime)}} AE/min
+                Min: {{Math.min(...slot.failed.amount_per_time)}} AE/min<br>
+                Max: {{Math.max(...slot.failed.amount_per_time)}} AE/min
               </div>
               <ae-button v-if="slot.failed.bids.length" face="round" fill="primary"
                          @click="showBids(slot.id, 'failed', slot.failed.bids)">
@@ -136,13 +136,13 @@
           <div class="flex-1">Data</div>
           <div class="flex-1">Preview</div>
         </div>
-        <div v-for="bid in inspectBids.bids" :key="bid.seqId">
+        <div v-for="bid in inspectBids.bids" :key="bid.seq_id">
           <div class="flex flex-col md:flex-row p-2 border-t border-grey-light">
             <div class="flex-1">
-              Sequence: {{bid.seqId}}<br>
+              Sequence: {{bid.seq_id}}<br>
               Amount: {{bid.amountAe.toFixed()}} AE<br>
               Time: {{bid.time}} min<br>
-              Amount/Time: {{bid.amountPerTimeAe}} AE/min<br>
+              Amount/Time: {{bid.amount_per_timeAe}} AE/min<br>
               Bidder: {{bid.user}}<br>
               X:{{bid.data.coordinates.x}} Y:{{bid.data.coordinates.y}}
             </div>
@@ -165,6 +165,7 @@
   import BigNumber from 'bignumber.js'
   import config from '~/config'
   import axios from 'axios'
+  import contractSource from '~/DroneGraffitiAuction.aes'
 
   export default {
     name: 'Admin',
@@ -252,10 +253,11 @@
 
           this.height = await client.height()
 
-          const called = await client.contractNodeCall(this.blockchainSettings.contractAddress, 'sophia-address', 'all_auction_slots', '()', '')
-          const decoded = await client.contractNodeDecodeData(Util.auctionSlotListType, called.out)
-          this.slots = Util.auctionSlotListToObject(decoded)
-            .sort((a, b) => a.endBlockHeight - b.endBlockHeight)
+          const contractInstance = await this.client.getContractInstance(contractSource, {contractAddress: this.blockchainSettings.contractAddress})
+          const allBids = await contractInstance.methods.all_auction_slots()
+
+          this.slots = allBids.decodedResult
+            .sort((a, b) => a.end_block_height - b.end_block_height)
             .map(slot => {
               return {
                 id: slot.id,
@@ -265,23 +267,23 @@
                   active: Util.slotIsActive(slot, this.height),
                   future: Util.slotIsFuture(slot, this.height)
                 },
-                timeCapacity: slot.timeCapacity,
-                minimumTimePerBid: slot.minimumTimePerBid,
-                maximumTimePerBid: slot.maximumTimePerBid,
-                startBlockHeight: slot.startBlockHeight,
-                endBlockHeight: slot.endBlockHeight,
+                time_capacity: slot.time_capacity,
+                minimum_time_per_bid: slot.minimum_time_per_bid,
+                maximum_time_per_bid: slot.maximum_time_per_bid,
+                start_block_height: slot.start_block_height,
+                end_block_height: slot.end_block_height,
                 capacityUsed: Util.slotCapacityUsed(slot),
                 success: {
-                  bids: slot.successfulBids.sort((a, b) => a.seqId - b.seqId),
-                  amountSum: Util.atomsToAe(slot.successfulBids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
-                  timeSum: slot.successfulBids.reduce((acc, x) => Number(x.time) + acc, 0),
-                  amountPerTime: slot.successfulBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4))
+                  bids: slot.successful_bids.sort((a, b) => a.seq_id - b.seq_id),
+                  amountSum: Util.atomsToAe(slot.successful_bids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
+                  timeSum: slot.successful_bids.reduce((acc, x) => Number(x.time) + acc, 0),
+                  amount_per_time: slot.successful_bids.map(x => x.amount_per_time).map(x => Util.atomsToAe(x).toFixed(4))
                 },
                 failed: {
-                  bids: slot.failedBids.sort((a, b) => a.seqId - b.seqId),
-                  amountSum: Util.atomsToAe(slot.failedBids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
-                  timeSum: slot.failedBids.reduce((acc, x) => Number(x.time) + acc, 0),
-                  amountPerTime: slot.failedBids.map(x => x.amountPerTime).map(x => Util.atomsToAe(x).toFixed(4))
+                  bids: slot.failed_bids.sort((a, b) => a.seq_id - b.seq_id),
+                  amountSum: Util.atomsToAe(slot.failed_bids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
+                  timeSum: slot.failed_bids.reduce((acc, x) => Number(x.time) + acc, 0),
+                  amount_per_time: slot.failed_bids.map(x => x.amount_per_time).map(x => Util.atomsToAe(x).toFixed(4))
                 },
 
               }
@@ -295,9 +297,9 @@
         this.inspectBidsLoading = true
         this.inspectBids = null
         bids = bids.map(bid => {
-          bid.url = config.apiUrl + '/ipfs/' + bid.data.artworkReference + '.svg'
+          bid.url = config.apiUrl + '/ipfs/' + bid.data.artwort_reference + '.svg'
           bid.amountAe = Util.atomsToAe(bid.amount)
-          bid.amountPerTimeAe = Util.atomsToAe(bid.amountPerTime).toFixed(4)
+          bid.amount_per_timeAe = Util.atomsToAe(bid.amount_per_time).toFixed(4)
           return bid
         })
         this.inspectBidsLoading = false
