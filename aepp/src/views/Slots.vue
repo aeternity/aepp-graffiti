@@ -12,7 +12,7 @@
 
     <div class="w-full p-8 pb-6">
       <div class="flex justify-center flex-col">
-        <h1 class="text-center mb-2">Dronetime Auctions</h1>
+        <h1 class="text-center mb-2">Drawtime Auctions</h1>
         <span class="text-xl text-center leading-normal text-grey-darker">
           Bid in an auction for your artwork to be sprayed on the wall
         </span>
@@ -87,7 +87,7 @@
                   <span class="font-mono text-black text-xl" v-else>
                     {{slot.minimumBid.toFixed(5)}} AE
                   </span>
-                  <span v-if="slot.remainingDronetime > 0" class="font-sans text-grey-darker text-base">{{slot.remainingDronetime}} unclaimed Minutes</span>
+                  <span v-if="slot.remainingDrawtime > 0" class="font-sans text-grey-darker text-base">{{slot.remainingDrawtime}} unclaimed Minutes</span>
                 </div>
 
 
@@ -130,7 +130,7 @@
   import WhiteHeader from '~/components/WhiteHeader'
   import 'swiper/dist/css/swiper.css'
   import config from '~/config'
-  import contractSource from '~/assets/DroneGraffitiAuction.aes'
+  import contractSource from '~/assets/GraffitiAuction.aes'
 
   import { swiper, swiperSlide } from 'vue-awesome-swiper'
 
@@ -208,7 +208,7 @@
               return bid.amount_per_time
             }))
             slot.minimumBid = slot.successful_bids.length === 0 ? 0 : Util.atomsToAe(slot.minimumBid)
-            slot.remainingDronetime = Util.slotCapacityRemaining(slot)
+            slot.remainingDrawtime = Util.slotCapacityRemaining(slot)
             slot.artworkToBig = slot.maximum_time_per_bid < this.transformedImage.dronetime
             slot.artworkToSmall = slot.minimum_time_per_bid > this.transformedImage.dronetime
             return slot

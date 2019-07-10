@@ -157,20 +157,19 @@
 </template>
 
 <script>
-  import ChainNode from '@aeternity/aepp-sdk/es/chain/node'
-  import ContractNodeAPI from '@aeternity/aepp-sdk/es/contract'
+  import { Crypto, Universal as Ae } from '@aeternity/aepp-sdk/es/'
   import Util from '~/utils/blockchain_util'
   import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components'
   import BiggerLoader from '~/components/BiggerLoader'
   import BigNumber from 'bignumber.js'
   import config from '~/config'
   import axios from 'axios'
-  import contractSource from '~/assets/DroneGraffitiAuction.aes'
+  import contractSource from '~/assets/GraffitiAuction.aes'
 
   export default {
     name: 'Admin',
-    components: {AeLoader, BiggerLoader, AeBadge, AeButton, AeIcon},
-    data() {
+    components: { AeLoader, BiggerLoader, AeBadge, AeButton, AeIcon },
+    data () {
       return {
         slots: [],
         height: 0,
@@ -183,6 +182,8 @@
         time: null,
         timezone: null,
         resultBlock: null,
+        contractInstance: null,
+        client: null,
         health: {
           ipfsNode: null,
           blockchainNode: null,
@@ -195,38 +196,38 @@
       }
     },
     computed: {
-      blockchainSettings() {
+      blockchainSettings () {
         return config.blockchainSettings
       },
-      apiURL() {
+      apiURL () {
         return config.apiUrl
       },
-      timeZoneString() {
-        if (!this.timezone || this.timezone === 0) return null;
-        return (this.timezone < 0 ? '-' : '+') + ('0000' + String(Math.abs(this.timezone * 100))).substr(-4, 4);
+      timeZoneString () {
+        if (!this.timezone || this.timezone === 0) return null
+        return (this.timezone < 0 ? '-' : '+') + ('0000' + String(Math.abs(this.timezone * 100))).substr(-4, 4)
       },
-      block() {
-        const target = Date.parse(`${this.date || ' '} ${this.time || ' '}${this.timeZoneString || ' '}`.trim());
-        const current = Date.now();
-        const diff = target - current;
-        const goalBlock = parseInt(this.height + diff / 180000);
-        return Number.isNaN(goalBlock) ? 0 : goalBlock;
+      block () {
+        const target = Date.parse(`${this.date || ' '} ${this.time || ' '}${this.timeZoneString || ' '}`.trim())
+        const current = Date.now()
+        const diff = target - current
+        const goalBlock = parseInt(this.height + diff / 180000)
+        return Number.isNaN(goalBlock) ? 0 : goalBlock
       }
     },
     methods: {
-      blockToDate(goalBlock) {
-        const diff = goalBlock - this.height;
+      blockToDate (goalBlock) {
+        const diff = goalBlock - this.height
         return new Date(diff * 180000 + Date.now()).toLocaleString([],
           {
             day: '2-digit',
             month: '2-digit',
             year: '2-digit',
             hour: '2-digit',
-            minute:'2-digit',
+            minute: '2-digit',
             timeZoneName: 'short'
-          });
+          })
       },
-      runHealthChecks() {
+      runHealthChecks () {
         this.health = {
           ipfsNode: null,
           blockchainNode: null,
@@ -234,7 +235,7 @@
           teaserContract: null,
           testFiles: null,
           testContract: null
-        };
+        }
         axios.get(`${this.apiURL}/health/ipfsNode`).then(() => this.health.ipfsNode = true).catch(() => {
           this.health.ipfsNode = false
         })
@@ -244,17 +245,11 @@
         axios.get(`${this.apiURL}/health/testFiles`).then(() => this.health.testFiles = true).catch(() => this.health.testFiles = false)
         axios.get(`${this.apiURL}/health/testContract`).then(() => this.health.testContract = true).catch(() => this.health.testContract = false)
       },
-      async loadData() {
+      async loadData () {
         try {
-          const client = await ChainNode.compose(ContractNodeAPI)({
-            url: `https://testnet.dronegraffiti.com`,
-            internalUrl: `https://testnet.dronegraffiti.com`,
-          })
+          this.height = await this.client.height()
 
-          this.height = await client.height()
-
-          const contractInstance = await this.client.getContractInstance(contractSource, {contractAddress: this.blockchainSettings.contractAddress})
-          const allBids = await contractInstance.methods.all_auction_slots()
+          const allBids = await this.contractInstance.methods.all_auction_slots()
 
           this.slots = allBids.decodedResult
             .sort((a, b) => a.end_block_height - b.end_block_height)
@@ -293,7 +288,7 @@
           this.error = e.message
         }
       },
-      async showBids(slotId, state, bids) {
+      async showBids (slotId, state, bids) {
         this.inspectBidsLoading = true
         this.inspectBids = null
         bids = bids.map(bid => {
@@ -303,10 +298,23 @@
           return bid
         })
         this.inspectBidsLoading = false
-        this.inspectBids = {slotId: slotId, state: state, bids: bids}
+        this.inspectBids = { slotId: slotId, state: state, bids: bids }
       }
     },
-    created() {
+    async created () {
+
+      const keypair = Crypto.generateKeyPair()
+
+      this.client = await Ae({
+        url: 'https://ae-uat.piwo.app',
+        internalUrl: 'https://ae-uat.piwo.app',
+        compilerUrl: 'https://compiler.aepps.com',
+        networkId: 'ae_uat',
+        keypair: keypair
+      }).catch(console.error)
+
+      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.blockchainSettings.contractAddress })
+
       this.runHealthChecks()
       this.loadData()
       this.interval = setInterval(() => {
@@ -314,7 +322,7 @@
         this.runHealthChecks()
       }, 30000)
     },
-    beforeDestroy() {
+    beforeDestroy () {
       clearInterval(this.interval)
     }
   }

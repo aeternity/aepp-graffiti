@@ -6,7 +6,7 @@
         <ae-icon v-if="back" name="back"></ae-icon>
       </div>
       <div class="ae-title">
-        <img src="../assets/0_DGP_Logo_black_1.svg" class="logo" @click="$router.push('/')" alt="Drone Library Logo"/>
+        <img src="../assets/0_DGP_Logo_rainbow_1.svg" class="logo" @click="$router.push('/')" alt="Logo"/>
         <span>{{title}}</span>
       </div>
       <ae-dropdown class="ae-menu">
