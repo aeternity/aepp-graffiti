@@ -165,7 +165,7 @@
   import BigNumber from 'bignumber.js'
   import config from '~/config'
   import axios from 'axios'
-  import contractSource from '~/DroneGraffitiAuction.aes'
+  import contractSource from '~/assets/DroneGraffitiAuction.aes'
 
   export default {
     name: 'Admin',

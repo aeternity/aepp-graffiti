@@ -117,7 +117,7 @@
   import { AeButton, AeCard } from '@aeternity/aepp-components'
   import BiggerLoader from '../../components/BiggerLoader'
   import { Crypto, Universal as Ae } from '@aeternity/aepp-sdk/es/'
-  import contractSource from '~/DroneGraffitiTeaser.aes'
+  import contractSource from '~/assets/DroneGraffitiTeaser.aes'
   import AeLoader from '@aeternity/aepp-components/src/components/aeLoader/aeLoader'
 
   export default {

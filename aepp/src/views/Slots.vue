@@ -130,7 +130,7 @@
   import WhiteHeader from '~/components/WhiteHeader'
   import 'swiper/dist/css/swiper.css'
   import config from '~/config'
-  import contractSource from '~/DroneGraffitiAuction.aes'
+  import contractSource from '~/assets/DroneGraffitiAuction.aes'
 
   import { swiper, swiperSlide } from 'vue-awesome-swiper'
 
