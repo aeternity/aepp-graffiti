@@ -165,7 +165,6 @@
   import BigNumber from 'bignumber.js'
   import config from '~/config'
   import axios from 'axios'
-  import bugsnagClient from '~/utils/bugsnag'
 
   export default {
     name: 'Admin',
@@ -289,7 +288,6 @@
             })
           this.loading = false
         } catch (e) {
-          bugsnagClient.notify(e)
           this.error = e.message
         }
       },

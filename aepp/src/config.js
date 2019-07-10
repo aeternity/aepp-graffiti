@@ -33,10 +33,5 @@ export default {
   blockchainSettings: {
     contractAddress: 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt'
   },
-  apiUrl: API_URL,
-  matomo: {
-    url: 'https://matomo.dronegraffiti.com',
-    siteId: 1,
-  },
-  feedbackUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSczuV1bCU_GGdQR_Xwb7URpSoVOD0eg7Q9I9DmYKTvPFclorQ/viewform?hl=en'
+  apiUrl: API_URL
 }

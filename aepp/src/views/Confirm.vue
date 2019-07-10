@@ -13,13 +13,11 @@
           <div v-if="currentLoadingStep === 3" class="font-mono text-lg text-grey-darkest">
             <span>Congratulations<br />Bid Successful</span>
             <div class="mt-4 font-bold">How did you like the aepp?</div>
-            <ae-button extend class="mt-8" face="round" fill="primary" @click="giveFeedback">Give Feedback</ae-button>
             <ae-button extend class="mt-8" face="round" fill="neutral" @click="$router.push('overview')">Continue to Bid Status</ae-button>
           </div>
           <div v-if="errorStep" class="font-mono text-lg text-red">
             <span>Oh no :(<br />Bid Failed</span>
             <div class="mt-4 font-bold">How did you like the aepp?</div>
-            <ae-button extend class="mt-8" face="round" fill="primary" @click="giveFeedback">Give Feedback</ae-button>
             <ae-button extend class="mt-8" face="round" fill="neutral" @click="$router.push('amount')">Try again</ae-button>
           </div>
         </div>
@@ -60,7 +58,6 @@
   import Util from '~/utils/blockchain_util'
   import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
   import config from '~/config'
-  import bugsnagClient from '~/utils/bugsnag'
 
   const STATUS_INITIAL = 1, STATUS_LOADING = 2;
   const LOADING_DATA = 0, LOADING_IPFS = 1, LOADING_CONTRACT = 2, LOADING_FINISHED = 3;
@@ -97,17 +94,11 @@
       },
       bid() {
         return this.$store.state.bid
-      },
-      feedbackUrl () {
-        return config.feedbackUrl
       }
     },
     methods: {
       back () {
         this.$router.push('slots')
-      },
-      giveFeedback() {
-        window.location.href = this.feedbackUrl
       },
       async resetView() {
         this.currentStatus = STATUS_LOADING;
@@ -130,7 +121,6 @@
             const response = await axios.post(`${config.apiUrl}/upload`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
             this.ipfsAddr = response.data.hash
           } catch (e) {
-            bugsnagClient.notify(e)
             console.error(e)
             return this.errorStep = LOADING_IPFS
           }
@@ -138,22 +128,14 @@
           this.currentLoadingStep = LOADING_CONTRACT
           try {
             await this.runBid()
-            try {
-              this.$matomo.trackEvent('Conversion', 'Finished', 'Success', this.bid.amount)
-            } catch (e) {
-              console.error('Tracking failed')
-              console.error(e)
-            }
             this.currentLoadingStep = LOADING_FINISHED
             this.$store.dispatch('resetState')
           } catch (e) {
-            bugsnagClient.notify(e)
             console.error(e)
             return this.errorStep = LOADING_CONTRACT
           }
 
         } catch (e) {
-          bugsnagClient.notify(e)
           this.errorStep = LOADING_DATA
           console.error(e)
         }
@@ -188,7 +170,6 @@
             throw Error('Could not decode error data');
           })
           console.log('decodedError', decodedError)
-          bugsnagClient.notify(decodedError)
           throw Error(JSON.stringify(decodedError))
         }
       }
