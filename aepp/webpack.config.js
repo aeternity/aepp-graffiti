@@ -38,7 +38,7 @@ module.exports = env => {
     },
     output: {
       filename: 'bundle.js?[hash]',
-      publicPath: '/'
+      publicPath: env.NODE_ENV === 'prod' ? './' : '/'
     },
     devServer: {
       contentBase: path.join(__dirname, 'dist'),
