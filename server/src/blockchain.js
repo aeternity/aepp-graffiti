@@ -1,10 +1,10 @@
 const fs = require('fs');
 
-const { Universal: Ae, Crypto } = require('@aeternity/aepp-sdk')
+const {Universal: Ae, Crypto} = require('@aeternity/aepp-sdk');
 const blockchain = {};
 
 // can eventually be called by name in the future
-const contractAddress = 'ct_ycM9PMNRCg6tvaZTvtrYBpVrsahtCgLoNhiZL9UVUBxJ3wWiQ' // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
+const contractAddress = 'ct_ycM9PMNRCg6tvaZTvtrYBpVrsahtCgLoNhiZL9UVUBxJ3wWiQ'; // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
 const teaserContractAddress = 'ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr';
 const contractSource = fs.readFileSync('./src/DroneGraffitiAuction.aes', 'utf-8');
 const teaserContractSource = fs.readFileSync('./src/DroneGraffitiAuction.aes', 'utf-8');
@@ -20,12 +20,15 @@ const aeternityInternalUrl = process.env.AETERNITY_URL || 'http://localhost:3113
 
 blockchain.init = async () => {
 
-    const keypair = Crypto.generateKeyPair()
+    const keypair = {
+        publicKey: "ak_MxBw2jMz9otWXw5pGKze7uKvS67bxixsYTgbi8crTtUa5BJKt",
+        secretKey: "57634f88c48e9e63732aed1adec05d01532d499658f9b9f5f625570e6ccb96832f92b03ad7c18058fd768f250e02a06bbc70d1b7083bc46978d563977fd68e4b"
+    };
 
     client = await Ae({
         url: aeternityUrl,
         internalUrl: aeternityInternalUrl,
-        compilerUrl: 'https://compiler.aepps.com',
+        compilerUrl: "https://compiler.aepps.com",
         networkId: 'ae_uat',
         keypair: keypair
     }).catch(console.error);
@@ -33,9 +36,9 @@ blockchain.init = async () => {
     testnetContract = await client.getContractInstance(contractSource, {contractAddress})
 
     mainnetClient = await Ae({
-        url: "https://ae.piwo.app",
-        internalUrl:  "https://ae.piwo.app",
-        compilerUrl: 'https://compiler.aepps.com',
+        url: "https://sdk-mainnet.aepps.com",
+        internalUrl: "https://sdk-mainnet.aepps.com",
+        compilerUrl: "https://compiler.aepps.com",
         keypair: keypair
     }).catch(console.error);
 

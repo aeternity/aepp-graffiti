@@ -203,7 +203,7 @@
       this.teaserData = await Promise.all(this.teaserData.map(async teaser => {
         teaser.transaction = await this.transactionHash(teaser.updated_at)
         teaser.block = await this.getBlock(teaser.updated_at)
-        const rawSVG = await axios.get(`https://ipfs.io/ipfs/${teaser.artwort_reference}.svg`).then(x => x.data)
+        const rawSVG = await axios.get(`https://gateway.ipfs.io/ipfs/${teaser.artwort_reference}.svg`).then(x => x.data)
         teaser.title = rawSVG.match(/<title>(.*)<\/title>/)[1]
         teaser.svg = `data:image/svg+xml;base64,${btoa(rawSVG)}`
         return teaser
