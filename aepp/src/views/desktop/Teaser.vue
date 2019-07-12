@@ -51,9 +51,9 @@
                     <div class="text-grey">IPFS Hash</div>
                     <div class="font-mono text-xl">
                       <a target="_blank"
-                         :href="`https://gateway.ipfs.io/ipfs/${teaser.artwort_reference}`"
+                         :href="`https://gateway.ipfs.io/ipfs/${teaser.artwork_reference}`"
                          class="text-grey-dark break-words max-w-full">
-                        {{teaser.artwort_reference}}
+                        {{teaser.artwork_reference}}
                       </a>
                     </div>
                   </div>
@@ -125,7 +125,7 @@
     components: { AeLoader, BiggerLoader, AeButton, AeCard },
     data () {
       return {
-        mainnetUrl: 'https://sdk-mainnet.aepps.com',
+        mainnetUrl: 'https://ae.piwo.app',
         teaserContractAddress: 'ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr',
         teaserData: [],
         height: null,
@@ -186,7 +186,10 @@
       this.height = await this.getHeight()
       this.currentBlock = await this.getBlock(this.height)
 
-      const keypair = Crypto.generateKeyPair()
+      const keypair = {
+        publicKey: "ak_MxBw2jMz9otWXw5pGKze7uKvS67bxixsYTgbi8crTtUa5BJKt",
+        secretKey: "57634f88c48e9e63732aed1adec05d01532d499658f9b9f5f625570e6ccb96832f92b03ad7c18058fd768f250e02a06bbc70d1b7083bc46978d563977fd68e4b"
+      };
 
       this.client = await Ae({
         url: this.mainnetUrl,
@@ -203,7 +206,7 @@
       this.teaserData = await Promise.all(this.teaserData.map(async teaser => {
         teaser.transaction = await this.transactionHash(teaser.updated_at)
         teaser.block = await this.getBlock(teaser.updated_at)
-        const rawSVG = await axios.get(`https://gateway.ipfs.io/ipfs/${teaser.artwort_reference}.svg`).then(x => x.data)
+        const rawSVG = await axios.get(`https://gateway.ipfs.io/ipfs/${teaser.artwork_reference}`).then(x => x.data)
         teaser.title = rawSVG.match(/<title>(.*)<\/title>/)[1]
         teaser.svg = `data:image/svg+xml;base64,${btoa(rawSVG)}`
         return teaser

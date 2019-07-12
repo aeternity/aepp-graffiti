@@ -23,7 +23,7 @@
             </div>
 
             <div v-show="imageLoaded" class="border-2 p-2 rounded">
-              <img alt="artwork" :src="`${config.apiUrl}/ipfs/${bidData.data.artwort_reference}.svg`" @load="imageLoaded = true">
+              <img alt="artwork" :src="`${config.apiUrl}/ipfs/${bidData.data.artwork_reference}.svg`" @load="imageLoaded = true">
             </div>
             <div>
               <bigger-loader v-show="!imageLoaded"></bigger-loader>
