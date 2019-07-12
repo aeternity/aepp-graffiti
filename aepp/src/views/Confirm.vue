@@ -56,10 +56,9 @@
 <script>
   // TODO switch to mono-l typeface if available
   import CanvasWithControlls from '../components/CanvasWithControlls.vue'
-  import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
   import axios from 'axios'
   import LoadingStep from '~/components/LoadingStep'
-  import Util from '~/utils/blockchain_util'
+  import Util from '~/utils/blockchainUtil'
   import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
   import config from '~/config'
   import contractSourceCode from '~/assets/GraffitiAuction.aes'
@@ -180,11 +179,9 @@
         }
       }
     },
-    created () {
-      Aepp().then(async ae => {
-        this.client = ae
-        await this.next()
-      })
+    async created () {
+      this.client = await aeternity.getClient()
+      await this.next()
     }
   }
 </script>

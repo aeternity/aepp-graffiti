@@ -38,7 +38,7 @@
   import WhiteHeader from '../components/WhiteHeader'
   import { AeButton, AeInput, AeToolbar } from '@aeternity/aepp-components'
   import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import Utils from '~/utils/blockchain_util'
+  import Utils from '~/utils/blockchainUtil'
   import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
 
   export default {

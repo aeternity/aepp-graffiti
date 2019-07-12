@@ -122,8 +122,7 @@
 </template>
 
 <script>
-  import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import Util from '~/utils/blockchain_util'
+  import Util from '~/utils/blockchainUtil'
   import BiggerLoader from '~/components/BiggerLoader'
   import Countdown from '~/components/Countdown'
   import { AeButton, AeCard, AeDivider } from '@aeternity/aepp-components'
@@ -131,6 +130,7 @@
   import 'swiper/dist/css/swiper.css'
   import config from '~/config'
   import contractSource from '~/assets/GraffitiAuction.aes'
+  import aeternity from '~/utils/aeternityNetwork'
 
   import { swiper, swiperSlide } from 'vue-awesome-swiper'
 
@@ -230,12 +230,9 @@
         this.$router.push('positioning')
       }
     },
-    created () {
-      Aepp().then(async ae => {
-        this.client = ae
-        this.height = await this.client.height()
-        await this.updateMyBids()
-      })
+    async created () {
+      this.client = await aeternity.getClient()
+      await this.updateMyBids()
     }
   }
 </script>

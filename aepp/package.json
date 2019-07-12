@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@aeternity/aepp-components": "git+https://github.com/aeternity/aepp-components.git#develop",
-    "@aeternity/aepp-sdk": "^4.1.0",
+    "@aeternity/aepp-sdk": "git+https://github.com/aeternity/aepp-sdk-js.git#feature/aex-2",
     "axios": "^0.19.0",
     "bignumber.js": "^9.0.0",
     "dronetracer": "https://github.com/THE-WYE/DroneTracer",

@@ -51,7 +51,7 @@
   import WhiteHeader from '../components/WhiteHeader'
   import axios from 'axios'
   import config from '~/config'
-  import Utils from '../utils/blockchain_util.js'
+  import Utils from '../utils/blockchainUtil.js'
   import AeCard from '@aeternity/aepp-components/src/components/ae-card/ae-card'
   import BiggerLoader from '../components/BiggerLoader'
   import AeIdentity from '@aeternity/aepp-components/src/components/aeIdentity/aeIdentity'

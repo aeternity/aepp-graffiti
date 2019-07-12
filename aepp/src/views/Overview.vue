@@ -82,8 +82,7 @@
 </template>
 
 <script>
-  import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import Util from '../utils/blockchain_util'
+  import Util from '../utils/blockchainUtil'
   import BiggerLoader from '~/components/BiggerLoader'
   import WhiteHeader from '~/components/WhiteHeader'
   import { AeCard } from '@aeternity/aepp-components'
@@ -95,7 +94,7 @@
 
   export default {
     name: 'Overview',
-    components: {AeIcon, BiggerLoader, AeCard, WhiteHeader },
+    components: { AeIcon, BiggerLoader, AeCard, WhiteHeader },
     data () {
       return {
         bids: [],
@@ -122,13 +121,13 @@
       }
     },
     methods: {
-      shareBid(id) {
+      shareBid (id) {
         window.open(`https://aepp.dronegraffiti.com/bid/${id}`)
       },
       async updateMyBids () {
         try {
 
-          const contractInstance = await this.client.getContractInstance(contractSource, {contractAddress: this.blockchainSettings.contractAddress})
+          const contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.blockchainSettings.contractAddress })
           const slots = await contractInstance.methods.all_auction_slots()
 
           const height = await this.client.height()
@@ -137,7 +136,6 @@
             this.error = 'Could not decode data from contract.'
             return this.state = ERROR_STATE
           }
-
 
           if (slots.decodedResult.length === 0) return this.state = EMPTY_LIST
 
@@ -165,7 +163,7 @@
             return allBids
           })
 
-          if(allBids.length === 0) return this.state = EMPTY_LIST
+          if (allBids.length === 0) return this.state = EMPTY_LIST
 
           this.bids = allBids.reduce((acc, val) => acc.concat(val), []).sort((a, b) => b.seq_id - a.seq_id)
 
@@ -179,12 +177,11 @@
 
       }
     },
-    created () {
-      Aepp().then(async ae => {
-        this.client = ae
-        this.address = await this.client.address()
-        await this.updateMyBids()
-      })
+    async created () {
+      this.client = await aeternity.getClient()
+      this.address = await this.client.address()
+      await this.updateMyBids()
+
     }
   }
 </script>
