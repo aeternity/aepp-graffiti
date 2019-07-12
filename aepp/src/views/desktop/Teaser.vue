@@ -125,7 +125,7 @@
     components: { AeLoader, BiggerLoader, AeButton, AeCard },
     data () {
       return {
-        mainnetUrl: 'https://ae.piwo.app',
+        mainnetUrl: 'https://sdk-mainnet.aepps.com',
         teaserContractAddress: 'ct_2ccJZsoN5D4iWuueX7k4HSTt3QxBGATqzRo1GfeGj2A5GHCTHr',
         teaserData: [],
         height: null,
@@ -196,15 +196,14 @@
         keypair: keypair
       }).catch(console.error);
 
-      this.contractInstance = await this.client.getContractInstance(contractSource, this.teaserContractAddress)
+      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.teaserContractAddress })
 
       this.teaserData = await this.teaserContractData()
-
 
       this.teaserData = await Promise.all(this.teaserData.map(async teaser => {
         teaser.transaction = await this.transactionHash(teaser.updated_at)
         teaser.block = await this.getBlock(teaser.updated_at)
-        const rawSVG = await axios.get(`https://backend.dronegraffiti.com/ipfs/${teaser.artwort_reference}.svg`).then(x => x.data)
+        const rawSVG = await axios.get(`https://ipfs.io/ipfs/${teaser.artwort_reference}.svg`).then(x => x.data)
         teaser.title = rawSVG.match(/<title>(.*)<\/title>/)[1]
         teaser.svg = `data:image/svg+xml;base64,${btoa(rawSVG)}`
         return teaser
