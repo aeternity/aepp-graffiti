@@ -53,8 +53,6 @@ app.get('/bid/:id', errorHandler(logic.getSingleBid));
 // Health checks
 app.get('/health/ipfsNode', errorHandler(health.ipfsNode));
 app.get('/health/blockchainNode', errorHandler(health.blockchainNode));
-app.get('/health/teaserFiles', errorHandler(health.teaserIPFSFiles));
-app.get('/health/teaserContract', errorHandler(health.teaserSmartContract));
 app.get('/health/testFiles', errorHandler(health.normalIPFSFiles));
 app.get('/health/testContract', errorHandler(health.normalSmartContract));
 
