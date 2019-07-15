@@ -22,7 +22,6 @@ blockchain.init = async () => {
         url: process.env.AETERNITY_URL,
         internalUrl: process.env.AETERNITY_URL,
         compilerUrl: "https://compiler.aepps.com",
-        networkId: 'ae_uat',
         keypair: keypair
     }).catch(console.error);
 
@@ -48,7 +47,6 @@ blockchain.auctionSlots = async () => {
     if (!client) await blockchain.init();
 
     const response = await contract.methods.all_auction_slots().catch(console.error);
-
     return response.decodedResult;
 };
 
