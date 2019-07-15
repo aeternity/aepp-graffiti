@@ -1,5 +1,5 @@
 {
-    "name": "aepp-drone-graffiti-server",
+    "name": "aepp-graffiti-server",
     "version": "1.0.0",
     "description": "",
     "main": "server.js",
