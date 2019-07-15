@@ -43,10 +43,10 @@ describe('GraffitiAuction', () => {
     });
 
     it('Call GraffitiAuction Contract; add_auction_slot', async () => {
-        openHeight = (await owner.height()) + 5;
+        openHeight = (await owner.height()) + 10;
 
         const addAuction = await contract.methods.add_auction_slot(100, openHeight, openHeight + 200, 1, 100);
-        const addSecondAuction = await contract.methods.add_auction_slot(100, openHeight, openHeight + 25, 1, 100);
+        const addSecondAuction = await contract.methods.add_auction_slot(100, openHeight, openHeight + 50, 1, 100);
 
         assert.equal(addAuction.result.returnType, 'ok');
         assert.equal(addSecondAuction.result.returnType, 'ok');
@@ -142,7 +142,7 @@ describe('GraffitiAuction', () => {
     });
 
     it('Call GraffitiAuction Contract; admin_withdraw_to_address closed slot', async () => {
-        await owner.awaitHeight(openHeight + 25);
+        await owner.awaitHeight(openHeight + 50);
         const toAddress = Crypto.generateKeyPair().publicKey;
 
         const withdraw = await contract.methods.admin_withdraw_to_address(toAddress, {amount: 0});
