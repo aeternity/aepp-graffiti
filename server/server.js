@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const storage = require('./src/storage');
 const health = require('./src/health');
 const sanity = require('./src/sanity');
+const path = require('path');
 
 // HELPER FUNCTIONS
 
@@ -33,7 +34,7 @@ app.use(fileUpload({
     files: 1
 }));
 
-app.use('/rendered', express.static(__dirname + '/data/rendered'));
+app.use('/rendered', express.static(path.join(__dirname, "/data/rendered", process.env.PATH_IDENTIFIER)));
 
 // get image from ipfs / local cache
 app.get('/ipfs/:hash.svg', errorHandler(logic.ipfs));
@@ -63,7 +64,7 @@ app.post('/sanity/:check', errorHandler(sanity.runCheck));
 // general helpers for all routes
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    if(res.headersSent) return;
+    if (res.headersSent) return;
     res.status(500).send(e.message);
 });
 

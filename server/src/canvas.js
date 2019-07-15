@@ -39,7 +39,28 @@ intervalJob = async () => {
     await canvas.render();
 };
 
+canvas.pathIdentifier = process.env.PATH_IDENTIFIER;
+canvas.fullPathWithIdentifier = `../data/rendered/${canvas.pathIdentifier}`;
+
+canvas.pathLatest = `${canvas.fullPathWithIdentifier}/latest`;
+canvas.pathByHeightDir = `${canvas.fullPathWithIdentifier}/height`;
+canvas.pathByHeight = () => {
+    return `${canvas.pathByHeightDir}/${current_height}`;
+};
+
+createDirs = () => {
+    const dirs = [canvas.fullPathWithIdentifier, canvas.pathByHeightDir];
+    dirs.forEach((dir) => {
+        if (!fs.existsSync(path.join(__dirname, dir))) {
+            fs.mkdirSync(path.join(__dirname, dir));
+        }
+    })
+};
+
 canvas.init = async () => {
+    if (!process.env.PATH_IDENTIFIER) throw "PATH_IDENTIFIER is not set";
+
+    createDirs();
     await blockchain.init();
     await intervalJob();
 
@@ -47,10 +68,6 @@ canvas.init = async () => {
     setInterval(intervalJob, renderInterval);
 };
 
-canvas.pathLatest = "../data/rendered/latest";
-canvas.pathByHeight = () => {
-    return `../data/rendered/height/${current_height}`;
-};
 canvas.svgToPNGBuffer = (svg, pixelWidth, pixelHeight) => {
     return svg2png.sync(Buffer.from(svg), {
         width: pixelWidth,
