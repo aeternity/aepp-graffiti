@@ -44,7 +44,7 @@ namespace List =
 // the contract allows for definition of unlimited separate auctions, meant to be in one pysical location, i.e. one event
 // each bids includes reference to ipfs files, for this usecase svg files
 // bids that are paying lower than the sufficient amount are refunded, once higher bids get included
-contract DroneGraffitiAuction =
+contract GraffitiAuction =
 
   type is_admin = map(address, bool)
 

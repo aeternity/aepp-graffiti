@@ -5,7 +5,7 @@ As the smart contract can also be accessed directly we supply this documentation
 ## How to bid directly on the contract
 
 ### 1. Create your artwork
-We published a image conversion library that converts any digital image into a drone flyable svg. 
+We published a image conversion library that converts any digital image into a svg. 
 Clone the [Drone Tracer repository](https://github.com/Drone-Graffiti/DroneTracer) and follow its 
 example implementation to load and convert your image.
 Its important that you note down the `estimatedTime` property of the resulting `dronePaint` object as 
