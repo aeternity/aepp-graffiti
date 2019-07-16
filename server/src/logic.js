@@ -159,22 +159,6 @@ logic.getSlots = async (req, res, next) => {
 
 };
 
-logic.teaserJson = async (req, res, next) => {
-    try {
-        const artworks = await blockchain.teaserArtworks();
-        const geolocation = await blockchain.teaserGeolocation();
-        res.json({
-            contractAddress: blockchain.teaserContractAddress,
-            contractData: {
-                geolocation: geolocation,
-                artworks: artworks
-            }
-        });
-    } catch (e) {
-        return next(e);
-    }
-};
-
 logic.getSingleBid = async (req, res, next) => {
     try {
         const searchId = req.params.id;

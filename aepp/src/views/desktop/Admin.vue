@@ -187,8 +187,6 @@
         health: {
           ipfsNode: null,
           blockchainNode: null,
-          teaserFiles: null,
-          teaserContract: null,
           testFiles: null,
           testContract: null
         },
@@ -231,8 +229,6 @@
         this.health = {
           ipfsNode: null,
           blockchainNode: null,
-          teaserFiles: null,
-          teaserContract: null,
           testFiles: null,
           testContract: null
         }
@@ -240,8 +236,6 @@
           this.health.ipfsNode = false
         })
         axios.get(`${this.apiURL}/health/blockchainNode`).then(() => this.health.blockchainNode = true).catch(() => this.health.blockchainNode = false)
-        axios.get(`${this.apiURL}/health/teaserFiles`).then(() => this.health.teaserFiles = true).catch(() => this.health.teaserFiles = false)
-        axios.get(`${this.apiURL}/health/teaserContract`).then(() => this.health.teaserContract = true).catch(() => this.health.teaserContract = false)
         axios.get(`${this.apiURL}/health/testFiles`).then(() => this.health.testFiles = true).catch(() => this.health.testFiles = false)
         axios.get(`${this.apiURL}/health/testContract`).then(() => this.health.testContract = true).catch(() => this.health.testContract = false)
       },
