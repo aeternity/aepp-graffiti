@@ -89,6 +89,7 @@
   import config from '~/config'
   import AeIcon from '@aeternity/aepp-components/src/components/ae-icon/ae-icon'
   import contractSource from '~/assets/GraffitiAuction.aes'
+  import aeternity from '~/utils/aeternityNetwork'
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2, ERROR_STATE = 3
 
@@ -122,7 +123,7 @@
     },
     methods: {
       shareBid (id) {
-        window.open(`https://aepp.dronegraffiti.com/bid/${id}`)
+        window.open(`${window.location.host}/bid/${id}`)
       },
       async updateMyBids () {
         try {
