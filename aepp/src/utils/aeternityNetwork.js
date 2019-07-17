@@ -37,7 +37,7 @@ aeternity.initBase = async () => {
     if (window.parent === window) return false
     return await timeout(Aepp())
   } catch (e) {
-    console.warn(e)
+    console.warn('Base Aepp init failed')
     return false
   }
 }
@@ -64,7 +64,7 @@ aeternity.initLedger = async () => {
       parent: await aeternity.getWalletWindow()
     }))
   } catch (e) {
-    console.warn(e)
+    console.warn('Reverse iFrame init failed')
     return false
   }
 }
@@ -72,14 +72,14 @@ aeternity.initLedger = async () => {
 aeternity.checkAvailableWallets = async () => {
 
   // Check for base aepp
-  const wallets = {
-    'mobileBaseAepp': null,
-    'desktopBaseAepp': null
-  }
+  const wallets = {}
 
   const baseAeppClient = await aeternity.initBase()
   console.log(baseAeppClient)
   if (baseAeppClient && baseAeppClient !== 'TIMEOUT') wallets['mobileBaseAepp'] = baseAeppClient
+
+  // Dont even check for iframe / extension if aepp is run inside a base-aepp
+  if(baseAeppClient && window.parent !== window) return wallets
 
   // Check for iframe
   const iframeClient = await aeternity.initLedger()
@@ -110,9 +110,9 @@ aeternity.getClient = async () => {
     const wallets = await aeternity.checkAvailableWallets()
     if (preferredWallet && wallets[preferredWallet]) {
       await aeternity.setClient(preferredWallet, wallets[preferredWallet])
-    } else if (wallets.length === 1) {
+    } else if (Object.keys(wallets).length === 1) {
       await aeternity.setClient(Object.keys(wallets)[0], wallets[Object.keys(wallets)[0]])
-    } else if (wallets.length > 1) {
+    } else if (Object.keys(wallets).length > 1) {
       const otherWallets = Object.filter(wallets).map(walletName => walletName !== preferredWallet)
       await aeternity.setClient(otherWallets[0], wallets[otherWallets[0]])
     } else {
