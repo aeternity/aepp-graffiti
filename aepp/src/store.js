@@ -33,12 +33,13 @@ function initialState () {
       scaleFactor: 4,
       MAX_SCALING: 4,
       threshold: 50,
-      color: 0,
+      color: '#000000',
       hysteresisHighThreshold: 50,
       centerline: false,
       blurKernel: 3,
       binaryThreshold: 45,
-      dilationRadius: 6
+      dilationRadius: 6,
+      strokeWidth: 100
     },
     position: {
       x: 0,
@@ -201,6 +202,7 @@ const store = new Vuex.Store({
         typeof state.droneObject.setPaintingPosition !== 'function'
         || typeof state.droneObject.setPaintingScale !== 'function'
         || typeof state.droneObject.setPaintingColor !== 'function'
+        || typeof state.droneObject.setStrokeWidth !== 'function'
       ) {
         return dispatch('transformImage')
       }
@@ -215,7 +217,8 @@ const store = new Vuex.Store({
         throw Error('Scale out of bound')
       }
 
-      state.droneObject.setPaintingColor(config.droneSettings.colors[state.settings.color])
+      state.droneObject.setPaintingColor(state.settings.color)
+      state.droneObject.setStrokeWidth(state.settings.strokeWidth)
 
       let image = {}
 
@@ -262,7 +265,8 @@ const store = new Vuex.Store({
       }
 
       if (changedKeys.includes('scaleFactor') ||
-        changedKeys.includes('color')) {
+        changedKeys.includes('color') ||
+        changedKeys.includes('strokeWidth')) {
         try {
           await dispatch('applyPostRenderingChanges')
         } catch (e) {

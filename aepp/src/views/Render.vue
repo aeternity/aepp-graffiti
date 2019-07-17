@@ -13,7 +13,7 @@
 
     <!-- IMAGE -->
     <div class="w-full p-8 ae-preview-wrap relative h-full">
-      <div class="absolute pin">
+      <div class="absolute inset-0">
         <div v-show="isLoading" class="flex justify-center items-center bg-half-transparent h-full">
           <BiggerLoader></BiggerLoader>
         </div>
@@ -44,20 +44,21 @@
           </div>
           <div class="flex flex-row justify-around items-center mb-6 mt-2">
             <div class="flex w-full justify-between text-black mb-2">
-              <label>Color</label>
+              <label for="color">Color</label>
             </div>
-            <div class="w-full flex flex-row">
-              <template v-for="(color, index) in droneSettings.colors">
-                <div :key="color" @click="changeColor(index)" class="w-full flex justify-center">
-                  <div v-if="currentColor === index" :style="{backgroundColor: color}"
-                       class="h-8 w-8 rounded-full shadow-lg text-white">
-                    <div class="w-full h-full flex justify-center items-center">
-                      <ae-icon name="check" class="text-white"></ae-icon>
-                    </div>
-                  </div>
-                  <div v-else :style="{backgroundColor: color}" class="h-8 w-8 rounded-full"></div>
-                </div>
-              </template>
+            <div class="w-full flex flex-row justify-end items-center">
+              <div>
+                <input id="color" type="color" v-model="currentColor">
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="flex w-full justify-between text-black mb-2">
+              <label for="strokeWidth">Stroke Width</label>
+            </div>
+            <div class="w-full">
+              <input id="strokeWidth" class="w-full max-w-full" type="range" step="10" min="50" max="300"
+                     v-model="strokeWidth"/>
             </div>
           </div>
           <div class="flex flex-row mb-4">
@@ -119,7 +120,6 @@
               </div>
             </div>
           </div>
-
           <ae-button face="round" fill="primary" @click="closeBackdropAndUpdatePreview" extend>
             Update Preview
           </ae-button>
@@ -170,11 +170,12 @@
     data() {
       return {
         hysteresisHighThreshold: 50,
-        currentColor: 0,
+        currentColor: '#000',
         centerline: true,
         blurKernel: 4,
         binaryThreshold: 45,
         dilationRadius: 4,
+        strokeWidth: 100,
         status: STATUS_LOADING,
         progress: -1,
         backDropVisible: false,
@@ -226,19 +227,17 @@
         this.oldImage = this.transformedImage.src;
         console.log('loading')
         await this.$store.dispatch(`updateSettings`, {
-          color: Number(this.currentColor),
+          color: this.currentColor,
           threshold: Number(this.threshold),
           hysteresisHighThreshold: 100 - Number(this.hysteresisHighThreshold),
           centerline: Number(this.centerline),
           blurKernel: Number(this.blurKernel),
           binaryThreshold: Number(this.binaryThreshold), // inverse binary threshold
-          dilationRadius: Number(this.dilationRadius)
+          dilationRadius: Number(this.dilationRadius),
+          strokeWidth: Number(this.strokeWidth)
         })
         this.status = STATUS_READY
         this.oldImage = null
-      },
-      changeColor(index) {
-        this.currentColor = index
       },
       progressCallback(progress) {
         const progress100 = Math.round(progress * 100)
@@ -255,6 +254,7 @@
       this.blurKernel = this.settings.blurKernel
       this.binaryThreshold = this.settings.binaryThreshold
       this.dilationRadius = this.settings.dilationRadius
+      this.strokeWidth = this.settings.strokeWidth
       this.$store.dispatch('registerProgressCallback', this.progressCallback)
     },
     async mounted() {
