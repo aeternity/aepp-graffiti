@@ -28,7 +28,7 @@
         <div v-if="!isLoading && !transformedImage.width">
           <h1 class="text-red font-mono text-center">Sorry!
           </h1>
-          <p class="text-red mt-2 text-base">We could not create a drone flyable image from the source image and
+          <p class="text-red mt-2 text-base">We could not create an line-based SVG image from the source image and
             settings you provided. <span
               class="font-bold">Try changing the settings or choose another source image.</span></p>
         </div>

@@ -6,7 +6,7 @@
         On this page you are asked to upload an image. It will accept most common image formats including but not limited to: jpg, jpeg, png
       </p>
       <p class="p-4 pb-0">
-        Please do not upload SVG images, the SVG for the drone will be created later in this process and there will be options to adjust the final appearance.
+        Please do not upload SVG images, the SVG will be created later in this process and there will be options to adjust the final appearance.
       </p>
     </WhiteHeader>
 

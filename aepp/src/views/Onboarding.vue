@@ -4,28 +4,20 @@
       v-if="view === 1"
       key="v1"
       image="0_DGP_lockup_black_1.svg"
-      headline="Have a drone paint your art on a real wall in Mexico City"
-      text="Bid with AE to win drone time for your art"
+      headline="Upload an image and make an artwork out of it"
+      text="Your image will be vectorized, get creative with editing"
     >
     </OnboardingStep>
     <OnboardingStep
       v-if="view === 2"
       key="v1"
       image="0_DGP_lockup_black_1.svg"
-      headline="Upload an image and make an artwork out of it"
-      text="Your image will be vectorized, get creative with editing"
+      headline="Bid enough AE to win the required painting time"
+      text="The aeternity smart contract shows the artworks of all successful bids"
     >
     </OnboardingStep>
     <OnboardingStep
       v-if="view === 3"
-      key="v1"
-      image="0_DGP_lockup_black_1.svg"
-      headline="Bid enough AE to win the required drone time"
-      text="The aeternity smart contract sends the artworks of all successful bids to the drones"
-    >
-    </OnboardingStep>
-    <OnboardingStep
-      v-if="view === 4"
       key="v1"
       image="0_DGP_lockup_black_1.svg"
       headline="Be part of the first smart contract art on this scale"
@@ -61,7 +53,7 @@
       return {
         view: 1,
         MIN_VIEW: 1,
-        MAX_VIEW: 4,
+        MAX_VIEW: 3,
         currentlyTouching: false,
         touchStartPos: {
           x: 0,
@@ -75,7 +67,7 @@
     },
     computed: {
       nextText () {
-        if (this.view === 4) return 'START'
+        if (this.view === 3) return 'START'
         else return 'NEXT'
       }
     },

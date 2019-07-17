@@ -5,7 +5,7 @@
       <p class="p-4 pb-0">
         The bidding slots are fixed length auctions. While a slot is open, meaning the maximum block
         height is not reached, you may add your bid. Once the maximum block height is reached by the network the smart
-        contract will take all top bids and send them to the drones to paint.
+        contract will take all top bids and display them on the wall.
       </p>
     </WhiteHeader>
 
