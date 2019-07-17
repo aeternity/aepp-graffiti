@@ -34,17 +34,18 @@
     async created () {
       // Bypass check if we are on desktop
       if (this.$route.path.includes('desktop') || this.$route.path.includes('bid')) return
+      // Bypass check if there is already an active wallet
+      if(aeternity.hasActiveWallet()) return
 
       // check if wallet is available
       try {
         // base-aepp and reverse iframe
-
         const wallets = await aeternity.checkAvailableWallets()
         if (wallets.length === 0) throw new Error('Neither mobile nor desktop aepp found.')
         if (wallets.length > 1) {
           // TODO two wallets found
+          alert("TWO WALLETS")
         }
-
         //await wallet.init()
         //console.log(wallet.walletName)
       } catch (e) {

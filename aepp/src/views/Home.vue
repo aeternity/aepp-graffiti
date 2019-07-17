@@ -36,12 +36,11 @@
 <script>
   import WhiteHeader from '~/components/WhiteHeader'
   import { AeIcon } from '@aeternity/aepp-components/'
-  import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import Util from '~/utils/blockchainUtil'
-  import axios from 'axios'
   import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
   import NativeCanvas from '../components/NativeCanvas'
   import Toast from '../components/Toast'
+  import aeternity from '../utils/aeternityNetwork.js'
+  import axios from 'axios'
 
   export default {
     name: 'Home',
@@ -86,11 +85,9 @@
     async mounted () {
       if (this.firstTimeOpened) return this.$router.push('onboarding')
       try {
-        const client = await Aepp()
-        const address = await client.address()
-        const balance = await client.balance(address, { format: false }).then(Util.atomsToAe).catch(() => 0)
-        console.log('balance', balance)
-        if (balance <= 5) {
+        if(!aeternity.hasActiveWallet()) await aeternity.getClient()
+        console.log('balance', aeternity.balance)
+        if (aeternity.balance <= 5) {
           await axios.post(`https://testnet.faucet.aepps.com/account/${address}`, {}, { headers: { 'content-type': 'application/x-www-form-urlencoded' } }).catch(console.error)
         }
       } catch (e) {
