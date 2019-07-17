@@ -99,6 +99,10 @@ aeternity.setClient = async (clientName, client) => {
   await aeternity.initProvider()
 }
 
+aeternity.hasActiveWallet = () => {
+  return !!aeternity.client
+}
+
 aeternity.getClient = async () => {
 
   if (!aeternity.client) {

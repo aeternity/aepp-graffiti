@@ -23,7 +23,8 @@
             </div>
 
             <div v-show="imageLoaded" class="border-2 p-2 rounded">
-              <img alt="artwork" :src="`${config.apiUrl}/ipfs/${bidData.data.artwort_reference}.svg`" @load="imageLoaded = true">
+              <img alt="artwork" :src="`${config.apiUrl}/ipfs/${bidData.data.artwort_reference}.svg`"
+                   @load="imageLoaded = true">
             </div>
             <div>
               <bigger-loader v-show="!imageLoaded"></bigger-loader>
@@ -32,7 +33,7 @@
               <ae-button class="mr-4 w-full sm:w-auto" type="exciting" @click="placeBid">
                 Place a bid
               </ae-button>
-              <ae-button type="dramatic" class=" w-full sm:w-auto mb-4 sm:mt-0" @click="seeImageOnCanvas" >
+              <ae-button type="dramatic" class=" w-full sm:w-auto mb-4 sm:mt-0" @click="seeImageOnCanvas">
                 See Image on Canvas
               </ae-button>
             </div>
@@ -57,6 +58,7 @@
   import AeIdentity from '@aeternity/aepp-components/src/components/aeIdentity/aeIdentity'
   import AeIdenticon from '@aeternity/aepp-components/src/components/ae-identicon/ae-identicon'
   import AeButton from '@aeternity/aepp-components/src/components/aeButton/aeButton'
+  import aeternity from '../utils/aeternityNetwork.js'
 
   export default {
     name: 'Bid',
@@ -78,34 +80,34 @@
     },
     methods: {
       placeBid() {
-        if(window.parent.location.hostname !== 'base-aepp.dronegraffiti.com') {
+        if(!aeternity.hasActiveWallet()) {
           // Not in base-aepp
-          window.location.href = 'https://base-aepp.dronegraffiti.com'
+          window.location.href = 'https://base.aepps.com'
         } else {
           this.$router.push('contribute');
         }
       },
-      seeImageOnCanvas() {
-        if(window.parent.location.hostname !== 'base-aepp.dronegraffiti.com') {
+      seeImageOnCanvas () {
+        if (aeternity.hasActiveWallet()) {
           // Not in base-aepp
-          this.$router.push('/desktop/canvas')
-        } else {
           this.$router.push('/')
+        } else {
+          this.$router.push('/desktop/canvas')
         }
       }
     },
     async created () {
-      if(!this.$route.params.id || isNaN(this.$route.params.id)) {
-        return this.error = "400<br />Bad request. Please provide a numerical ID (eg. '/bid/1')."
+      if (!this.$route.params.id || isNaN(this.$route.params.id)) {
+        return this.error = '400<br />Bad request. Please provide a numerical ID (eg. \'/bid/1\').'
       }
       try {
         const bid = await axios.get(`${config.apiUrl}/bid/${this.$route.params.id}`)
         this.bidData = bid.data
       } catch (e) {
-        if(String(e.message).includes('404')) {
-          this.error = "404<br />Bid not found."
+        if (String(e.message).includes('404')) {
+          this.error = '404<br />Bid not found.'
         } else {
-          this.error = "500<br />Please try again later."
+          this.error = '500<br />Please try again later.'
         }
       }
     }
