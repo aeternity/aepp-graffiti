@@ -64,15 +64,9 @@ services:
     depends_on:
       - "server"
 
-  base-aepp:
-    build: aepp-base
-    ports:
-      - "8084:80"
-
   aepp:
     build: aepp
     depends_on:
       - "server"
-      - "base-aepp"
     ports:
       - "8085:80"

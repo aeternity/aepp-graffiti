@@ -1,7 +1,7 @@
-# Aeternity Drone Painting 
+# Aeternity Graffiti Aepp 
 
-1. start server using `node server.js`
-2. start aepp using `npm run serve`
+1. start server using `cd server && npm start`
+2. start aepp using `cd aepp && npm run serve`
 
 ## License
 

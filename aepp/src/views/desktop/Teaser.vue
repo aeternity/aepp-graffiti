@@ -51,9 +51,9 @@
                     <div class="text-grey">IPFS Hash</div>
                     <div class="font-mono text-xl">
                       <a target="_blank"
-                         :href="`https://gateway.ipfs.io/ipfs/${teaser.artwort_reference}`"
+                         :href="`https://gateway.ipfs.io/ipfs/${teaser.artwork_reference}`"
                          class="text-grey-dark break-words max-w-full">
-                        {{teaser.artwort_reference}}
+                        {{teaser.artwork_reference}}
                       </a>
                     </div>
                   </div>
@@ -186,7 +186,10 @@
       this.height = await this.getHeight()
       this.currentBlock = await this.getBlock(this.height)
 
-      const keypair = Crypto.generateKeyPair()
+      const keypair = {
+        publicKey: "ak_11111111111111111111111111111111273Yts",
+        secretKey: ""
+      };
 
       this.client = await Ae({
         url: this.mainnetUrl,
@@ -196,15 +199,14 @@
         keypair: keypair
       }).catch(console.error);
 
-      this.contractInstance = await this.client.getContractInstance(contractSource, this.teaserContractAddress)
+      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.teaserContractAddress })
 
       this.teaserData = await this.teaserContractData()
-
 
       this.teaserData = await Promise.all(this.teaserData.map(async teaser => {
         teaser.transaction = await this.transactionHash(teaser.updated_at)
         teaser.block = await this.getBlock(teaser.updated_at)
-        const rawSVG = await axios.get(`https://backend.dronegraffiti.com/ipfs/${teaser.artwort_reference}.svg`).then(x => x.data)
+        const rawSVG = await axios.get(`https://gateway.ipfs.io/ipfs/${teaser.artwork_reference}`).then(x => x.data)
         teaser.title = rawSVG.match(/<title>(.*)<\/title>/)[1]
         teaser.svg = `data:image/svg+xml;base64,${btoa(rawSVG)}`
         return teaser

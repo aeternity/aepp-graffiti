@@ -6,7 +6,9 @@ const ipfsWrap = {};
 let node = null;
 
 ipfsWrap.init = () => {
-    node = ipfsClient({ host: process.env.IPFS_URL || 'localhost', port: '5001', protocol: 'http' });
+    if (!process.env.IPFS_URL) throw "IPFS_URL is not set";
+
+    node = ipfsClient({ host: process.env.IPFS_URL, port: '5001', protocol: 'http' });
 };
 
 ipfsWrap.checkFileExists = async (hash) => {

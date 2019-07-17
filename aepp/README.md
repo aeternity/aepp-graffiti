@@ -7,11 +7,11 @@ at [https://aepp.dronegraffiti.com/](https://aepp.dronegraffiti.com/).
 
 Clone this repository by running
 ```
-git clone git@github.com:aeternity/aepp-drone-graffiti.git
+git clone git@github.com:aeternity/aepp-graffiti.git
 ```
 Install the dependencies
 ```
-cd aepp-drone-graffiti/aepp && npm install
+cd aepp-graffiti/aepp && npm install
 ```
 
 In order to run you need to provide a bugsnag secret and an momoto instance.

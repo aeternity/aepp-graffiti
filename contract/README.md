@@ -5,7 +5,7 @@ As the smart contract can also be accessed directly we supply this documentation
 ## How to bid directly on the contract
 
 ### 1. Create your artwork
-We published a image conversion library that converts any digital image into a drone flyable svg. 
+We published a image conversion library that converts any digital image into a svg. 
 Clone the [Drone Tracer repository](https://github.com/Drone-Graffiti/DroneTracer) and follow its 
 example implementation to load and convert your image.
 Its important that you note down the `estimatedTime` property of the resulting `dronePaint` object as 
@@ -19,7 +19,7 @@ file in the IPFS network is provided. You can obtain this reference by hosting y
 
 ### 2.1 Verify your bid (optional)
 
-The node-js server provides an API for you to check your bid against. [Read the documentation here.](https://github.com/aeternity/aepp-drone-graffiti/tree/master/server/docs/SANITY.md)
+The node-js server provides an API for you to check your bid against. [Read the documentation here.](https://github.com/aeternity/aepp-graffiti/tree/master/server/docs/SANITY.md)
 
 ### 3. Call the contract
 
