@@ -1,10 +1,13 @@
 import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-import BlockchainUtil from '~/utils/blockchainUtil.js'
+import BlockchainUtil from '../utils/blockchainUtil'
+import config from '../config'
+import contractSource from '../assets/GraffitiAuction.aes'
 
 const aeternity = {
   client: null,
   address: null,
   height: null,
+  networkId: null
 }
 
 const timeout = async (promise) => {
@@ -25,6 +28,8 @@ aeternity.initProvider = async () => {
     aeternity.balance = await aeternity.client.balance(aeternity.address)
       .then(balance => `${BlockchainUtil.atomsToAe(balance)}`.replace(',', ''))
       .catch(() => '0')
+    aeternity.networkId = (await aeternity.client.getNodeInfo()).nodeNetworkId
+    aeternity.contract = await aeternity.client.getContractInstance(contractSource, {contractAddress: config.blockchainSettings[aeternity.networkId]})
     return true
   } catch (e) {
     console.warn(e)
@@ -44,6 +49,7 @@ aeternity.initBase = async () => {
 
 aeternity.getWalletWindow = async () => {
   const iframe = document.createElement('iframe')
+  // TODO change to base.aepps.com
   iframe.src = 'http://localhost:8080/'//'https://base.aepps.com/' // https://stage-identity.aepps.com/
   iframe.style.display = 'none'
   document.body.appendChild(iframe)
@@ -75,7 +81,6 @@ aeternity.checkAvailableWallets = async () => {
   const wallets = {}
 
   const baseAeppClient = await aeternity.initBase()
-  console.log(baseAeppClient)
   if (baseAeppClient && baseAeppClient !== 'TIMEOUT') wallets['mobileBaseAepp'] = baseAeppClient
 
   // Dont even check for iframe / extension if aepp is run inside a base-aepp
@@ -96,30 +101,42 @@ aeternity.checkAvailableWallets = async () => {
 aeternity.setClient = async (clientName, client) => {
   aeternity.client = client
   localStorage.setItem('aeWallet', clientName)
-  await aeternity.initProvider()
+  return await aeternity.initProvider()
 }
 
 aeternity.hasActiveWallet = () => {
-  return !!aeternity.client
+  return !!aeternity.client && !!aeternity.contract
 }
 
-aeternity.getClient = async () => {
+aeternity.isTestnet = () => {
+  return aeternity.networkId === 'ae_uat'
+}
 
+aeternity.initClient = async () => {
+
+  let result = true
   if (!aeternity.client) {
-    const preferredWallet = localStorage.getItem('aeWallet')
-    const wallets = await aeternity.checkAvailableWallets()
-    if (preferredWallet && wallets[preferredWallet]) {
-      await aeternity.setClient(preferredWallet, wallets[preferredWallet])
-    } else if (Object.keys(wallets).length === 1) {
-      await aeternity.setClient(Object.keys(wallets)[0], wallets[Object.keys(wallets)[0]])
-    } else if (Object.keys(wallets).length > 1) {
-      const otherWallets = Object.filter(wallets).map(walletName => walletName !== preferredWallet)
-      await aeternity.setClient(otherWallets[0], wallets[otherWallets[0]])
-    } else {
-      return null
+    try {
+      const preferredWallet = localStorage.getItem('aeWallet')
+      const wallets = await aeternity.checkAvailableWallets()
+      if (preferredWallet && wallets[preferredWallet]) {
+        result = await aeternity.setClient(preferredWallet, wallets[preferredWallet])
+      } else if (Object.keys(wallets).length === 1) {
+        result = await aeternity.setClient(Object.keys(wallets)[0], wallets[Object.keys(wallets)[0]])
+      } else if (Object.keys(wallets).length > 1) {
+        const otherWallets = Object.filter(wallets).map(walletName => walletName !== preferredWallet)
+        result = await aeternity.setClient(otherWallets[0], wallets[otherWallets[0]])
+      } else {
+        result = false
+      }
+    } catch (e) {
+      console.error(e)
+      result = false
     }
+  } else {
+    result = await aeternity.initProvider()
   }
-  return aeternity.client
+  return result
 }
 
 export default aeternity

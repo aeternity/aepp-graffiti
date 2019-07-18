@@ -88,7 +88,6 @@
   import { AeCard } from '@aeternity/aepp-components'
   import config from '~/config'
   import AeIcon from '@aeternity/aepp-components/src/components/ae-icon/ae-icon'
-  import contractSource from '~/assets/GraffitiAuction.aes'
   import aeternity from '~/utils/aeternityNetwork'
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2, ERROR_STATE = 3
@@ -128,10 +127,9 @@
       async updateMyBids () {
         try {
 
-          const contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.blockchainSettings.contractAddress })
-          const slots = await contractInstance.methods.all_auction_slots()
+          const slots = await aeternity.contract.methods.all_auction_slots()
 
-          const height = await this.client.height()
+          const height = await aeternity.height
 
           if (!slots.decodedResult) {
             this.error = 'Could not decode data from contract.'
@@ -179,10 +177,8 @@
       }
     },
     async created () {
-      this.client = await aeternity.getClient()
-      this.address = await this.client.address()
+      this.address = await aeternity.address
       await this.updateMyBids()
-
     }
   }
 </script>

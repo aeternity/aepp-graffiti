@@ -85,10 +85,9 @@
     async mounted () {
       if (this.firstTimeOpened) return this.$router.push('onboarding')
       try {
-        if(!aeternity.hasActiveWallet()) await aeternity.getClient()
-        console.log('balance', aeternity.balance)
-        if (aeternity.balance <= 5) {
-          await axios.post(`https://testnet.faucet.aepps.com/account/${address}`, {}, { headers: { 'content-type': 'application/x-www-form-urlencoded' } }).catch(console.error)
+        // Top up users balance if user is on testnet and balance is smaller than 5
+        if (aeternity.isTestnet() && aeternity.balance <= 5) {
+          await axios.post(`https://testnet.faucet.aepps.com/account/${aeternity.address}`, {}, { headers: { 'content-type': 'application/x-www-form-urlencoded' } }).catch(console.error)
         }
       } catch (e) {
         console.error(e)

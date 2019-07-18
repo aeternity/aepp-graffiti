@@ -129,7 +129,6 @@
   import WhiteHeader from '~/components/WhiteHeader'
   import 'swiper/dist/css/swiper.css'
   import config from '~/config'
-  import contractSource from '~/assets/GraffitiAuction.aes'
   import aeternity from '~/utils/aeternityNetwork'
 
   import { swiper, swiperSlide } from 'vue-awesome-swiper'
@@ -144,10 +143,9 @@
         state: LOADING,
         bids: [],
         slots: [],
-        client: null,
-        height: 0,
         nextSlotAtHeight: null,
         choice: null,
+        height: 0,
         swiperOption: {
           slidesPerView: 'auto',
           spaceBetween: 35,
@@ -178,7 +176,7 @@
           || !slot
           || slot.artworkToBig
           || slot.artworkToSmall
-          || !Util.slotIsActive(slot, this.height)
+          || !Util.slotIsActive(slot, aeternity.height)
       }
     },
     methods: {
@@ -189,19 +187,21 @@
       async updateMyBids () {
         //TODO change to contractInstances
 
-        const contractInstance = await this.client.getContractInstance(contractSource, {contractAddress: this.blockchainSettings.contractAddress})
-        const allBids = await contractInstance.methods.all_auction_slots()
+        const allSlots = await aeternity.contract.methods.all_auction_slots()
+
+        // For rendering purposes
+        this.height = aeternity.height
 
         let slotIndex = 0
 
-        const nextSlots = allBids.decodedResult
-          .filter(slot => Util.slotIsFuture(slot, this.height))
+        const nextSlots = allSlots.decodedResult
+          .filter(slot => Util.slotIsFuture(slot, aeternity.height))
           .sort((a, b) => a.start_block_height - b.start_block_height)
 
         if (nextSlots.length) this.nextSlotAtHeight = nextSlots[0].start_block_height
 
-        this.slots = allBids.decodedResult
-          .filter(slot => Util.slotIsActive(slot, this.height))
+        this.slots = allSlots.decodedResult
+          .filter(slot => Util.slotIsActive(slot, aeternity.height))
           .map(slot => {
             slot.index = slotIndex++
             slot.minimumBid = Math.min.apply(Math, slot.successful_bids.map(function (bid) {
@@ -231,7 +231,6 @@
       }
     },
     async created () {
-      this.client = await aeternity.getClient()
       await this.updateMyBids()
     }
   }
