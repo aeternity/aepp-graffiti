@@ -158,7 +158,7 @@
 
 <script>
   import { Crypto, Universal as Ae } from '@aeternity/aepp-sdk/es/'
-  import Util from '~/utils/blockchain_util'
+  import Util from '~/utils/blockchainUtil'
   import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components'
   import BiggerLoader from '~/components/BiggerLoader'
   import BigNumber from 'bignumber.js'

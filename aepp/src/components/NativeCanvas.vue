@@ -2,11 +2,11 @@
   <div class="w-full h-full" ref="canvasContainer">
     <div class="w-full h-full">
       <div ref="stageWrapper" class="stageWrapper relative" id="stageWrapper">
-        <canvas id="backgroundCanvas" ref="backgroundCanvas" class="absolute pin" :style="{
+        <canvas id="backgroundCanvas" ref="backgroundCanvas" class="absolute inset-0" :style="{
           width: cssWidth,
           height: cssHeight
         }"></canvas>
-        <canvas id="overlayCanvas" ref="overlayCanvas" class="absolute pin" :style="{
+        <canvas id="overlayCanvas" ref="overlayCanvas" class="absolute inset-0" :style="{
           width: cssWidth,
           height: cssHeight
         }"></canvas>
@@ -530,7 +530,7 @@
 
       onTouchMoveEvent (event) {
 
-        event.preventDefault()
+        //event.preventDefault()
 
         let touch1 = event.touches[0]
         let touch2 = event.touches[1]
@@ -563,7 +563,7 @@
         }
       },
       onTouchEndEvent (event) {
-        event.preventDefault()
+        //event.preventDefault()
         this.lastDist = 0
         this.lastPos = {
           x: -1,
@@ -573,7 +573,7 @@
       },
       onTouchStartEvent (event) {
 
-        event.preventDefault()
+        //event.preventDefault()
 
         let touch1 = event.touches[0]
 
@@ -601,7 +601,7 @@
         }
       },
       onWheelEvent (event) {
-        event.preventDefault()
+        //event.preventDefault()
 
         const scaleBy = 1.1
 
@@ -686,26 +686,26 @@
         MOBILE DRAG AND ZOOM HANDLER
          */
 
-        this.$refs.stageWrapper.addEventListener('touchstart', this.onTouchStartEvent)
-        this.$refs.stageWrapper.addEventListener('touchmove', this.onTouchMoveEvent)
-        this.$refs.stageWrapper.addEventListener('touchend', this.onTouchEndEvent)
+        this.$refs.stageWrapper.addEventListener('touchstart', this.onTouchStartEvent, {passive: true})
+        this.$refs.stageWrapper.addEventListener('touchmove', this.onTouchMoveEvent, {passive: true})
+        this.$refs.stageWrapper.addEventListener('touchend', this.onTouchEndEvent, {passive: true})
 
         /*
         DESKTOP DRAG AND ZOOM HANDLER
          */
 
-        this.$refs.stageWrapper.addEventListener('wheel', this.onWheelEvent)
-        this.$refs.stageWrapper.addEventListener('mousedown', this.onMouseDownEvent)
-        this.$refs.stageWrapper.addEventListener('mousemove', this.onMouseMoveEvent)
-        this.$refs.stageWrapper.addEventListener('mouseup', this.onMouseUpEvent)
-        this.$refs.stageWrapper.addEventListener('mouseleave', this.onMouseUpEvent)
+        this.$refs.stageWrapper.addEventListener('wheel', this.onWheelEvent, {passive: true})
+        this.$refs.stageWrapper.addEventListener('mousedown', this.onMouseDownEvent, {passive: true})
+        this.$refs.stageWrapper.addEventListener('mousemove', this.onMouseMoveEvent, {passive: true})
+        this.$refs.stageWrapper.addEventListener('mouseup', this.onMouseUpEvent, {passive: true})
+        this.$refs.stageWrapper.addEventListener('mouseleave', this.onMouseUpEvent, {passive: true})
       }
     }
     ,
     beforeDestroy: function () {
-      this.$refs.stageWrapper.removeEventListener('touchstart', this.onTouchStartEvent, false)
-      this.$refs.stageWrapper.removeEventListener('touchmove', this.onTouchMoveEvent, false)
-      this.$refs.stageWrapper.removeEventListener('touchend', this.onTouchEndEvent, false)
+      this.$refs.stageWrapper.removeEventListener('touchstart', this.onTouchStartEvent)
+      this.$refs.stageWrapper.removeEventListener('touchmove', this.onTouchMoveEvent)
+      this.$refs.stageWrapper.removeEventListener('touchend', this.onTouchEndEvent)
       this.$refs.stageWrapper.removeEventListener('wheel', this.onWheelEvent)
       this.$refs.stageWrapper.removeEventListener('mousedown', this.onMouseDownEvent)
       this.$refs.stageWrapper.removeEventListener('mousemove', this.onMouseMoveEvent)

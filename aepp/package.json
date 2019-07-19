@@ -11,10 +11,10 @@
   },
   "dependencies": {
     "@aeternity/aepp-components": "git+https://github.com/aeternity/aepp-components.git#develop",
-    "@aeternity/aepp-sdk": "^4.1.0",
+    "@aeternity/aepp-sdk": "git+https://github.com/aeternity/aepp-sdk-js.git#master",
     "axios": "^0.19.0",
     "bignumber.js": "^9.0.0",
-    "dronetracer": "https://github.com/THE-WYE/DroneTracer",
+    "dronetracer": "git+https://github.com/kenodressel/DroneTracer.git#master",
     "jimp": "^0.6.4",
     "vue": "^2.6.10",
     "vue-awesome-swiper": "^3.1.3",

@@ -5,7 +5,7 @@
       <div class="flex justify-center flex-col">
         <h1 class="text-center mb-2">Place your bid</h1>
         <span class="text-xl text-center leading-normal text-grey-darker">
-          Your artwork takes the drone <span class="bold-info">{{transformedImage.dronetime}} minutes</span> to paint. How much AE do you want to bid per minute?
+          Your artwork takes <span class="bold-info">{{transformedImage.dronetime}} minutes</span> to paint. How much AE do you want to bid per minute?
         </span>
       </div>
       <div class="mt-8">
@@ -37,9 +37,9 @@
 <script>
   import WhiteHeader from '../components/WhiteHeader'
   import { AeButton, AeInput, AeToolbar } from '@aeternity/aepp-components'
-  import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import Utils from '~/utils/blockchain_util'
+  import Utils from '~/utils/blockchainUtil'
   import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
+  import aeternity from '~/utils/aeternityNetwork'
 
   export default {
     name: 'Amount',
@@ -101,9 +101,7 @@
     async mounted () {
       try {
         this.perMinute = this.amount / this.transformedImage.dronetime
-        this.client = await Aepp()
-        const pub = await this.client.address()
-        this.balance = Utils.atomsToAe(await this.client.balance(pub, {format:false}))
+        this.balance = Utils.atomsToAe(await aeternity.client.balance(aeternity.address, {format:false}))
       } catch (e) {
         console.error(e)
         this.balance = 0

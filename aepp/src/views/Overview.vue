@@ -82,20 +82,19 @@
 </template>
 
 <script>
-  import Aepp from '@aeternity/aepp-sdk/es/ae/aepp'
-  import Util from '../utils/blockchain_util'
+  import Util from '../utils/blockchainUtil'
   import BiggerLoader from '~/components/BiggerLoader'
   import WhiteHeader from '~/components/WhiteHeader'
   import { AeCard } from '@aeternity/aepp-components'
   import config from '~/config'
   import AeIcon from '@aeternity/aepp-components/src/components/ae-icon/ae-icon'
-  import contractSource from '~/assets/GraffitiAuction.aes'
+  import aeternity from '~/utils/aeternityNetwork'
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2, ERROR_STATE = 3
 
   export default {
     name: 'Overview',
-    components: {AeIcon, BiggerLoader, AeCard, WhiteHeader },
+    components: { AeIcon, BiggerLoader, AeCard, WhiteHeader },
     data () {
       return {
         bids: [],
@@ -122,22 +121,20 @@
       }
     },
     methods: {
-      shareBid(id) {
-        window.open(`https://aepp.dronegraffiti.com/bid/${id}`)
+      shareBid (id) {
+        window.open(`${window.location.host}/bid/${id}`)
       },
       async updateMyBids () {
         try {
 
-          const contractInstance = await this.client.getContractInstance(contractSource, {contractAddress: this.blockchainSettings.contractAddress})
-          const slots = await contractInstance.methods.all_auction_slots()
+          const slots = await aeternity.contract.methods.all_auction_slots()
 
-          const height = await this.client.height()
+          const height = await aeternity.height
 
           if (!slots.decodedResult) {
             this.error = 'Could not decode data from contract.'
             return this.state = ERROR_STATE
           }
-
 
           if (slots.decodedResult.length === 0) return this.state = EMPTY_LIST
 
@@ -165,7 +162,7 @@
             return allBids
           })
 
-          if(allBids.length === 0) return this.state = EMPTY_LIST
+          if (allBids.length === 0) return this.state = EMPTY_LIST
 
           this.bids = allBids.reduce((acc, val) => acc.concat(val), []).sort((a, b) => b.seq_id - a.seq_id)
 
@@ -179,12 +176,9 @@
 
       }
     },
-    created () {
-      Aepp().then(async ae => {
-        this.client = ae
-        this.address = await this.client.address()
-        await this.updateMyBids()
-      })
+    async created () {
+      this.address = await aeternity.address
+      await this.updateMyBids()
     }
   }
 </script>

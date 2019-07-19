@@ -1,5 +1,5 @@
-// const API_URL = 'https://backend.dronegraffiti.com'
- const API_URL = 'http://localhost:3000';
+ const API_URL = 'https://backend.graffiti.aeternity.com'
+// const API_URL = 'http://localhost:3000';
 // const API_URL = 'http://192.168.0.157:3000';
 
 export default {
@@ -31,7 +31,8 @@ export default {
     minimumImageSize: [10, 10]
   },
   blockchainSettings: {
-    contractAddress: 'ct_ycM9PMNRCg6tvaZTvtrYBpVrsahtCgLoNhiZL9UVUBxJ3wWiQ' // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
+    ae_uat: 'ct_ycM9PMNRCg6tvaZTvtrYBpVrsahtCgLoNhiZL9UVUBxJ3wWiQ', // testnet //ct_2SugvqB52guEV6fSTkuGjipzPMjeEf5urYQYnPe91cdkMmjJGy
+    ae_mainnet: 'ct_ycM9PMNRCg6tvaZTvtrYBpVrsahtCgLoNhiZL9UVUBxJ3wWiQ' // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
   },
   apiUrl: API_URL
 }
