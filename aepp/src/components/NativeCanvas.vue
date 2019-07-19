@@ -623,10 +623,9 @@
         }
 
         // CHECK IF USER IS CLICKING ON OVERLAY
-        const target = this.renderQueue.overlay.find(imageObject => this.isUserClickingOnOverlay(imageObject, {
-          clientX: event.clientX / this.cssToCanvasRatio,
-          clientY: event.clientY / this.cssToCanvasRatio
-        }))
+
+        const target = this.renderQueue.overlay.find(imageObject => this.isUserClickingOnOverlay(imageObject, event))
+
         if (target) {
           this.moveTarget = target
         } else {
@@ -641,7 +640,7 @@
         this.moveTarget = null
       },
       onMouseMoveEvent (event) {
-        event.preventDefault()
+        //event.preventDefault()
         this.onMoveEvent({
           clientX: event.clientX / this.cssToCanvasRatio,
           clientY: event.clientY / this.cssToCanvasRatio
