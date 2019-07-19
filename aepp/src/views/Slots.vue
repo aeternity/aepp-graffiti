@@ -95,10 +95,10 @@
                   <ae-divider></ae-divider>
                   <div class="flex flex-col mt-2">
                 <span class="font-mono text-red text-lg" v-if="slot.artworkToBig">
-                  Your artwork takes to much Dronetime for this slot. Consider making it smaller.
+                  Your artwork takes to much painting time for this slot. Consider making it smaller.
                 </span>
                     <span class="font-mono text-red text-lg" v-if="slot.artworkToSmall">
-                  Your artwork takes to less Dronetime for this slot. Consider making it larger.
+                  Your artwork takes to less painting time for this slot. Consider making it larger.
                 </span>
                   </div>
                 </div>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <WhiteHeader title="Drone Graffiti"></WhiteHeader>
+    <WhiteHeader title="Graffiti"></WhiteHeader>
 
     <div class="w-full h-full">
       <NativeCanvas
