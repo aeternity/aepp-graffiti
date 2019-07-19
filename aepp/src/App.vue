@@ -3,8 +3,9 @@
     <div class="content min-h-screen">
       <ae-main class="min-h-screen">
         <router-view v-if="clientAvailable"></router-view>
-        <div class="inset-0 flex justify-center items-center" v-else>
+        <div class="inset-0 flex justify-center flex-col items-center" v-else>
           <BiggerLoader></BiggerLoader>
+          <h2 class="mt-2 font-bold">Looking for a wallet. Check for popups.</h2>
         </div>
       </ae-main>
     </div>
@@ -81,6 +82,6 @@
     min-height: 100vh;
     max-height: 100vh;
     padding-bottom: 0;
-    overflow-y: auto
+    overflow-y: auto;
   }
 </style>
