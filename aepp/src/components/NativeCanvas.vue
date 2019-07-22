@@ -663,7 +663,7 @@
         })
       },
       startAutoReload () {
-        this.reloadInterval = setInterval(this.reloadBackgroundImage, 10000)
+        this.reloadInterval = setInterval(this.reloadBackgroundImage, 30000)
       }
     }
     ,
