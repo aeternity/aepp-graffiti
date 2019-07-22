@@ -109,7 +109,7 @@
 
         let foundUpdate = false
 
-        if (this.scale > 4) {
+        if (this.scale * this.$refs.backgroundCanvas.width > 4 * 400) {
           if (this.backgroundUrl === config.canvas.url) return
           this.backgroundUrl = config.canvas.url
           foundUpdate = true
