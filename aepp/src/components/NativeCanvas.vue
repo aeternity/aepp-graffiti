@@ -31,7 +31,7 @@
   export default {
     name: 'NativeCanvas',
     components: { BiggerLoader },
-    props: ['draggable', 'height', 'greyedOut', 'fillScale', 'smallBackground'],
+    props: ['draggable', 'height', 'greyedOut', 'fillScale', 'smallBackground', 'autoReload'],
     data () {
       return {
         backgroundContext: null,
@@ -62,7 +62,8 @@
         moveTarget: null,
         currentStatus: STATUS_LOADING,
         backgroundUrl: config.canvas.urlSmall,
-        cacheTimestamp: Date.now()
+        cacheTimestamp: Date.now(),
+        reloadInterval: null
       }
     },
     computed: {
@@ -661,6 +662,9 @@
           clientY: event.clientY / this.cssToCanvasRatio
         })
       },
+      startAutoReload () {
+        this.reloadInterval = setInterval(this.reloadBackgroundImage, 10000)
+      }
     }
     ,
     async mounted () {
@@ -695,6 +699,8 @@
       // this.setScaleToFill()
       if (this.fillScale) this.setScaleToFill()
 
+      if (this.autoReload) this.startAutoReload()
+
       if (this.draggable && this.$refs.stageWrapper) {
         /*
         MOBILE DRAG AND ZOOM HANDLER
@@ -717,6 +723,7 @@
     }
     ,
     beforeDestroy: function () {
+      clearInterval(this.reloadInterval)
       this.$refs.stageWrapper.removeEventListener('touchstart', this.onTouchStartEvent)
       this.$refs.stageWrapper.removeEventListener('touchmove', this.onTouchMoveEvent)
       this.$refs.stageWrapper.removeEventListener('touchend', this.onTouchEndEvent)

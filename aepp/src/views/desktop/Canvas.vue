@@ -1,5 +1,5 @@
 <template>
-  <NativeCanvas :height=height :draggable=true :fill-scale=true></NativeCanvas>
+  <NativeCanvas :height=height :draggable=true :fill-scale=true :auto-reload=true ></NativeCanvas>
 </template>
 
 <script>
