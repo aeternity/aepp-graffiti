@@ -109,7 +109,7 @@
 
         let foundUpdate = false
 
-        if (this.scale * this.$refs.backgroundCanvas.width > 4 * 400) {
+        if (this.scale * this.$refs.backgroundCanvas.width > 4 * 200) {
           if (this.backgroundUrl === config.canvas.url) return
           this.backgroundUrl = config.canvas.url
           foundUpdate = true
@@ -272,20 +272,35 @@
         if(!this.$refs.backgroundCanvas) return;
 
         const containerWidth = this.$refs.backgroundCanvas.width
+        const containerHeight = this.$refs.backgroundCanvas.height
+        console.log(this.$refs.backgroundCanvas.height)
+        console.log(this.$refs.backgroundCanvas.width)
 
+        // update this to 1 if padding should be removed
         const smallerThanContainerScale = 0.95
-        const newScale = (this.$refs.backgroundCanvas.width / config.canvas.width) * smallerThanContainerScale
+        const widthScale = (this.$refs.backgroundCanvas.width / config.canvas.width) * smallerThanContainerScale
+        const heightScale = (this.$refs.backgroundCanvas.height / config.canvas.height) * smallerThanContainerScale
+        const newScale = Math.min(heightScale, widthScale)
+
 
         this.onScaleEvent({
           x: this.$refs.canvasContainer.offsetLeft,
           y: this.$refs.canvasContainer.offsetTop
         }, newScale)
 
-        const smallerThanContainerBorder = (containerWidth - (containerWidth * smallerThanContainerScale)) / 2
+        //
+        let xPadding, yPadding
+        if(heightScale <= widthScale) {
+          xPadding = (containerWidth - (containerWidth * smallerThanContainerScale * heightScale)) / 2
+          yPadding = (containerHeight - (containerHeight * smallerThanContainerScale)) / 2
+        } else {
+          xPadding = (containerWidth - (containerWidth * smallerThanContainerScale)) / 2
+          yPadding = (containerHeight - (containerHeight * smallerThanContainerScale * widthScale)) / 2
+        }
 
         const backgroundPositionUpdate = {
-          x: smallerThanContainerBorder - this.renderQueue.background[0].position.x,
-          y: smallerThanContainerBorder - this.renderQueue.background[0].position.y
+          x: xPadding - this.renderQueue.background[0].position.x,
+          y: yPadding - this.renderQueue.background[0].position.y
         }
 
         this.updateCanavsPosition(backgroundPositionUpdate)
