@@ -12,6 +12,7 @@ import Admin from './views/desktop/Admin'
 import Teaser from './views/desktop/Teaser'
 import Amount from './views/Amount'
 import Bid from './views/Bid'
+import StaticSVG from "./views/desktop/StaticSVG";
 
 const routes = [
   {
@@ -91,6 +92,12 @@ const routes = [
     name: 'bid',
     component: Bid,
     meta: { title: `Bid` },
+  },
+  {
+    path: '/desktop/svg',
+    name: 'svg',
+    component: StaticSVG,
+    meta: { title: `SVG` },
   }
 ]
 
