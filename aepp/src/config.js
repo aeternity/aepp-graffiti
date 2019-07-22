@@ -24,7 +24,7 @@ export default {
     wallSize: [33000, 50000],   // in mm
     canvasSize: [33000, 50000], // mm
     canvasPosition: [0, 0], // mm (origin = [bottom left])
-    colors: ['#000000', '#eb340f', '#0f71eb'], // default [#000]
+    colors: ['#f7296e'], // default [#f7296e]
     droneResolution: 200,       // min distance drone can move, in mm
     dronePrecisionError: 150,   // error margin, mm
     droneFlyingSpeed: 0.3,  // average drone flying speed [m/s],

@@ -170,7 +170,7 @@
     data() {
       return {
         hysteresisHighThreshold: 50,
-        currentColor: '#000',
+        currentColor: '#f7296e',
         centerline: true,
         blurKernel: 4,
         binaryThreshold: 45,

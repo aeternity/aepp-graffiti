@@ -33,7 +33,7 @@ function initialState () {
       scaleFactor: 4,
       MAX_SCALING: 4,
       threshold: 50,
-      color: '#000000',
+      color: '#f7296e',
       hysteresisHighThreshold: 50,
       centerline: false,
       blurKernel: 3,
