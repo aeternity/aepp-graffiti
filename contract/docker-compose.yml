@@ -52,7 +52,6 @@ services:
 
   compiler:
     image: aeternity/aesophia_http:v3.2.0
-    restart: always
     ports:
       - "3081:3080"
 
