@@ -5,7 +5,7 @@
       <div class="flex justify-center flex-col">
         <h1 class="text-center mb-2">Place your bid</h1>
         <span class="text-xl text-center leading-normal text-grey-darker">
-          Your artwork takes <span class="bold-info">{{transformedImage.dronetime}} minutes</span> to paint. How much AE do you want to bid per minute?
+          Your artwork would take <span class="bold-info">{{transformedImage.dronetime}} minutes</span> to paint. How much AE do you want to bid per minute?
         </span>
       </div>
       <div class="mt-8">

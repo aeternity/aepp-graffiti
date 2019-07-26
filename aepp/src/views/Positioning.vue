@@ -1,13 +1,12 @@
 <template>
   <div>
     <WhiteHeader :back="back" title="Place Your Artwork">
-      <h2>Positioning</h2>
+      <h2>Place Your Artwork</h2>
       <p class="p-4 pb-0">
         Drag and drop the artwork to your desired position on the wall. You can pinch to zoom and drag to move.
       </p>
       <p class="p-4 pb-0">
-        To adjust the size of your artwork use the scale slider down below. For more detailed positioning you can enter
-        the X and Y coordinates in the in put fields below.
+        To adjust the size of your artwork use the scale - and + buttons down below.
       </p>
     </WhiteHeader>
     <div class="w-full h-full relative">

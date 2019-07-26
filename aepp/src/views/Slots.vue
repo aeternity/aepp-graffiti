@@ -1,20 +1,19 @@
 <template>
   <div>
     <WhiteHeader title="Auction Slots" :back="back">
-      <h2>Slots</h2>
+      <h2>Auction Slots</h2>
       <p class="p-4 pb-0">
         The bidding slots are fixed length auctions. While a slot is open, meaning the maximum block
         height is not reached, you may add your bid. Once the maximum block height is reached by the network the smart
-        contract will take all top bids and display them on the wall.
+        contract will take all top paying bids and included them in our collaborative global canvas.
       </p>
     </WhiteHeader>
 
 
     <div class="w-full p-8 pb-6">
       <div class="flex justify-center flex-col">
-        <h1 class="text-center mb-2">Drawtime Auctions</h1>
         <span class="text-xl text-center leading-normal text-grey-darker">
-          Bid in an auction for your artwork to be sprayed on the wall
+          Bid in an auction for your artwork to be included in our collaborative global canvas
         </span>
       </div>
     </div>

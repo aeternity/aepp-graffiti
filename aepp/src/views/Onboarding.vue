@@ -5,24 +5,21 @@
       key="v1"
       image="0_DGP_lockup_black_1.svg"
       headline="Upload an image and make an artwork out of it"
-      text="Your image will be vectorized, get creative with editing"
-    >
+      text="Your image will be vectorized, get creative with editing">
     </OnboardingStep>
     <OnboardingStep
       v-if="view === 2"
       key="v1"
       image="0_DGP_lockup_black_1.svg"
       headline="Bid enough AE to win the required painting time"
-      text="The aeternity smart contract shows the artworks of all successful bids"
-    >
+      text="The aeternity smart contract shows the artworks of all successful bids">
     </OnboardingStep>
     <OnboardingStep
       v-if="view === 3"
       key="v1"
       image="0_DGP_lockup_black_1.svg"
-      headline="Be part of the first smart contract art on this scale"
-      text="Checkout the wall and get creative"
-    >
+      headline="Be part of the first collaborative artwork on the aeternity blockchain"
+      text="Checkout the canvas and get creative">
     </OnboardingStep>
 
     <footer class="w-full fixed bottom-0">
@@ -82,10 +79,10 @@
         this.view += 1
       },
       prev () {
-        if(this.view !== this.MIN_VIEW) this.view -= 1
+        if (this.view !== this.MIN_VIEW) this.view -= 1
       },
       onTouchStartEvent (event) {
-        if(event.touches.length === 1) {
+        if (event.touches.length === 1) {
           this.touchStartPos = {
             x: event.touches[0].clientX,
             y: event.touches[0].clientY
@@ -94,13 +91,13 @@
         }
       },
       onTouchMoveEvent (event) {
-        if(this.currentlyTouching) {
+        if (this.currentlyTouching) {
           let dist = event.touches[0].clientX - this.touchStartPos.x
-          if(dist > 200) {
-            this.prev();
+          if (dist > 200) {
+            this.prev()
             this.currentlyTouching = false
-          } else if(dist < -200) {
-            this.next();
+          } else if (dist < -200) {
+            this.next()
             this.currentlyTouching = false
           }
         }

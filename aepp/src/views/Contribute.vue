@@ -38,7 +38,7 @@
         </div>
         <div class="text-center mb-4">
           <h2 class="mb-2">That's a piece of art!</h2>
-          <span class="text-grey-darkest leading-normal font-medium">Continue to make it suiteable for the wall or reset to choose another one.</span>
+          <span class="text-grey-darkest leading-normal font-medium">Continue to make it suitable for the wall or reset to choose another one.</span>
         </div>
         <div class="w-full">
           <ae-list>
