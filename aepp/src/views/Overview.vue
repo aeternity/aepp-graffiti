@@ -124,7 +124,7 @@
       shareBid (id) {
         window.open(`${window.location.host}/bid/${id}`)
       },
-      async updateMyBids () {
+      async updateSlots () {
         try {
 
           const slots = await aeternity.contract.methods.all_auction_slots()
@@ -178,7 +178,7 @@
     },
     async created () {
       this.address = await aeternity.address
-      await this.updateMyBids()
+      await this.updateSlots()
     }
   }
 </script>

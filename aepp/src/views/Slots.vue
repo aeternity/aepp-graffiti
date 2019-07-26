@@ -145,6 +145,7 @@
         nextSlotAtHeight: null,
         choice: null,
         height: 0,
+        interval: null,
         swiperOption: {
           slidesPerView: 'auto',
           spaceBetween: 35,
@@ -183,9 +184,7 @@
         const realIndex = this.$refs.mySwiper.swiper.realIndex
         this.choice = this.slots.find(slot => slot.index === realIndex).id
       },
-      async updateMyBids () {
-        //TODO change to contractInstances
-
+      async updateSlots () {
         const allSlots = await aeternity.contract.methods.all_auction_slots()
 
         // For rendering purposes
@@ -229,8 +228,14 @@
         this.$router.push('positioning')
       }
     },
-    async created () {
-      await this.updateMyBids()
+    mounted () {
+      this.updateSlots()
+      this.interval = setInterval(() => {
+        this.updateSlots()
+      }, 30000)
+    },
+    beforeDestroy () {
+      clearInterval(this.interval)
     }
   }
 </script>
