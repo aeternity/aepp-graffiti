@@ -1,24 +1,14 @@
+const BigNumber = require('bignumber.js')
 
-const BigNumber = require('bignumber.js');
+const atomsToAe = (atoms) => (new BigNumber(atoms)).dividedBy(new BigNumber(1000000000000000000))
+const aeToAtoms = (ae) => (new BigNumber(ae)).times(new BigNumber(1000000000000000000))
 
-const atomsToAe = (atoms) => (new BigNumber(atoms)).dividedBy(new BigNumber(1000000000000000000));
-const aeToAtoms = (ae) => (new BigNumber(ae)).times(new BigNumber(1000000000000000000));
-
-const slotIsActive = (slot, height) => slot.start_block_height <= height && slot.end_block_height > height;
-const slotIsPast = (slot, height) => slot.end_block_height < height;
-const slotIsFuture = (slot, height) =>  slot.start_block_height >= height;
-const slotCapacityUsed = (slot) => slot.successful_bids.reduce((acc, x) => Number(x.time) + acc, 0);
-const slotCapacityRemaining = (slot) => slot.time_capacity - slotCapacityUsed(slot);
-
-
-const auctionMetaDataToObject = (object) => {
-  return {
-    geolocation: object.value[0].value,
-    canvas_width: object.value[1].value,
-    canvas_height: object.value[2].value,
-  }
-};
+const slotIsActive = (slot, height) => slot.start_block_height <= height && slot.end_block_height > height
+const slotIsPast = (slot, height) => slot.end_block_height < height
+const slotIsFuture = (slot, height) => slot.start_block_height >= height
+const slotCapacityUsed = (slot) => slot.successful_bids.reduce((acc, x) => Number(x.time) + acc, 0)
+const slotCapacityRemaining = (slot) => slot.time_capacity - slotCapacityUsed(slot)
 
 export default {
-  auctionMetaDataToObject, atomsToAe, aeToAtoms, slotIsActive, slotIsPast, slotIsFuture, slotCapacityUsed, slotCapacityRemaining
+  atomsToAe, aeToAtoms, slotIsActive, slotIsPast, slotIsFuture, slotCapacityUsed, slotCapacityRemaining
 }
