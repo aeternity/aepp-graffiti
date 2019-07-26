@@ -297,17 +297,20 @@
     },
     async created () {
 
-      const keypair = Crypto.generateKeyPair()
+      const keypair = {
+        publicKey: "ak_11111111111111111111111111111111273Yts",
+        secretKey: ""
+      }
 
       this.client = await Ae({
-        url: 'https://ae-uat.piwo.app',
-        internalUrl: 'https://ae-uat.piwo.app',
+        url: 'https://sdk-testnet.aepps.com/',
+        internalUrl: 'https://sdk-testnet.aepps.com/',
         compilerUrl: 'https://compiler.aepps.com',
         networkId: 'ae_uat',
         keypair: keypair
       }).catch(console.error)
 
-      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.blockchainSettings.contractAddress })
+      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.blockchainSettings.ae_uat })
 
       this.runHealthChecks()
       this.loadData()
