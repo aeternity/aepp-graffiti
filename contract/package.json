@@ -16,6 +16,6 @@
         "forgae-lib": "1.0.4"
     },
     "devDependencies": {
-        "forgae": "2.0.1"
+        "forgae": "3.0.0"
     }
 }
