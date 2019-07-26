@@ -26,11 +26,6 @@
             Main Screen
           </ae-button>
         </li>
-        <li>
-          <ae-button @click="giveFeedback">
-            Give Feedback
-          </ae-button>
-        </li>
         <li v-if="hasDefaultSlot">
           <ae-button @click="showBackdrop">
             Help
@@ -70,7 +65,7 @@
         type: String,
       }
     },
-    data() {
+    data () {
       return {
         backDropVisible: false
       }
@@ -78,9 +73,6 @@
     computed: {
       hasDefaultSlot () {
         return !!this.$slots.default
-      },
-      feedbackUrl() {
-        return config.feedbackUrl
       }
     },
     methods: {
@@ -89,9 +81,6 @@
       },
       showBackdrop () {
         this.backDropVisible = !this.backDropVisible
-      },
-      giveFeedback() {
-        window.location.href = this.feedbackUrl
       }
     }
   }
@@ -113,7 +102,7 @@
 
   .logo {
     height: 2.5rem;
-    margin-right: 0.8rem
+    margin-right: 0.4rem
   }
 
   .ae-back {
