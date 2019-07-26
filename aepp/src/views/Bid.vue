@@ -79,12 +79,12 @@
       }
     },
     methods: {
-      placeBid() {
-        if(!aeternity.hasActiveWallet()) {
+      placeBid () {
+        if (!aeternity.hasActiveWallet()) {
           // Not in base-aepp
-          window.location.href = 'https://base.aepps.com'
+          window.location.href = 'https://base.aepps.com/browser/graffiti.aeternity.com'
         } else {
-          this.$router.push('contribute');
+          this.$router.push('contribute')
         }
       },
       seeImageOnCanvas () {

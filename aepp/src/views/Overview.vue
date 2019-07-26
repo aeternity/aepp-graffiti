@@ -77,6 +77,12 @@
     <div @click="$router.push('/')" class="fixed bottom-0 right-0 p-8 cursor-pointer">
       <div class="ae-icon-size rounded-full text-xl py-4  px-8 text-white">Home</div>
     </div>
+    <div class="absolute bottom-0 mb-8 flex justify-center w-full" @click="sharedBid = null" v-show="sharedBid">
+      <Toast>
+        {{sharedBid}}
+      </Toast>
+    </div>
+
   </div>
 
 </template>
@@ -89,18 +95,20 @@
   import config from '~/config'
   import AeIcon from '@aeternity/aepp-components/src/components/ae-icon/ae-icon'
   import aeternity from '~/utils/aeternityNetwork'
+  import Toast from '~/components/Toast'
 
   const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2, ERROR_STATE = 3
 
   export default {
     name: 'Overview',
-    components: { AeIcon, BiggerLoader, AeCard, WhiteHeader },
+    components: { Toast, AeIcon, BiggerLoader, AeCard, WhiteHeader },
     data () {
       return {
         bids: [],
         state: INITAL_STATE,
         address: null,
         error: null,
+        sharedBid: null
       }
     },
     computed: {
@@ -121,8 +129,28 @@
       }
     },
     methods: {
-      shareBid (id) {
-        window.open(`${window.location.host}/bid/${id}`)
+      async shareBid (id) {
+        try {
+          if (navigator.share) {
+            navigator.share({
+              title: 'æeternity graffiti project',
+              text: 'Check out my participation in the gobal blockchain artwork!',
+              url: `${window.location.host}/#/bid/${id}`,
+            })
+          } else {
+            if (navigator.clipboard) {
+              await navigator.clipboard.writeText(`${window.location.host}/#/bid/${id}`)
+              this.sharedBid = 'sharing info copied to clipboard'
+            } else {
+              window.open(`${window.location.host}/#/bid/${id}`)
+
+            }
+          }
+        } catch (e) {
+          this.sharedBid = 'Error Sharing'
+          console.error(e)
+        }
+        setTimeout(() => this.sharedBid = null, 5000)
       },
       async updateSlots () {
         try {
