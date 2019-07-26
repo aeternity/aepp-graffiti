@@ -4,7 +4,7 @@ const Crypto = require('@aeternity/aepp-sdk').Crypto;
 const config = {
     host: 'http://localhost:3001/',
     internalHost: 'http://localhost:3001/internal/',
-    compilerUrl: 'http://localhost:3081'
+    compilerUrl: 'http://localhost:3080'
 };
 
 describe('GraffitiAuction', () => {

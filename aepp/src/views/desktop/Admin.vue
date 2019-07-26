@@ -243,9 +243,9 @@
         try {
           this.height = await this.client.height()
 
-          const allBids = await this.contractInstance.methods.all_auction_slots()
+          const allAuctionSlots = await this.contractInstance.methods.all_auction_slots()
 
-          this.slots = allBids.decodedResult
+          this.slots = allAuctionSlots.decodedResult
             .sort((a, b) => a.end_block_height - b.end_block_height)
             .map(slot => {
               return {

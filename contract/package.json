@@ -12,8 +12,10 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@aeternity/aepp-sdk": "4.1.0",
-        "forgae-lib": "1.0.4",
-        "yarn": "1.16.0"
+        "@aeternity/aepp-sdk": "4.2.0",
+        "forgae-lib": "1.0.4"
+    },
+    "devDependencies": {
+        "forgae": "2.0.1"
     }
 }
