@@ -49,8 +49,7 @@ aeternity.initBase = async () => {
 
 aeternity.getWalletWindow = async () => {
   const iframe = document.createElement('iframe')
-  // TODO change to base.aepps.com
-  iframe.src = 'http://localhost:8080/'//'https://base.aepps.com/' // https://stage-identity.aepps.com/
+  iframe.src = 'https://base.aepps.com/' //'https://base.aepps.com/' // https://stage-identity.aepps.com/ http://localhost:8080/
   iframe.style.display = 'none'
   document.body.appendChild(iframe)
   await new Promise(resolve => {
