@@ -4,4 +4,3 @@ node_modules/
 *.iml
 package-lock.json
 dist/
-src/secret.js

@@ -52,7 +52,7 @@ module.exports = env => {
       new HtmlWebpackPlugin({
         inject: true,
         // chunks: ['main'],
-        title: 'Æpp Drone Aepp',
+        title: 'Graffiti Aepp',
         template: './src/index.html',
         filename: distFolder + '/index.html',
         // Avoids building twice for dev
