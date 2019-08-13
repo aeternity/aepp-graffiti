@@ -2,8 +2,8 @@
   <ae-backdrop class="p-6" v-show="error">
     <ae-card class="white-bg">
       <div class="w-full">
-        <h1 class="font-mono text-red text-center pt-4">ERROR</h1>
-        <p class="text-base text-red pt-4 text-center">
+        <h1 class="font-mono text-red-600 text-center pt-4">ERROR</h1>
+        <p class="text-base text-red-600 pt-4 text-center">
           {{error}}
         </p>
         <div class="flex justify-center mt-6">

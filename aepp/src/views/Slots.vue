@@ -93,11 +93,11 @@
                 <div v-if="slot.artworkToBig || slot.artworkToSmall">
                   <ae-divider></ae-divider>
                   <div class="flex flex-col mt-2">
-                <span class="font-mono text-red text-lg" v-if="slot.artworkToBig">
-                  Your artwork takes to much painting time for this slot. Consider making it smaller.
+                <span class="text-red-600 text-sm" v-if="slot.artworkToBig">
+                  Your artwork takes to much painting time ({{transformedImage.dronetime}} min) for this slot (max: {{slot.maximum_time_per_bid}} min). Consider making it smaller.
                 </span>
-                    <span class="font-mono text-red text-lg" v-if="slot.artworkToSmall">
-                  Your artwork takes to less painting time for this slot. Consider making it larger.
+                    <span class="text-red-600 text-sm" v-if="slot.artworkToSmall">
+                  Your artwork takes to less painting time ({{transformedImage.dronetime}} min) for this slot (min: {{slot.maximum_time_per_bid}} min). Consider making it larger.
                 </span>
                   </div>
                 </div>

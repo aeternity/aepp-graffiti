@@ -54,7 +54,7 @@
       </div>
       <div v-if="isError" class="w-full p-4">
         <div class="w-full flex justify-center p-4">
-          <span class="text-xl text-red">{{error}}</span>
+          <span class="text-xl text-red-600">{{error}}</span>
         </div>
         <div class="w-full flex justify-center p-4">
           <ae-button face="round" fill="primary" @click="reset">Ok</ae-button>

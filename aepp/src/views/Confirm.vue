@@ -19,7 +19,7 @@
               Status
             </ae-button>
           </div>
-          <div v-if="errorStep" class="font-mono text-lg text-red">
+          <div v-if="errorStep" class="font-mono text-lg text-red-600">
             <span>Oh no :(<br/>Bid Failed</span>
             <ae-button extend class="mt-8" face="round" fill="neutral" @click="$router.push('amount')">Try again
             </ae-button>
@@ -173,7 +173,7 @@
             this.position.y,
             { amount: Util.aeToAtoms(this.bid.amount).toFixed() })
         } catch (e) {
-          console.log(e)
+          console.error(e)
           throw Error(JSON.stringify(e.decodedResult))
         }
       }

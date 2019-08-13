@@ -8,7 +8,7 @@
 
     <div class="w-full p-4 text-center" v-if="isErrorState">
       <h1 class="text-center mt-3">Error</h1>
-      <div class="w-full text-center font-mono text-xl text-red mt-2">
+      <div class="w-full text-center font-mono text-xl text-red-600 mt-2">
         {{error}}
       </div>
     </div>

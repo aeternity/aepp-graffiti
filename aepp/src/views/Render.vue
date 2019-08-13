@@ -26,9 +26,9 @@
           <img ref="previewImage" :src="oldImage" alt="Rendered Image"/>
         </div>
         <div v-if="!isLoading && !transformedImage.width">
-          <h1 class="text-red font-mono text-center">Sorry!
+          <h1 class="text-red-600 font-mono text-center">Sorry!
           </h1>
-          <p class="text-red mt-2 text-base">We could not create an line-based SVG image from the source image and
+          <p class="text-red-600 mt-2 text-base">We could not create an line-based SVG image from the source image and
             settings you provided. <span
               class="font-bold">Try changing the settings or choose another source image.</span></p>
         </div>

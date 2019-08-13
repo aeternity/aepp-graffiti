@@ -3,7 +3,7 @@
     <div class="p-8">
       <div v-if="error">
         <h1 class="mt-4 mb-2">error</h1>
-        <div class="font-mono text-red text-xl">{{error}}</div>
+        <div class="font-mono text-red-600 text-xl">{{error}}</div>
       </div>
       <div class="flex flex-col md:flex-row">
         <div>
@@ -12,7 +12,7 @@
             {{key}}:
             <ae-loader v-if="value === null"></ae-loader>
             <ae-icon name="check" v-if="value === true"></ae-icon>
-            <span v-if="value === false" class="text-red font-bold">HEALTHCHECK FAILED</span>
+            <span v-if="value === false" class="text-red-600 font-bold">HEALTHCHECK FAILED</span>
           </div>
         </div>
         <div class="md:ml-8 md:pl-8 md:border-l">
@@ -157,7 +157,7 @@
 </template>
 
 <script>
-  import { Crypto, Universal as Ae } from '@aeternity/aepp-sdk/es/'
+  import { Universal as Ae } from '@aeternity/aepp-sdk/es/'
   import Util from '~/utils/blockchainUtil'
   import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components'
   import BiggerLoader from '~/components/BiggerLoader'
