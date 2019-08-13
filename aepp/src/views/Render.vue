@@ -225,6 +225,7 @@
         this.centerline = (val !== 'photo')
       },
       showBackdrop() {
+        this.$store.dispatch('setFirstTimeRenderFalse')
         this.backDropVisible = !this.backDropVisible
       },
       closeBackdropAndUpdatePreview() {
