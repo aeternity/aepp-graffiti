@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div class="w-full p-4" v-if="isShowListState">
+    <div class="w-full p-4 pb-24" v-if="isShowListState">
       <div v-for="bid in bids" :key='bid.seq_id'>
         <ae-card class="mb-4">
 
@@ -82,9 +82,7 @@
         {{sharedBid}}
       </Toast>
     </div>
-
   </div>
-
 </template>
 
 <script>
