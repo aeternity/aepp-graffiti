@@ -61,6 +61,9 @@
   * @import "utilities/skew-transforms";
   */
 
+body {
+  overscroll-behavior: contain;
+}
 
 .max-w-desktop {
   max-width: 1000px;
