@@ -77,7 +77,7 @@
 
         this.error = null
 
-        if (this.remainingDrawtime < this.transformedImage.dronetime && this.perMinute < this.slotObject.minimumBid) {
+        if (this.remainingDrawtime < this.transformedImage.dronetime && this.perMinute < parseFloat(this.slotObject.minimumBid)) {
           this.error = `The minimum bid for this slot is ${this.slotObject.minimumBid.toFixed(5)} AE per minute`
         }
 
