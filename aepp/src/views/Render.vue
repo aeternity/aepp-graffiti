@@ -128,6 +128,11 @@
     </ae-backdrop>
     <!-- / OVERLAY -->
     <div class="w-full absolute bottom-0 mb-6">
+      <div @click="$store.dispatch('setFirstTimeRenderFalse')" v-if="firstTimeRender">
+        <Toast class="m-4 p-4" >
+          Pro Tip: Change the appearance of your artwork by clicking Edit Artwork.
+        </Toast>
+      </div>
       <ae-button-group class="mx-4" v-show="isReady">
         <ae-button face="round" fill="secondary" @click="showBackdrop">
           Edit Artwork
@@ -141,7 +146,6 @@
           Loading..
         </ae-button>
       </div>
-
     </div>
   </div>
 </template>
@@ -152,12 +156,14 @@
   import WhiteHeader from '~/components/WhiteHeader'
   import { AeBackdrop, AeButton, AeButtonGroup, AeCard, AeIcon, AeSwitch } from '@aeternity/aepp-components'
   import config from '~/config'
+  import Toast from '../components/Toast'
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 
   export default {
     name: 'Render',
     components: {
+      Toast,
       AeIcon,
       AeButtonGroup,
       AeBackdrop,
@@ -188,6 +194,9 @@
       },
       originalImage() {
         return this.$store.state.originalImage
+      },
+      firstTimeRender() {
+        return this.$store.state.firstTimeRender
       },
       settings() {
         return this.$store.state.settings
