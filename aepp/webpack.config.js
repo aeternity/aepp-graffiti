@@ -7,6 +7,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const PurgecssPlugin = require('purgecss-webpack-plugin')
+const WebpackPwaManifest = require('webpack-pwa-manifest')
+
 let glob = require('glob-all')
 
 const distFolder = path.resolve(__dirname, 'dist')
@@ -55,6 +57,7 @@ module.exports = env => {
         title: 'Graffiti Aepp',
         template: './src/index.html',
         filename: distFolder + '/index.html',
+        baseUrl: '/',
         // Avoids building twice for dev
         alwaysWriteToDisk: true
       }),
@@ -75,7 +78,19 @@ module.exports = env => {
       }),
       new HtmlWebpackHarddiskPlugin(),
       new CleanWebpackPlugin(),
-      new VueLoaderPlugin()
+      new VueLoaderPlugin(),
+      new WebpackPwaManifest({
+        name: 'Digital Graffiti Aepp',
+        short_name: 'Graffiti',
+        description: 'Draw your own graffiti on the blockchain!',
+        background_color: '#ff0d6a',
+        icons: [
+          {
+            src: path.resolve(__dirname, 'src/assets/0_DGP_Logo_rainbow_1.svg'),
+            sizes: [96, 128, 192, 256, 384, 512] // multiple sizes
+          }
+        ]
+      })
     ],
     module: {
       rules: [
