@@ -10,10 +10,13 @@
     </WhiteHeader>
 
 
-    <div class="w-full p-8 pb-6">
+    <div class="w-full p-8 pt-4 pb-4">
       <div class="flex justify-center flex-col">
         <span class="text-xl text-center leading-normal text-grey-darker">
-          Bid in an auction for your artwork to be included in our collaborative global canvas
+          Choose an auction slot to place a bid in, for your artwork to be included in our global canvas
+        </span>
+        <span class="text-xs text-center leading-normal text-gray-600">
+          Once a slot is closed, all bids are immutably included in the artwork. When the slot is still open, higher bids can replace lower ones.
         </span>
       </div>
     </div>
@@ -106,10 +109,10 @@
           </div>
         </swiper-slide>
       </swiper>
-      <div class="w-full mt-6 mb-8 flex justify-center">
+      <div class="w-full mt-4 mb-8 flex justify-center">
         <transition>
           <ae-button class="ae-max-width" face="round" fill="primary" @click="next" extend v-if="!nextButtonDisabled">
-            Bid in this slot
+            Choose this slot
           </ae-button>
           <ae-button class="ae-max-width" face="round" fill="neutral" extend disabled v-if="nextButtonDisabled">
             CAN NOT BID ON THIS SLOT

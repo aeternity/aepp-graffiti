@@ -1,11 +1,13 @@
 <template>
   <div>
     <WhiteHeader :back="back" title="Your Bid"></WhiteHeader>
-    <div class="w-full p-8 pb-6">
+    <div class="w-full p-8 pt-4 pb-6">
       <div class="flex justify-center flex-col">
-        <h1 class="text-center mb-2">Place your bid</h1>
         <span class="text-xl text-center leading-normal text-grey-darker">
-          Your artwork would take <span class="bold-info">{{transformedImage.dronetime}} minutes</span> to paint. How much AE do you want to bid?
+          Your artwork would take <span class="bold-info">{{transformedImage.dronetime}} minutes</span> to paint. How much AE do you want to bid in total?
+        </span>
+        <span class="text-xs text-center leading-normal text-gray-600">
+          Keep in mind, higher paying bids (AE/Min) will replace lower paying ones if the slot capacity is reached. In case your artwork is not included you will receive a refund.
         </span>
       </div>
       <div class="mt-8">
@@ -22,8 +24,12 @@
           </ae-toolbar>
         </ae-input>
       </div>
-      <div class="w-full mt-8 flex justify-center">
-        <ae-button face="round" fill="primary" :disabled="error" @click="next" extend>Place Bid</ae-button>
+      <div class="text-red-600 text-sm mt-2" v-if="bidToLow">
+        Your bid would only pay ~{{perMinute.toLocaleString('en-US')}} AE per minute, the minimum required for the slot is greater {{minimumBid}} AE/Min.
+      </div>
+
+      <div class="w-full mt-4 flex justify-center">
+        <ae-button face="round" fill="primary" :disabled="error || bidToLow" @click="next" extend>Place Bid</ae-button>
       </div>
     </div>
     <CriticalErrorOverlay
@@ -49,7 +55,9 @@
         amount: 4,
         perMinute: 0,
         error: null,
-        balance: null
+        balance: null,
+        bidToLow: false,
+        minimumBid: 0
       }
     },
     computed: {
@@ -67,6 +75,8 @@
         } else {
           this.amount = e
           this.perMinute = this.amount / this.transformedImage.dronetime
+          this.minimumBid = (this.$store.state.bid.slotObject.minimumBid).toFixed(2);
+          this.bidToLow = this.$store.state.bid.slotObject.minimumBid >= this.amount;
         }
         this.error = null
       },
@@ -99,9 +109,12 @@
       }
     },
     async mounted () {
+      this.minimumBid = (this.$store.state.bid.slotObject.minimumBid).toFixed(2);
+      this.bidToLow = this.$store.state.bid.slotObject.minimumBid >= this.amount;
+
       try {
         this.perMinute = this.amount / this.transformedImage.dronetime
-        this.balance = Utils.atomsToAe(await aeternity.client.balance(aeternity.address, {format:false}))
+        this.balance = Utils.atomsToAe(await aeternity.client.balance(aeternity.address, { format: false }))
       } catch (e) {
         console.error(e)
         this.balance = 0

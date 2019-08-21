@@ -130,7 +130,7 @@
     <div class="w-full absolute bottom-0 mb-6">
       <div @click="$store.dispatch('setFirstTimeRenderFalse')" v-if="firstTimeRender">
         <Toast class="m-4 p-4" >
-          Pro Tip: Change the appearance of your artwork by clicking Edit Artwork.
+          Change the appearance of your artwork by clicking "Edit Artwork".
         </Toast>
       </div>
       <ae-button-group class="mx-4" v-show="isReady">

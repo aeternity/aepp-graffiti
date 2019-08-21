@@ -30,7 +30,7 @@
                   Amount
                 </span>
                 <span class="font-mono text-black text-lg">
-                  {{bid.amount.toFixed(2)}} AE
+                  {{bid.amount.toFixed(2)}} AE ({{bid.perMinute}} AE/Min)
                 </span>
               </div>
               <div class="flex flex-col mt-2">
@@ -55,10 +55,10 @@
                   Status
                 </span>
               <span class="font-mono text-black text-lg">
-                  <span v-if="bid.successful">Successful</span>
-                  <span v-if="!bid.successful">Failed</span>
+                  <span v-if="bid.finished && bid.successful">Immutably Included</span>
+                  <span v-if="!bid.successful">Outbid and refunded</span>
                   <span v-if="bid.finished && !bid.successful"><br> (Minimum bid: {{bid.minimumAmount}} AE / Min)</span>
-                  <span v-if="!bid.finished && bid.successful"> (Pending)</span>
+                  <span v-if="!bid.finished && bid.successful">Bid Placed (Slot Open)</span>
               </span>
             </div>
             <div class="absolute bottom-0 right-0 rounded-full btn-primary-round"
@@ -179,6 +179,7 @@
 
             allBids = allBids.map(bid => {
               bid.amount = Util.atomsToAe(bid.amount)
+              bid.perMinute = Util.atomsToAe(bid.amount_per_time).toFixed(2)
               bid.finished = Util.slotIsPast(slot, height)
               bid.slotId = slot.id
               bid.minimumAmount = Math.min(...slot.successful_bids.map(x => x.amount_per_time).map(x => Util.atomsToAe(x).toFixed(4)))

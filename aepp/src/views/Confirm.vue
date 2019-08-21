@@ -14,13 +14,13 @@
 
         <div class="w-full p-4 text-center">
           <div v-if="currentLoadingStep === 3" class="font-mono text-lg text-grey-darkest">
-            <span>Congratulations<br/>Bid Successful</span>
+            <span>Congratulations<br/>Bid placed successfully</span>
             <ae-button extend class="mt-8" face="round" fill="neutral" @click="$router.push('overview')">Continue to Bid
               Status
             </ae-button>
           </div>
           <div v-if="errorStep" class="font-mono text-lg text-red-600">
-            <span>Oh no :(<br/>Bid Failed</span>
+            <span>Oh no :(<br/>Bid placement failed</span>
             <ae-button extend class="mt-8" face="round" fill="neutral" @click="$router.push('amount')">Try again
             </ae-button>
           </div>
