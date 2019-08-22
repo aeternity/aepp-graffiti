@@ -28,8 +28,7 @@ aeternity.initProvider = async () => {
     aeternity.balance = await aeternity.client.balance(aeternity.address)
       .then(balance => `${BlockchainUtil.atomsToAe(balance)}`.replace(',', ''))
       .catch(() => '0')
-    //aeternity.networkId = (await aeternity.client.getNodeInfo()).nodeNetworkId
-    aeternity.networkId = "ae_uat";
+    aeternity.networkId = (await aeternity.client.getNodeInfo()).nodeNetworkId
     aeternity.contract = await aeternity.client.getContractInstance(contractSource, {contractAddress: config.blockchainSettings[aeternity.networkId]})
     return true
   } catch (e) {
