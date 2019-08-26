@@ -151,7 +151,7 @@
         interval: null,
         swiperOption: {
           slidesPerView: 'auto',
-          spaceBetween: 35,
+          spaceBetween: 10,
           centeredSlides: true
         },
       }
