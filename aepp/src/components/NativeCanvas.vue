@@ -546,7 +546,7 @@
 
       onTouchMoveEvent (event) {
 
-        //event.preventDefault()
+        event.preventDefault()
 
         let touch1 = event.touches[0]
         let touch2 = event.touches[1]
@@ -579,7 +579,7 @@
         }
       },
       onTouchEndEvent (event) {
-        //event.preventDefault()
+        event.preventDefault()
         this.lastDist = 0
         this.lastPos = {
           x: -1,
@@ -589,7 +589,7 @@
       },
       onTouchStartEvent (event) {
 
-        //event.preventDefault()
+        event.preventDefault()
 
         let touch1 = event.touches[0]
 
@@ -706,9 +706,9 @@
         MOBILE DRAG AND ZOOM HANDLER
          */
 
-        this.$refs.stageWrapper.addEventListener('touchstart', this.onTouchStartEvent, {passive: true})
-        this.$refs.stageWrapper.addEventListener('touchmove', this.onTouchMoveEvent, {passive: true})
-        this.$refs.stageWrapper.addEventListener('touchend', this.onTouchEndEvent, {passive: true})
+        this.$refs.stageWrapper.addEventListener('touchstart', this.onTouchStartEvent, {passive: false})
+        this.$refs.stageWrapper.addEventListener('touchmove', this.onTouchMoveEvent, {passive: false})
+        this.$refs.stageWrapper.addEventListener('touchend', this.onTouchEndEvent, {passive: false})
 
         /*
         DESKTOP DRAG AND ZOOM HANDLER
