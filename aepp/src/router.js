@@ -7,12 +7,11 @@ import Confirm from './views/Confirm.vue'
 import Overview from './views/Overview'
 import Onboarding from './views/Onboarding'
 import Slots from './views/Slots'
-import Canvas from './views/desktop/Canvas'
 import Admin from './views/desktop/Admin'
 import Teaser from './views/desktop/Teaser'
 import Amount from './views/Amount'
 import Bid from './views/Bid'
-import StaticSVG from "./views/desktop/StaticSVG";
+import StaticSVG from './views/desktop/StaticSVG';
 
 const routes = [
   {
@@ -68,12 +67,6 @@ const routes = [
     name: 'amount',
     component: Amount,
     meta: { title: `Amount` },
-  },
-  {
-    path: '/desktop/canvas',
-    name: 'canvas',
-    component: Canvas,
-    meta: { title: `Canvas` },
   },
   {
     path: '/desktop/admin',

@@ -7,6 +7,7 @@
 
 <script>
   import config from '../config'
+  import aeternity from '../utils/aeternityNetwork'
 
   export default {
     name: 'CSSCanvas',
@@ -97,7 +98,7 @@
       }
     },
     mounted () {
-      this.backgroundCSS = `url(${config.canvas.urlSmall}) no-repeat`
+      this.backgroundCSS = `url(${config.canvas.urlSmall(aeternity.network)}) no-repeat`
 
       this.$refs.background.addEventListener('mousedown', this.onMouseDownEvent)
       this.$refs.background.addEventListener('mousemove', this.onMouseMoveEvent)

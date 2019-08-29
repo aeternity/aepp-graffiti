@@ -1,4 +1,4 @@
- const API_URL = 'https://backend.graffiti.aeternity.com'
+const API_URL = 'https://backend.graffiti.aeternity.com'
 // const API_URL = 'http://localhost:3000';
 // const API_URL = 'http://192.168.0.157:3000';
 
@@ -9,8 +9,8 @@ export default {
     min: { width: 400, height: 300 }
   },
   canvas: {
-    url: API_URL + '/rendered/latest.svg',
-    urlSmall: API_URL + '/rendered/latest_small.png',
+    url: (network) => `${API_URL}/rendered/${network ? network + '/' : ''}latest.svg`,
+    urlSmall: (network) => `${API_URL}/rendered/${network ? network + '/' : ''}latest_small.png`,
     width: 990,
     height: 1500,
     realWidth: 3300,
@@ -32,7 +32,7 @@ export default {
   },
   blockchainSettings: {
     ae_uat: 'ct_eU2JXB8pTDMMofPdtNW6XwMmVkSvp3iKXcoeLshreHEtBeApa', // testnet //ct_2SugvqB52guEV6fSTkuGjipzPMjeEf5urYQYnPe91cdkMmjJGy
-    ae_mainnet: 'ct_ycM9PMNRCg6tvaZTvtrYBpVrsahtCgLoNhiZL9UVUBxJ3wWiQ' // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
+    ae_mainnet: 'ct_2GWJrLVVqxoV9hx7smEThtQ9TJ6fcD1SRh3LKJ74HuxMD6cgqn' // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
   },
   apiUrl: API_URL
 }

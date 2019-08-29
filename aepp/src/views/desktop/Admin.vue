@@ -296,14 +296,17 @@
       }
     },
     async created () {
+      const networkId = this.$route.query.testnet ? 'ae_uat' : 'ae_mainnet';
+      const url = this.$route.query.testnet ? 'https://sdk-testnet.aepps.com/' : 'https://sdk-mainnet.aepps.com/'
+
       this.client = await Ae({
-        url: 'https://sdk-testnet.aepps.com/',
-        internalUrl: 'https://sdk-testnet.aepps.com/',
+        url: url,
+        internalUrl: url,
         compilerUrl: 'https://compiler.aepps.com',
-        networkId: 'ae_uat',
+        networkId: networkId,
       }).catch(console.error)
 
-      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.blockchainSettings.ae_uat })
+      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.blockchainSettings[networkId] })
 
       this.runHealthChecks()
       this.loadData()

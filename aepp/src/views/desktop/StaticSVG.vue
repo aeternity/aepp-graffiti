@@ -11,14 +11,17 @@
     name: "StaticSVG",
     data() {
       return {
-        svgURL: config.canvas.url,
+        network: '',
+        svgURL: config.canvas.url(this.network),
         reloadInterval: null,
         reloadTime: 30000
       }
     },
     created() {
+      this.network = this.$route.query.testnet ? '' : 'mainnet';
+      this.svgURL = `${config.canvas.url(this.network)}?date=${Date.now()}`
       this.reloadInterval = setInterval(() => {
-        this.svgURL = `${config.canvas.url}?date=${Date.now()}`
+        this.svgURL = `${config.canvas.url(this.network)}?date=${Date.now()}`
       }, this.reloadTime)
     },
     beforeDestroy() {

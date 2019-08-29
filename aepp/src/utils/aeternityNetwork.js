@@ -11,7 +11,7 @@ const aeternity = {
 }
 
 const timeout = async (promise) => {
-  return await Promise.race([
+  return Promise.race([
     promise,
     new Promise(resolve => {
       setTimeout(() => {
@@ -29,7 +29,8 @@ aeternity.initProvider = async () => {
       .then(balance => `${BlockchainUtil.atomsToAe(balance)}`.replace(',', ''))
       .catch(() => '0')
     aeternity.networkId = (await aeternity.client.getNodeInfo()).nodeNetworkId
-    aeternity.contract = await aeternity.client.getContractInstance(contractSource, {contractAddress: config.blockchainSettings[aeternity.networkId]})
+    aeternity.network = aeternity.isTestnet() ? '' : 'mainnet'
+    aeternity.contract = await aeternity.client.getContractInstance(contractSource, { contractAddress: config.blockchainSettings[aeternity.networkId] })
     return true
   } catch (e) {
     console.warn(e)

@@ -25,6 +25,7 @@
 
   import BiggerLoader from '~/components/BiggerLoader'
   import config from '~/config'
+  import aeternity from '~/utils/aeternityNetwork'
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 
@@ -61,7 +62,7 @@
         canvasToWallRation: 1,
         moveTarget: null,
         currentStatus: STATUS_LOADING,
-        backgroundUrl: config.canvas.urlSmall,
+        backgroundUrl: config.canvas.urlSmall(aeternity.network),
         cacheTimestamp: Date.now(),
         reloadInterval: null
       }
@@ -111,12 +112,12 @@
         let foundUpdate = false
 
         if (this.scale * this.$refs.backgroundCanvas.width > 4 * 200) {
-          if (this.backgroundUrl === config.canvas.url) return
-          this.backgroundUrl = config.canvas.url
+          if (this.backgroundUrl === config.canvas.url(aeternity.network)) return
+          this.backgroundUrl = config.canvas.url(aeternity.network)
           foundUpdate = true
         } else {
-          if (this.backgroundUrl === config.canvas.urlSmall) return
-          this.backgroundUrl = config.canvas.urlSmall
+          if (this.backgroundUrl === config.canvas.urlSmall(aeternity.network)) return
+          this.backgroundUrl = config.canvas.urlSmall(aeternity.network)
           foundUpdate = true
         }
 
