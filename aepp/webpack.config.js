@@ -54,7 +54,7 @@ module.exports = env => {
       new HtmlWebpackPlugin({
         inject: true,
         // chunks: ['main'],
-        title: 'Graffiti Aepp',
+        title: 'Graffiti',
         template: './src/index.html',
         filename: distFolder + '/index.html',
         baseUrl: '/',
@@ -80,7 +80,7 @@ module.exports = env => {
       new CleanWebpackPlugin(),
       new VueLoaderPlugin(),
       new WebpackPwaManifest({
-        name: 'Digital Graffiti Aepp',
+        name: 'Graffiti',
         short_name: 'Graffiti',
         description: 'Draw your own graffiti on the blockchain!',
         background_color: '#ff0d6a',
