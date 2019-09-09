@@ -92,7 +92,7 @@
           // Not in base-aepp
           this.$router.push('/')
         } else {
-          this.$router.push('/desktop/canvas')
+          this.$router.push('/desktop/svg')
         }
       }
     },

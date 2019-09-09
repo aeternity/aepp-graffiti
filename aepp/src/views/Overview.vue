@@ -132,16 +132,15 @@
           if (navigator.share) {
             navigator.share({
               title: 'æeternity graffiti project',
-              text: 'Check out my participation in the gobal blockchain artwork!',
-              url: `${window.location.host}/#/bid/${id}`,
+              text: 'Check out my participation in the aeternity global blockchain artwork!',
+              url: `${document.location.host}/#/bid/${id}`,
             })
           } else {
             if (navigator.clipboard) {
-              await navigator.clipboard.writeText(`${window.location.host}/#/bid/${id}`)
+              await navigator.clipboard.writeText(`${document.location.host}/#/bid/${id}`)
               this.sharedBid = 'sharing info copied to clipboard'
             } else {
-              window.open(`${window.location.host}/#/bid/${id}`)
-
+              window.open(`${document.location.host}/#/bid/${id}`)
             }
           }
         } catch (e) {
