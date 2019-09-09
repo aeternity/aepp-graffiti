@@ -66,7 +66,7 @@
         //console.log(wallet.walletName)
       } catch (e) {
         console.error('INIT ERROR', e)
-        this.error = 'Could not connect to your wallet. Please make sure you grant this application access to your wallet.'
+        this.error = 'Could not connect to your wallet. Make sure to open in base-aepp at base.aepps.com or base-aepp from app store and that you grant this application access to your wallet.'
         this.errorCTA = 'Retry'
         this.errorClick = () => {
           window.location.reload()
