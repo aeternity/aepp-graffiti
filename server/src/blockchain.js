@@ -13,16 +13,10 @@ blockchain.init = async () => {
     if (!process.env.AETERNITY_URL) throw "AETERNITY_URL is not set";
     if (!process.env.CONTRACT_ADDRESS) throw "CONTRACT_ADDRESS is not set";
 
-    const keypair = {
-        publicKey: "ak_11111111111111111111111111111111273Yts",
-        secretKey: ""
-    };
-
     client = await Ae({
         url: process.env.AETERNITY_URL,
         internalUrl: process.env.AETERNITY_URL,
         compilerUrl: "https://compiler.aepps.com",
-        keypair: keypair
     }).catch(console.error);
 
     contract = await client.getContractInstance(contractSource, {contractAddress: process.env.CONTRACT_ADDRESS});
