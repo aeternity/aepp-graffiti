@@ -31,7 +31,7 @@ function initialState () {
       dronetime: -1
     },
     settings: {
-      scaleFactor: 4,
+      scaleFactor: 2,
       MAX_SCALING: 4,
       threshold: 50,
       color: '#f7296e',
@@ -234,6 +234,9 @@ const store = new Vuex.Store({
       image.height = Math.ceil(state.droneObject.paintingHeight / 10)
       image.width = Math.ceil(state.droneObject.paintingWidth / 10)
       image.dronetime = Math.round(state.droneObject.estimatedTime / 1000 / 60)
+      if(image.dronetime > 40) {
+        throw Error('Image too big')
+      }
 
       commit('modifyTransformedImage', Object.assign({}, state.transformedImage, image))
       commit('modifyDroneObject', state.droneObject)
