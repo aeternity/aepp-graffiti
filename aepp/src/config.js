@@ -32,7 +32,7 @@ export default {
   },
   blockchainSettings: {
     ae_uat: 'ct_eU2JXB8pTDMMofPdtNW6XwMmVkSvp3iKXcoeLshreHEtBeApa', // testnet //ct_2SugvqB52guEV6fSTkuGjipzPMjeEf5urYQYnPe91cdkMmjJGy
-    ae_mainnet: 'ct_Hk2JsNeWGEYQEHHQCfcBeGrwbhtYSwFTPdDhW2SvjFYVojyhW' // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
+    ae_mainnet: 'ct_bFsV8CKdGXQLB8nY48eQybxiwMMp2rJrVm4b2zfoYxE8GYqyc' // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
   },
   apiUrl: API_URL
 }
