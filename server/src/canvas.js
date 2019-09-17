@@ -112,7 +112,7 @@ canvas.mergeSVG = async (sources) => {
         height: height,
         x: 0,
         y: 0,
-        svg: `<svg><rect width="${width}" height="${height}" style="fill:white;stroke-width:20;stroke:#777777" /></svg>`
+        svg: `<svg><rect width="${width}" height="${height}" style="fill:black;stroke-width:20;stroke:#777777" /></svg>`
     };
 
     const sourcesWithBorder = [rect].concat(sources);
