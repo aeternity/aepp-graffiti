@@ -37,13 +37,13 @@
     <!-- / IMAGE -->
     <!-- OVERLAY -->
     <ae-backdrop class="p-6 ae-backdrop" v-show="backDropVisible" @click.native.self="showBackdrop">
-      <ae-card>
+      <DarkCard>
         <div class="w-full">
           <div class="text-center">
-            <h3 class="text-black p-4">Edit Art</h3>
+            <h3 class="text-gray-400 p-2 text-2xl">Edit Art</h3>
           </div>
           <div class="flex flex-row justify-around items-center mb-6 mt-2">
-            <div class="flex w-full justify-between text-black mb-2">
+            <div class="flex w-full justify-between text-gray-400 mb-2">
               <label for="color">Color</label>
             </div>
             <div class="w-full flex flex-row justify-end items-center">
@@ -53,7 +53,7 @@
             </div>
           </div>
           <div class="mb-4">
-            <div class="flex w-full justify-between text-black mb-2">
+            <div class="flex w-full justify-between text-gray-400 mb-2">
               <label for="strokeWidth">Stroke Width</label>
             </div>
             <div class="w-full">
@@ -62,7 +62,7 @@
             </div>
           </div>
           <div class="flex flex-row mb-4">
-            <div class="flex w-full justify-between text-black mb-2">
+            <div class="flex w-full justify-between text-gray-400 mb-2">
               <label>Type</label>
             </div>
             <div class="w-full">
@@ -82,7 +82,7 @@
           </div>
           <div v-if="showIllustration">
             <div class="mb-4">
-              <div class="flex w-full justify-between text-black mb-2">
+              <div class="flex w-full justify-between text-gray-400 mb-2">
                 <label for="dilationRadius">Line Smoothing</label>
               </div>
               <div class="w-full">
@@ -91,7 +91,7 @@
               </div>
             </div>
             <div class="mb-4">
-              <div class="flex w-full justify-between text-black mb-2">
+              <div class="flex w-full justify-between text-gray-400 mb-2">
                 <label for="binaryThreshold">Details</label>
               </div>
               <div class="w-full">
@@ -102,7 +102,7 @@
           </div>
           <div v-else>
             <div class="mb-4">
-              <div class="flex w-full justify-between text-black mb-2">
+              <div class="flex w-full justify-between text-gray-400 mb-2">
                 <label for="blurKernel">Line Smoothing</label>
               </div>
               <div class="w-full">
@@ -111,7 +111,7 @@
               </div>
             </div>
             <div class="mb-4">
-              <div class="flex w-full justify-between text-black mb-2">
+              <div class="flex w-full justify-between text-gray-400 mb-2">
                 <label for="hysteresisHighThreshold">Details</label>
               </div>
               <div class="w-full">
@@ -124,7 +124,7 @@
             Update Preview
           </ae-button>
         </div>
-      </ae-card>
+      </DarkCard>
     </ae-backdrop>
     <!-- / OVERLAY -->
     <div class="w-full absolute bottom-0 mb-6">
@@ -157,12 +157,14 @@
   import { AeBackdrop, AeButton, AeButtonGroup, AeCard, AeIcon, AeSwitch } from '@aeternity/aepp-components'
   import config from '~/config'
   import Toast from '../components/Toast'
+  import DarkCard from "../components/DarkCard";
 
   const STATUS_LOADING = 1, STATUS_READY = 2
 
   export default {
     name: 'Render',
     components: {
+        DarkCard,
       Toast,
       AeIcon,
       AeButtonGroup,
@@ -235,7 +237,6 @@
       async updatePreview() {
         this.status = STATUS_LOADING
         this.oldImage = this.transformedImage.src;
-        console.log('loading')
         await this.$store.dispatch(`updateSettings`, {
           color: this.currentColor,
           threshold: Number(this.threshold),
@@ -293,10 +294,10 @@
   }
 
   .ae-backdrop {
-    background-color: rgba(237,243,247,.95);
+    background-color: rgba(75,75,75,.95);
   }
 
   .bg-half-transparent {
-    background-color: rgba(237,243,247,.5);
+    background-color: rgba(26, 32, 44, 0.6);
   }
 </style>

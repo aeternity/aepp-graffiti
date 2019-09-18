@@ -63,6 +63,7 @@
 
 body {
   overscroll-behavior: contain;
+  color: #ddd;
 }
 
 .max-w-desktop {

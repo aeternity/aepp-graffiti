@@ -31,7 +31,7 @@
       </div>
 
       <div v-if="originalImage.src">
-        <div class="w-full flex justify-center mb-6 bg-white p-4 rounded-lg">
+        <div class="w-full flex justify-center mb-6 p-4">
           <div class="ae-image-preview">
             <img ref="image" class="w-full h-full" @load="imageLoad" :src="originalImage.src" :alt="originalImage.name">
           </div>

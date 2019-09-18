@@ -2,7 +2,7 @@
   <div class="flex flex-col items-center">
     <div class="pt-8 px-2 max-w-desktop">
       <div class="w-full p-8">
-        <img alt="graffiti logo" src="../../assets/0_DGP_lockup_black_1.svg">
+        <img alt="graffiti logo" src="../../assets/0_DGP_lockup_white_1.svg">
       </div>
       <div class="my-4">
         <ae-card class="w-full">

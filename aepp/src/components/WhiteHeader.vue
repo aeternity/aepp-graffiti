@@ -1,12 +1,12 @@
 <template>
   <div>
     <!-- HEADER -->
-    <div class="ae-white-header relative">
+    <div class="ae-white-header relative bg-gray-800">
       <div @click="goBack" class="ae-back">
         <ae-icon v-if="back" name="back"></ae-icon>
       </div>
       <div class="ae-title">
-        <img src="../assets/0_DGP_Logo_rainbow_1.svg" class="logo" @click="$router.push('/')" alt="Logo"/>
+        <img src="../assets/0_DGP_Logo_rainbow_white.svg" class="logo" @click="$router.push('/')" alt="Logo"/>
         <span>{{title}}</span>
       </div>
       <ae-dropdown class="ae-menu">
@@ -36,14 +36,14 @@
 
     <!-- HELP OVERLAY -->
     <ae-backdrop class="p-6" v-show="backDropVisible" @click.native.self="showBackdrop">
-      <ae-card>
-        <div class="flex justify-center items-center flex-col text-grey-darkest pt-4">
+      <DarkCard>
+        <div class="flex justify-center items-center flex-col pt-4">
           <slot></slot>
           <ae-button fill="primary" class="mt-8" face="round" @click.native.self="showBackdrop">
             Close
           </ae-button>
         </div>
-      </ae-card>
+      </DarkCard>
     </ae-backdrop>
   </div>
 
@@ -52,10 +52,11 @@
 <script>
   import { AeBackdrop, AeButton, AeCard, AeDropdown, AeIcon } from '@aeternity/aepp-components'
   import config from '~/config'
+  import DarkCard from "./DarkCard";
 
   export default {
     name: 'WhiteHeader',
-    components: { AeDropdown, AeIcon, AeButton, AeBackdrop, AeCard },
+    components: {DarkCard, AeDropdown, AeIcon, AeButton, AeBackdrop, AeCard },
     props: {
       'back': {
         type: Function,
@@ -94,7 +95,6 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    background: #fff;
     position: relative;
     font-family: "Inter UI", sans-serif;
     z-index: 10;
