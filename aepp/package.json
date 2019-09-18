@@ -10,7 +10,7 @@
     "check:es5": "es-check es5 './dist/*.js'"
   },
   "dependencies": {
-    "@aeternity/aepp-components": "git+https://github.com/aeternity/aepp-components.git#develop",
+    "@aeternity/aepp-components": "git+https://github.com/kenodressel/aepp-components.git#develop",
     "@aeternity/aepp-sdk": "4.5.1",
     "axios": "^0.19.0",
     "bignumber.js": "^9.0.0",
