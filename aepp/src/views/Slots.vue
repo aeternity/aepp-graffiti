@@ -31,27 +31,27 @@
       <swiper :options="swiperOption" ref="mySwiper" @slideChange="slideChange">
         <swiper-slide class="ae-max-width">
           <div class="mt-2 mb-2">
-            <ae-card>
+            <DarkCard>
               <div class="flex flex-col relative w-full">
                 <div>
-                  <h2 class="text-black">Currently no open Auction Slots</h2>
+                  <h2>Currently no open Auction Slots</h2>
                 </div>
                 <ae-divider></ae-divider>
-                <div v-if="nextSlotAtHeight" class="flex flex-col text-black text-base mt-2">
+                <div v-if="nextSlotAtHeight" class="flex flex-col text-base mt-2">
                   <span>
                     Next Auction Slot opens in
                   </span>
-                  <span class="font-mono text-black text-xl">
+                  <span class="font-mono text-xl">
                     <Countdown :initialTime="(nextSlotAtHeight - height) * 180"></Countdown>
                   </span>
                 </div>
-                <div v-else class="flex flex-col text-black text-base mt-2">
+                <div v-else class="flex flex-col text-base mt-2">
                    <span>
                     no more Auction Slots planned
                   </span>
                 </div>
               </div>
-            </ae-card>
+            </DarkCard>
           </div>
         </swiper-slide>
       </swiper>
@@ -62,31 +62,31 @@
       <swiper :options="swiperOption" ref="mySwiper" @slideChange="slideChange">
         <swiper-slide v-for="slot in slots" :key="slot.id" class="ae-max-width">
           <div class="mt-2 mb-2">
-            <ae-card>
+            <DarkCard>
               <div class="flex flex-col relative w-full">
                 <div>
-                  <h2 class="text-black">Slot {{slot.id}} ({{slot.successful_bids.length + slot.failed_bids.length}}
+                  <h2 >Slot {{slot.id}} ({{slot.successful_bids.length + slot.failed_bids.length}}
                     Bids)</h2>
                 </div>
-                <div class="flex flex-col text-black text-base mt-2">
+                <div class="flex flex-col text-base mt-2">
                 <span>
                   Slot will be open for estimated
                 </span>
-                  <span class="font-mono text-black text-xl">
+                  <span class="font-mono text-xl">
                   <Countdown :initialTime="(slot.end_block_height - height) * 180"></Countdown>
                 </span>
                 </div>
 
                 <ae-divider></ae-divider>
-                <div class="flex flex-col text-black text-base mt-2">
+                <div class="flex flex-col text-base mt-2">
                 <span>
                  current minimum bid AE / Minute
                 </span>
 
-                  <span class="font-mono text-black text-xl" v-if="slot.successful_bids.length === 0">
+                  <span class="font-mono text-xl" v-if="slot.successful_bids.length === 0">
                     0 AE (No Bids)
                   </span>
-                  <span class="font-mono text-black text-xl" v-else>
+                  <span class="font-mono text-xl" v-else>
                     {{slot.minimumBid.toFixed(5)}} AE
                   </span>
                   <span v-if="slot.remainingDrawtime > 0" class="font-sans text-grey-darker text-base">{{slot.remainingDrawtime}} unclaimed Minutes</span>
@@ -105,7 +105,7 @@
                   </div>
                 </div>
               </div>
-            </ae-card>
+            </DarkCard>
           </div>
         </swiper-slide>
       </swiper>
@@ -127,19 +127,20 @@
   import Util from '~/utils/blockchainUtil'
   import BiggerLoader from '~/components/BiggerLoader'
   import Countdown from '~/components/Countdown'
-  import { AeButton, AeCard, AeDivider } from '@aeternity/aepp-components'
+  import { AeButton, AeDivider } from '@aeternity/aepp-components'
   import WhiteHeader from '~/components/WhiteHeader'
   import 'swiper/dist/css/swiper.css'
   import config from '~/config'
   import aeternity from '~/utils/aeternityNetwork'
 
   import { swiper, swiperSlide } from 'vue-awesome-swiper'
+  import DarkCard from "../components/DarkCard";
 
   const SHOW_LIST = 1, EMPTY_LIST = 2, LOADING = 3
 
   export default {
     name: 'Slots',
-    components: { AeDivider, WhiteHeader, AeButton, AeCard, Countdown, BiggerLoader, swiper, swiperSlide },
+    components: {DarkCard, AeDivider, WhiteHeader, AeButton, Countdown, BiggerLoader, swiper, swiperSlide },
     data () {
       return {
         state: LOADING,
@@ -247,5 +248,8 @@
   .ae-max-width {
     width: 75%;
     max-width: 75%;
+  }
+  .ae-card-shadow {
+    box-shadow: 0 0 16px rgba(0,33,87,.15);
   }
 </style>

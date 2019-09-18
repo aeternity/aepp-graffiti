@@ -2,7 +2,7 @@
   <div>
     <div class="flex justify-center mt-4">
       <div v-if="bidData || error" class="max-w-desktop p-4">
-        <ae-card>
+        <DarkCard>
           <div class="flex flex-col p-4 w-full text-grey-darkest" v-if="!error">
             <h1 class="text-center mb-4">
               Bid {{bidData.seq_id}}
@@ -42,7 +42,7 @@
           <div v-if="error" class="p-4 w-full text-grey-darkest">
             <h1 class="text-center leading-normal" v-html="error"></h1>
           </div>
-        </ae-card>
+        </DarkCard>
       </div>
     </div>
   </div>
@@ -53,16 +53,16 @@
   import axios from 'axios'
   import config from '~/config'
   import Utils from '../utils/blockchainUtil.js'
-  import AeCard from '@aeternity/aepp-components/src/components/ae-card/ae-card'
   import BiggerLoader from '../components/BiggerLoader'
   import AeIdentity from '@aeternity/aepp-components/src/components/aeIdentity/aeIdentity'
   import AeIdenticon from '@aeternity/aepp-components/src/components/ae-identicon/ae-identicon'
   import AeButton from '@aeternity/aepp-components/src/components/aeButton/aeButton'
   import aeternity from '../utils/aeternityNetwork.js'
+  import DarkCard from "../components/DarkCard";
 
   export default {
     name: 'Bid',
-    components: { AeButton, AeIdenticon, AeIdentity, BiggerLoader, AeCard, WhiteHeader },
+    components: {DarkCard, AeButton, AeIdenticon, AeIdentity, BiggerLoader, WhiteHeader },
     data () {
       return {
         bidData: null,

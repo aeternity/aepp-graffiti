@@ -10,7 +10,7 @@
           Keep in mind, higher paying bids (AE/Min) will replace lower paying ones if the slot capacity is reached. In case your artwork is not included you will receive a refund.
         </span>
       </div>
-      <div class="mt-8">
+      <div class="mt-8 text-black">
         <ae-input type="number" label="Total Bid" step="0.01" placeholder="1" min="0" aemount :value="amount"
                   @input="updateData" :error="!!error">
           <template slot="header">

@@ -1,13 +1,13 @@
 <template>
   <div id="app" class="min-h-screen">
     <div class="content min-h-screen">
-      <ae-main class="min-h-screen">
+      <div class="min-h-screen bg-gray-900">
         <router-view v-if="clientAvailable"></router-view>
         <div class="inset-0 flex justify-center flex-col items-center" v-else>
           <BiggerLoader></BiggerLoader>
           <h2 class="mt-2 font-bold">Looking for a wallet. Check for popups.</h2>
         </div>
-      </ae-main>
+      </div>
     </div>
     <CriticalErrorOverlay
       :error="error"

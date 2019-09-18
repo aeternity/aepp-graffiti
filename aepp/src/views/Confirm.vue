@@ -2,7 +2,7 @@
   <div>
     <div v-if="isLoading">
       <div class="w-full pl-4 pr-4 pt-8 flex">
-        <h1 class="w-full text-center">Processing Bid</h1>
+        <h1 class="w-full text-center text-3xl">Processing Bid</h1>
       </div>
       <div class="w-full p-4 flex flex-col">
         <LoadingStep :currentStep="currentLoadingStep" :activeStep="0" :errorStep="errorStep">Processing Data
