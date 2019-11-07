@@ -1,5 +1,5 @@
-const API_URL = 'https://backend.graffiti.aeternity.art'
-// const API_URL = 'http://localhost:3000';
+//const API_URL = 'https://backend.graffiti.aeternity.art'
+const API_URL = 'http://localhost:3000';
 // const API_URL = 'http://192.168.0.157:3000';
 
 export default {
@@ -31,7 +31,7 @@ export default {
     minimumImageSize: [10, 10]
   },
   blockchainSettings: {
-    ae_uat: 'ct_eU2JXB8pTDMMofPdtNW6XwMmVkSvp3iKXcoeLshreHEtBeApa', // testnet //ct_2SugvqB52guEV6fSTkuGjipzPMjeEf5urYQYnPe91cdkMmjJGy
+    ae_uat: 'ct_8tu2Z8yf3z1BhA4hhFpynCzEmNCtvndnAiGp6PLffPJopGgGL', // testnet //ct_2SugvqB52guEV6fSTkuGjipzPMjeEf5urYQYnPe91cdkMmjJGy
     ae_mainnet: 'ct_2e4vXBEG2ig4NcvitYih5DnpqzvVWpu4SJLBgRqUfapnwE8cLq' // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
   },
   apiUrl: API_URL

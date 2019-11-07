@@ -44,16 +44,8 @@
         if (aeternity.hasActiveWallet()) {
           return this.clientAvailable = true
         } else if (aeternity.client && !aeternity.contract) {
-          await aeternity.initProvider()
-          return this.clientAvailable = true
-        }
-
-        // check if wallet is available
-        const wallets = await aeternity.checkAvailableWallets()
-        if (wallets.length === 0) throw new Error('Neither mobile nor desktop aepp found.')
-        if (wallets.length > 1) {
-          // TODO two wallets found
-          alert('TWO WALLETS')
+            await aeternity.initProvider()
+            return this.clientAvailable = true
         }
 
         if (!(await aeternity.initClient())) {

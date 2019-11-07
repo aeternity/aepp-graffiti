@@ -65,7 +65,7 @@ app.post('/sanity/:check', errorHandler(sanity.runCheck));
 app.use((err, req, res, next) => {
     console.error(err.stack);
     if (res.headersSent) return;
-    res.status(500).send(e.message);
+    res.status(500).send(err.message);
 });
 
 

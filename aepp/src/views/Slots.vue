@@ -192,7 +192,7 @@
         const allSlots = await aeternity.contract.methods.all_auction_slots()
 
         // For rendering purposes
-        this.height = aeternity.height
+        this.height = await aeternity.updateHeight()
 
         let slotIndex = 0
 
