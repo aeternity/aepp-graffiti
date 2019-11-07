@@ -3,7 +3,7 @@ const fs = require('fs');
 const {Universal: Ae} = require('@aeternity/aepp-sdk');
 const blockchain = {};
 
-const contractSource = fs.readFileSync('./src/DroneGraffitiAuction.aes', 'utf-8');
+const contractSource = fs.readFileSync('./src/GraffitiAuction.aes', 'utf-8');
 
 let client = null;
 let contract = null;
