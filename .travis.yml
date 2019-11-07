@@ -22,8 +22,8 @@ jobs:
     - stage: contract
       script:
        - cd $DIR/contract
-       - npm install -g forgae
+       - npm install -g aeproject
        - npm install
-       - forgae node
-       - forgae test
+       - aeproject node
+       - aeproject test
 

@@ -11,7 +11,6 @@ describe('GraffitiAuction', () => {
 
     let owner, contract, publicKey, openHeight;
 
-
     before(async () => {
         const ownerKeyPair = wallets[0];
         owner = await Ae({
@@ -79,7 +78,7 @@ describe('GraffitiAuction', () => {
     });
 
     it('Call GraffitiAuction Contract; place_bid', async () => {
-        await owner.awaitHeight(await owner.height() + 5);
+        await owner.awaitHeight(await owner.height() + 10);
         const amount = 10000;
         const auctionSlot = await contract.methods.place_bid(1, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40, {amount: amount});
 
