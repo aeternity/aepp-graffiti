@@ -29,7 +29,7 @@ const deploy = async () => {
     const init = await contract.methods.init('0.000000,-0.000000', 3300, 5000);
     console.log(init);
 
-    const startHeight = 141679;
+    const startHeight = await client.height();
     const numberOfUnits = 2 * 3;
     const blocksPerUnit = (60 / 3) * 24 / 3;
     const blocksOverlap = 60 / 3;
