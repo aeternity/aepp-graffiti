@@ -18,8 +18,6 @@ const deploy = async () => {
         url: config.host,
         internalUrl: config.internalHost,
         keypair: keypair,
-        nativeMode: true,
-        networkId: 'ae_uat',
         compilerUrl: config.compilerUrl
     });
 
@@ -29,19 +27,19 @@ const deploy = async () => {
     const init = await contract.methods.init('0.000000,-0.000000', 3300, 5000);
     console.log(init);
 
-    const startHeight = await client.height();
-    const numberOfUnits = 2 * 3;
-    const blocksPerUnit = (60 / 3) * 24 / 3;
-    const blocksOverlap = 60 / 3;
+    const startHeight = (await client.height()) + 1;
+    const numberOfUnits = 4;
+    const blocksPerUnit = (60 / 3) * 24 * 7;
+    const blocksOverlap = (60 / 3) * 24;
 
-    [...Array(numberOfUnits).keys()].reduce(async (previousPromise, unit) => {
+    await [...Array(numberOfUnits).keys()].reduce(async (previousPromise, unit) => {
         await previousPromise;
 
         const start = startHeight + (unit * blocksPerUnit) - (unit === 0 ? 0 : blocksOverlap);
         const end = startHeight + ((unit + 1) * blocksPerUnit);
         console.log(unit, start, end);
 
-        return contract.methods.add_auction_slot(1000, start, end, 1, 50).catch(console.error);
+        return contract.methods.add_auction_slot(1000, start, end, 1, 100).catch(console.error);
     }, Promise.resolve());
 
     const auctionSlots = await contract.methods.all_auction_slots();
