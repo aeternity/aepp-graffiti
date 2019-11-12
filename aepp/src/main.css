@@ -70,3 +70,115 @@ body {
   max-width: 1000px;
   width: 100%;
 }
+
+/* LANDINGPAGE */
+
+/* ibm-plex-mono-regular - latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: local('IBM Plex Mono'), local('IBMPlexMono'),
+  url('./assets/ibm-plex-mono-v5-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('./assets/ibm-plex-mono-v5-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* ibm-plex-mono-500 - latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  src: local('IBM Plex Mono Medium'), local('IBMPlexMono-Medium'),
+  url('./assets/ibm-plex-mono-v5-latin-500.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('./assets/ibm-plex-mono-v5-latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+.landingpage {
+  background-color: #191919;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #fdfdfd;
+}
+
+.rainbow-button {
+  width:300px;
+  height:110px;
+  background-image: linear-gradient(90deg, #00C0FF 0%, #FFCF00 49%, #FC4F4F 80%, #00C0FF 100%);
+  border-radius:5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:3vw;
+  font-weight:bold;
+  animation:slidebg 2s linear infinite;
+}
+.rainbow-button:after {
+  content:attr(data-text);
+  width:290px;
+  height:100px;
+  background-color:#191919;
+  font-size: 35px;
+  padding: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+@keyframes slidebg {
+  to {
+    background-position: 300px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .rainbow-button {
+    width:calc(50vw + 10px);
+    height:calc(10vh + 10px);
+    border-radius:5px;
+  }
+
+  .rainbow-button:after {
+    width:50vw;
+    height:10vh;
+    font-size: 1.5rem;
+  }
+  @keyframes slidebg {
+    to {
+      background-position: calc(50vw + 10px);
+    }
+  }
+}
+
+.divider {
+  background-image: linear-gradient(90deg, #00C0FF 0%, #FFCF00 49%, #FC4F4F 80%, #00C0FF 100%);
+  width: 100%;
+  height: 10px;
+  margin-top: 8rem;
+  margin-bottom: 8rem;
+  animation:slideDivider 5s linear infinite;
+}
+
+@keyframes slideDivider {
+  to {
+    background-position: 100vw;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .divider {
+    margin: 4rem 0;
+  }
+}
+
+.h-128 {
+  height: 32rem;
+}
+.max-w-400 {
+  max-width: 400px;
+}
+@media only screen and (max-width: 768px) {
+  .max-w-400 {
+    max-width: 100%;
+  }
+  .max-h-20vh {
+    max-height: 20vh;
+  }
+}
+

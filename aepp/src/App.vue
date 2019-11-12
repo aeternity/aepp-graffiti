@@ -38,7 +38,8 @@
     },
     async created () {
       // Bypass check if we are on desktop
-      if (this.$route.path.includes('desktop') || this.$route.path.includes('bid')) return this.clientAvailable = true
+      if (this.$route.path.includes('desktop') || this.$route.path.includes('bid') || this.$route.path.includes('landingpage'))
+        return this.clientAvailable = true
       // Bypass check if there is already an active wallet
       try {
         if (aeternity.hasActiveWallet()) {
@@ -49,10 +50,12 @@
         }
 
         if (!(await aeternity.initClient())) {
-          throw new Error('Wallet init failed')
-        }
+          this.clientAvailable = true
+          return await this.$router.push('landingpage')
+        } else {
+          this.clientAvailable = true
 
-        this.clientAvailable = true
+        }
 
         //await wallet.init()
         //console.log(wallet.walletName)

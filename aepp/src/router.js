@@ -11,7 +11,8 @@ import Admin from './views/desktop/Admin'
 import Teaser from './views/desktop/Teaser'
 import Amount from './views/Amount'
 import Bid from './views/Bid'
-import StaticSVG from './views/desktop/StaticSVG';
+import StaticSVG from './views/desktop/StaticSVG'
+import Landingpage from './views/Landingpage'
 
 const routes = [
   {
@@ -19,6 +20,12 @@ const routes = [
     name: 'home',
     component: Home,
     meta: { title: `Home` },
+  },
+  {
+    path: '/landingpage',
+    name: 'landingpage',
+    component: Landingpage,
+    meta: { title: `Get Started` },
   },
   {
     path: '/contribute',
