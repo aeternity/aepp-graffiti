@@ -8,7 +8,6 @@ import Overview from './views/Overview'
 import Onboarding from './views/Onboarding'
 import Slots from './views/Slots'
 import Admin from './views/desktop/Admin'
-import Teaser from './views/desktop/Teaser'
 import Amount from './views/Amount'
 import Bid from './views/Bid'
 import StaticSVG from './views/desktop/StaticSVG'
@@ -80,12 +79,6 @@ const routes = [
     name: 'admin',
     component: Admin,
     meta: { title: `Admin` },
-  },
-  {
-    path: '/desktop/teaser',
-    name: 'teaser',
-    component: Teaser,
-    meta: { title: `Teaser` },
   },
   {
     path: '/bid/:id',
