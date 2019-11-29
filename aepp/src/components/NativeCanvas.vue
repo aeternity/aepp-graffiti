@@ -275,8 +275,6 @@
 
         const containerWidth = this.$refs.backgroundCanvas.width
         const containerHeight = this.$refs.backgroundCanvas.height
-        console.log(this.$refs.backgroundCanvas.height)
-        console.log(this.$refs.backgroundCanvas.width)
 
         // update this to 1 if padding should be removed
         const smallerThanContainerScale = 0.95

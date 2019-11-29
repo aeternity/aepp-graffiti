@@ -107,11 +107,8 @@
       this.$refs.background.addEventListener('touchstart', this.onMouseDownEvent)
       this.$refs.background.addEventListener('touchmove', this.onMouseMoveEvent)
       this.$refs.background.addEventListener('touchend', this.onMouseUpEvent)
-      //}
-
-      console.log('canvas mounted')
     },
-    beforeDestroy: function () {
+    beforeDestroy () {
       this.$refs.background.removeEventListener('mousedown', this.onMouseDownEvent)
       this.$refs.background.removeEventListener('mousemove', this.onMouseMoveEvent)
       this.$refs.background.removeEventListener('mouseup', this.onMouseUpEvent)
