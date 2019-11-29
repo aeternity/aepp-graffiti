@@ -250,7 +250,6 @@ const store = new Vuex.Store({
     async updateSettings ({ commit, state, dispatch }, update) {
 
       // CHECK IF ADDITIONAL ACTIONS ARE REQUIRED
-      console.log('applying changes')
       const updatedKeys = Object.keys(update)
       const changedKeys = updatedKeys.filter(key => {
         return state.settings[key] !== update[key]
@@ -281,7 +280,6 @@ const store = new Vuex.Store({
           await dispatch('applyPostRenderingChanges')
         } catch (e) {
           console.error(e.message)
-          console.log(update, originalValues)
           commit('modifySettings', Object.assign({}, state.settings, originalValues))
         }
       }
@@ -294,7 +292,6 @@ const store = new Vuex.Store({
         await dispatch('applyPostRenderingChanges')
       } catch (e) {
         console.error(e.message)
-        console.log(update, oldScale)
         commit('modifySettings', Object.assign({}, state.settings, oldScale))
       }
     },
@@ -306,7 +303,6 @@ const store = new Vuex.Store({
         await dispatch('applyPostRenderingChanges')
       } catch (e) {
         console.error(e.message)
-        console.log(update, oldPosition)
         commit('modifyPosition', Object.assign({}, state.position, oldPosition))
       }
     },
