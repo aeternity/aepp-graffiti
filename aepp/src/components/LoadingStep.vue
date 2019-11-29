@@ -15,7 +15,7 @@
 </template>
 
 <script>
-  import { AeIcon, AeLoader } from '@aeternity/aepp-components'
+  import { AeIcon, AeLoader } from '@aeternity/aepp-components/src/components'
 
   export default {
     name: 'LoadingStep',

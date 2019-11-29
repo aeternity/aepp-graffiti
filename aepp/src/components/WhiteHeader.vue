@@ -6,7 +6,7 @@
         <ae-icon v-if="back" name="back"></ae-icon>
       </div>
       <div class="ae-title">
-        <img src="../assets/0_DGP_Logo_rainbow_white.svg" class="logo" @click="$router.push('/')" alt="Logo"/>
+        <img src="../assets/graffiti_logo.svg" class="logo" @click="$router.push('/')" alt="Logo"/>
         <span>{{title}}</span>
       </div>
       <ae-dropdown class="ae-menu">
@@ -50,9 +50,8 @@
 </template>
 
 <script>
-  import { AeBackdrop, AeButton, AeCard, AeDropdown, AeIcon } from '@aeternity/aepp-components'
-  import config from '~/config'
-  import DarkCard from "./DarkCard";
+  import { AeBackdrop, AeButton, AeCard, AeDropdown, AeIcon } from '@aeternity/aepp-components/src/components'
+  import DarkCard from './DarkCard'
 
   export default {
     name: 'WhiteHeader',

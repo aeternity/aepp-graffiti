@@ -7,7 +7,7 @@
 
 <script>
 
-  import { AeLoader } from '@aeternity/aepp-components'
+  import { AeLoader } from '@aeternity/aepp-components/src/components'
 
   export default {
     name: "BiggerLoader",

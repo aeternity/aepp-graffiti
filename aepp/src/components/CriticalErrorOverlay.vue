@@ -1,6 +1,6 @@
 <template>
   <ae-backdrop class="p-6" v-show="error">
-    <ae-card class="white-bg">
+    <ae-card class="bg-white">
       <div class="w-full">
         <h1 class="font-mono text-red-600 text-center pt-4">ERROR</h1>
         <p class="text-base text-red-600 pt-4 text-center">
@@ -15,7 +15,7 @@
 </template>
 
 <script>
-  import { AeBackdrop, AeButton, AeCard } from '@aeternity/aepp-components/'
+  import { AeBackdrop, AeButton, AeCard } from '@aeternity/aepp-components/src/components'
 
   export default {
     name: 'CriticalErrorOverlay',
@@ -30,7 +30,5 @@
 </script>
 
 <style scoped>
-  .white-bg {
-    background-color: white;
-  }
+
 </style>

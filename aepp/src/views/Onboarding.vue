@@ -42,7 +42,7 @@
 
 <script>
   import OnboardingStep from '~/components/OnboardingStep'
-  import { AeText } from '@aeternity/aepp-components'
+  import { AeText } from '@aeternity/aepp-components/src/components'
 
   export default {
     name: 'Onboarding',

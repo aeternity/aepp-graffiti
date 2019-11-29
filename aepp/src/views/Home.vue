@@ -35,7 +35,7 @@
 
 <script>
   import WhiteHeader from '~/components/WhiteHeader'
-  import { AeIcon } from '@aeternity/aepp-components/'
+  import { AeIcon } from '@aeternity/aepp-components/src/components'
   import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
   import NativeCanvas from '../components/NativeCanvas'
   import Toast from '../components/Toast'

@@ -42,7 +42,7 @@
 
 <script>
   import WhiteHeader from '../components/WhiteHeader'
-  import { AeButton, AeInput, AeToolbar } from '@aeternity/aepp-components'
+  import { AeButton, AeInput, AeToolbar } from '@aeternity/aepp-components/src/components'
   import Utils from '~/utils/blockchainUtil'
   import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
   import aeternity from '~/utils/aeternityNetwork'
