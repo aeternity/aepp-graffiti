@@ -37,7 +37,7 @@
 <script>
   import CanvasWithControlls from '../components/CanvasWithControlls.vue'
   import WhiteHeader from '~/components/WhiteHeader'
-  import { AeButton } from '@aeternity/aepp-components'
+  import { AeButton } from '@aeternity/aepp-components/src/components'
   import Toast from '../components/Toast'
 
   export default {

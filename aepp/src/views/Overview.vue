@@ -87,17 +87,17 @@
 </template>
 
 <script>
-    import Util from '../utils/blockchainUtil'
-    import BiggerLoader from '~/components/BiggerLoader'
-    import WhiteHeader from '~/components/WhiteHeader'
-    import {AeCard} from '@aeternity/aepp-components'
-    import config from '~/config'
-    import AeIcon from '@aeternity/aepp-components/src/components/ae-icon/ae-icon'
-    import aeternity from '~/utils/aeternityNetwork'
-    import Toast from '~/components/Toast'
-    import DarkCard from "../components/DarkCard";
+  import Util from '../utils/blockchainUtil'
+  import BiggerLoader from '~/components/BiggerLoader'
+  import WhiteHeader from '~/components/WhiteHeader'
+  import { AeCard } from '@aeternity/aepp-components/src/components'
+  import config from '~/config'
+  import AeIcon from '@aeternity/aepp-components/src/components/ae-icon/ae-icon'
+  import aeternity from '~/utils/aeternityNetwork'
+  import Toast from '~/components/Toast'
+  import DarkCard from '../components/DarkCard'
 
-    const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2, ERROR_STATE = 3
+  const INITAL_STATE = 0, SHOW_LIST = 1, EMPTY_LIST = 2, ERROR_STATE = 3
 
     export default {
         name: 'Overview',

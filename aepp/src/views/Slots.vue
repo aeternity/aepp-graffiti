@@ -127,14 +127,14 @@
   import Util from '~/utils/blockchainUtil'
   import BiggerLoader from '~/components/BiggerLoader'
   import Countdown from '~/components/Countdown'
-  import { AeButton, AeDivider } from '@aeternity/aepp-components'
+  import { AeButton, AeDivider } from '@aeternity/aepp-components/src/components'
   import WhiteHeader from '~/components/WhiteHeader'
   import 'swiper/dist/css/swiper.css'
   import config from '~/config'
   import aeternity from '~/utils/aeternityNetwork'
 
   import { swiper, swiperSlide } from 'vue-awesome-swiper'
-  import DarkCard from "../components/DarkCard";
+  import DarkCard from '../components/DarkCard'
 
   const SHOW_LIST = 1, EMPTY_LIST = 2, LOADING = 3
 

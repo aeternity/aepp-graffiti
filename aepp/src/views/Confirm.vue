@@ -54,12 +54,11 @@
 </template>
 
 <script>
-  // TODO switch to mono-l typeface if available
   import CanvasWithControlls from '../components/CanvasWithControlls.vue'
   import axios from 'axios'
   import LoadingStep from '~/components/LoadingStep'
   import Util from '~/utils/blockchainUtil'
-  import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components'
+  import { AeButton, AeList, AeListItem, AeText } from '@aeternity/aepp-components/src/components'
   import config from '~/config'
   import aeternity from '~/utils/aeternityNetwork'
 

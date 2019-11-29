@@ -54,15 +54,13 @@
   import config from '~/config'
   import Utils from '../utils/blockchainUtil.js'
   import BiggerLoader from '../components/BiggerLoader'
-  import AeIdentity from '@aeternity/aepp-components/src/components/aeIdentity/aeIdentity'
-  import AeIdenticon from '@aeternity/aepp-components/src/components/ae-identicon/ae-identicon'
-  import AeButton from '@aeternity/aepp-components/src/components/aeButton/aeButton'
+  import { AeButton, AeIdenticon, AeIdentity } from '@aeternity/aepp-components/src/components'
   import aeternity from '../utils/aeternityNetwork.js'
-  import DarkCard from "../components/DarkCard";
+  import DarkCard from '../components/DarkCard'
 
   export default {
     name: 'Bid',
-    components: {DarkCard, AeButton, AeIdenticon, AeIdentity, BiggerLoader, WhiteHeader },
+    components: { DarkCard, AeButton, AeIdenticon, AeIdentity, BiggerLoader, WhiteHeader },
     data () {
       return {
         bidData: null,
@@ -98,7 +96,7 @@
     },
     async created () {
       if (!this.$route.params.id || isNaN(this.$route.params.id)) {
-        return this.error = '400<br />Bad request. Please provide a numerical ID (eg. \'/bid/1\').'
+        return this.error = `400<br />Bad request. Please provide a numerical ID (eg. '/bid/1').`
       }
       try {
         const bid = await axios.get(`${config.apiUrl}/bid/${this.$route.params.id}`)

@@ -157,9 +157,9 @@
 </template>
 
 <script>
-  import { Universal as Ae } from '@aeternity/aepp-sdk/es/'
+  import { Universal } from '@aeternity/aepp-sdk/es/ae/universal'
   import Util from '~/utils/blockchainUtil'
-  import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components'
+  import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components/src/components'
   import BiggerLoader from '~/components/BiggerLoader'
   import BigNumber from 'bignumber.js'
   import config from '~/config'
@@ -296,14 +296,12 @@
       }
     },
     async created () {
-      const networkId = this.$route.query.testnet ? 'ae_uat' : 'ae_mainnet';
       const url = this.$route.query.testnet ? 'https://sdk-testnet.aepps.com/' : 'https://sdk-mainnet.aepps.com/'
 
-      this.client = await Ae({
+      this.client = await Universal({
         url: url,
         internalUrl: url,
-        compilerUrl: 'https://compiler.aepps.com',
-        networkId: networkId,
+        compilerUrl: 'https://compiler.aepps.com'
       }).catch(console.error)
 
       this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.blockchainSettings[networkId] })
