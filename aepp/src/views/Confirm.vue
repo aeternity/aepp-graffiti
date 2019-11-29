@@ -165,7 +165,7 @@
         // args: hash, x, y, time
         // amount: ae to contract amount
         try {
-          await aeternity.contract.methods.place_bid.send(
+          await aeternity.contract.methods.place_bid(
             this.bid.slotId,
             Math.round(this.transformedImage.dronetime),
             this.ipfsAddr,
