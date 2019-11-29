@@ -5,7 +5,7 @@ const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
 // Cleans dist folder before building for fresh build
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const {VueLoaderPlugin} = require('vue-loader');
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 const distFolder = path.resolve(__dirname, 'dist');
@@ -117,7 +117,8 @@ module.exports = {
           loader: 'file-loader',
           options: {
             name: '[name].[ext]',
-            outputPath: './assets/'
+            outputPath: 'assets/',
+            esModule: false
           }
         }]
       }
