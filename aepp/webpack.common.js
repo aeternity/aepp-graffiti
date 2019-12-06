@@ -26,11 +26,8 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       inject: true,
-      // chunks: ['main'],
-      title: 'Graffiti',
       template: './src/index.html',
-      filename: distFolder + '/index.html',
-      baseUrl: '/',
+      domain: 'https://graffiti.aeternity.com',
       // Avoids building twice for dev
       alwaysWriteToDisk: true
     }),

@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html class="font-sans" lang="en">
 <head>
-  <base href="<%= htmlWebpackPlugin.options.baseUrl %>">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="description" content="Graffiti Aepp">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta name="og:type" content="website">
+  <meta name="og:title" content="Graffiti Aepp">
+  <meta name="og:description" content="A graffiti aepp for the aeternity blockchain.">
+  <meta name="og:url" content=<%=htmlWebpackPlugin.options.domain %>>
+  <meta name="og:site_name" content="Graffiti Aepp">
+  <meta name="og:image" content=<%=htmlWebpackPlugin.options.domain + '/assets/apple-touch-icon-1024x1024.png' %> >
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@aeternity">
   <title>Home - Graffiti Aepp</title>
   <!-- CSS files will be injected here by WebPack -->
 </head>
