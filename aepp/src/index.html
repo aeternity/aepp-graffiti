@@ -8,9 +8,9 @@
   <meta name="og:type" content="website">
   <meta name="og:title" content="Graffiti Aepp">
   <meta name="og:description" content="A graffiti aepp for the aeternity blockchain.">
-  <meta name="og:url" content=<%=htmlWebpackPlugin.options.domain %>>
+  <meta name="og:url" content="<%= htmlWebpackPlugin.options.domain %>">
   <meta name="og:site_name" content="Graffiti Aepp">
-  <meta name="og:image" content=<%=htmlWebpackPlugin.options.domain + require('./assets/logo.jpg') %> >
+  <meta name="og:image" content="<%= htmlWebpackPlugin.options.domain + require('./assets/logo.jpg').substr(1) %>" >
   <meta name="twitter:card" content="summary">
   <meta name="twitter:site" content="@aeternity">
   <title>Home - Graffiti Aepp</title>
