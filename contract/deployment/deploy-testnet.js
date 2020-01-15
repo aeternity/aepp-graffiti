@@ -23,12 +23,15 @@ const deploy = async () => {
 
     let contractSource = fs.readFileSync('../contracts/GraffitiAuction.aes', 'utf-8');
 
+    const contractOld = await client.getContractInstance(contractSource, {contractAddress: ''});
+    await contractOld.methods.admin_withdraw_to_admin();
+
     const contract = await client.getContractInstance(contractSource);
     const init = await contract.methods.init('0.000000,-0.000000', 3300, 5000);
     console.log(init);
 
     const startHeight = (await client.height()) + 1;
-    const numberOfUnits = 4;
+    const numberOfUnits = 8;
     const blocksPerUnit = (60 / 3) * 24 * 7;
     const blocksOverlap = (60 / 3) * 24;
 
