@@ -297,6 +297,7 @@
     },
     async created () {
       const url = this.$route.query.testnet ? 'https://sdk-testnet.aepps.com/' : 'https://sdk-mainnet.aepps.com/'
+      const networkId = this.$route.query.testnet ? 'ae_uat' : 'ae_mainnet'
 
       this.client = await Universal({
         url: url,
