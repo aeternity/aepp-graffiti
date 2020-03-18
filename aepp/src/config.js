@@ -31,8 +31,8 @@ export default {
     minimumImageSize: [10, 10]
   },
   blockchainSettings: {
-    ae_uat: 'ct_22W1FRpVA71Ep83NHyQeSbfQx3ri4dMyd5omzUkzedupRPANkx', // testnet //ct_2SugvqB52guEV6fSTkuGjipzPMjeEf5urYQYnPe91cdkMmjJGy
-    ae_mainnet: 'ct_VaVQeVHqkQr23QSEUFrqcKyRQhZhjUKWvKdE3kazr3zXHzJR7' // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
+    ae_uat: 'ct_2LFdgxTJCCaxTnNkxpuEw3oBf1vRxvERodseHw4hASdtfmtNHk', // testnet //ct_2SugvqB52guEV6fSTkuGjipzPMjeEf5urYQYnPe91cdkMmjJGy
+    ae_mainnet: 'ct_2L8CMtgsb3cz9VbhYdtrSZPU8MbGDhH446WjTnFDm3snyMYTR' // 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
   },
   apiUrl: API_URL
 }
