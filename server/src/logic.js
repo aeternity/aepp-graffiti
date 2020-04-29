@@ -32,9 +32,9 @@ logic.upload = async (req, res, next) => {
 
     try {
         const result = await ipfsWrapper.addFile(file.data);
-        await ipfsWrapper.pinFile(result[0].hash);
+        await ipfsWrapper.pinFile(result[0].path);
         //BACKUP SVG TO S3
-        await storage.backupSVG(result[0].hash, file.data);
+        await storage.backupSVG(result[0].path, file.data);
 
         return res.json({
             hash: result[0].hash,
