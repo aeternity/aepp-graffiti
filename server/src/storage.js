@@ -1,6 +1,7 @@
 const fs = require('fs');
 const S3 = require('aws-sdk/clients/s3');
 const path = require('path');
+const ipfsWrapper = require('./ipfs.js');
 
 const client = new S3({
     accessKeyId: process.env.S3_KEY,
@@ -24,6 +25,35 @@ storage.init = () => {
         console.log(alreadyStored)
     });
 };
+
+storage.uploadAllToIPFS = () => {
+    const params = {
+        Bucket: process.env.S3_BUCKET
+    };
+    client.listObjects(params, function (err, data) {
+        if (err) return console.error("unable to list dir:", err.stack);
+        data.Contents.reduce(async (promiseAcc, remoteFile) => {
+            await promiseAcc;
+
+            const [ipfsHash, ext] = remoteFile.Key.split('.');
+            alreadyStored[ipfsHash] = Object.assign({}, alreadyStored[ipfsHash], {[ext]: true});
+
+            console.log("downloading s3", ipfsHash)
+            try {
+                const file = await storage.retrieveSVG(ipfsHash);
+                const ipfsUpload = await ipfsWrapper.addFile(file);
+                ipfsWrapper.pinFile(ipfsHash);
+                console.log("uploading ipfs", ipfsUpload[0].path);
+                console.log("downloading ipfs", await ipfsWrapper.getFile(ipfsHash));
+                return ipfsUpload;
+            } catch (e) {
+                console.warn(e);
+                return Promise.resolve();
+            }
+        }, Promise.resolve());
+        console.log("alreadyStored", alreadyStored)
+    });
+}
 
 const shouldUpload = (ipfsHash, ext) => {
     return !alreadyStored[ipfsHash] || !alreadyStored[ipfsHash][ext];

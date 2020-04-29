@@ -87,7 +87,7 @@ try {
 try {
     storage.init();
 } catch (e) {
-    console.error("Could not initialize to storage.");
+    console.error("Could not initialize to storage.", e);
 }
 
 app.listen(3000);

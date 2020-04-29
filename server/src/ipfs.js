@@ -1,67 +1,60 @@
 const ipfsClient = require('ipfs-http-client');
-const Buffer = require('buffer').Buffer;
 
-const ipfsWrap = {};
+class IPFS {
 
-let node = null;
+    node;
 
-ipfsWrap.init = () => {
-    if (!process.env.IPFS_URL) throw "IPFS_URL is not set";
-
-    node = ipfsClient({ host: process.env.IPFS_URL, port: '5001', protocol: 'http' });
-};
-
-ipfsWrap.checkFileExists = async (hash) => {
-    if (!node) ipfsWrap.init();
-    const result = await Promise.race([
-        node.files.stat(`/ipfs/${hash}`),
-        new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(null);
-            }, 30000);
-        })
-    ]);
-
-    if(!result || result.hash !== hash) console.warn(`IPFS ${hash} stats timed out`);
-
-    return result.hash === hash;
-};
-
-ipfsWrap.writeFile = (buffer) => {
-    if(!node) ipfsWrap.init();
-    return node.add({
-        content: buffer,
-
-    });
-};
-
-ipfsWrap.pinFile = (hash) => {
-    if(!node) ipfsWrap.init();
-    return node.pin.add(hash);
-};
-
-ipfsWrap.id = () => {
-    if(!node) ipfsWrap.init();
-    return new Promise((resolve, reject) => {
-        node.id((err, identity) => {
-            if (err) {
-                return reject(err)
-            }
-            resolve(identity)
-        });
-    })
-};
-
-ipfsWrap.getFile = async (hash) => {
-    if(!node) ipfsWrap.init();
-    if(await ipfsWrap.checkFileExists(hash)) {
-        const data = await node.cat(hash);
-        if(data.length > 0) {
-            return Buffer.from(data);
-        }
+    constructor() {
+        if (!process.env.IPFS_URL) throw "IPFS_URL is not set";
+        this.node = ipfsClient(process.env.IPFS_URL);
     }
 
-    throw Error(`IPFS: ${hash} not found`);
-};
 
-module.exports = ipfsWrap;
+    _asyncGeneratorToArray = async (generator) => {
+        const all = [];
+        for await (const result of generator) {
+            all.push(result);
+        }
+        return all;
+    };
+
+    checkFileExists = async (hash) => {
+        const result = await Promise.race([
+            this.node.files.stat(`/ipfs/${hash}`),
+            new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(null);
+                }, 1000);
+            })
+        ]);
+        if(!result) return false;
+        return result.cid.toString() === hash;
+    };
+
+    addFile = async (buffer) => {
+        const generator = this.node.add({
+            content: buffer,
+        });
+        return this._asyncGeneratorToArray(generator);
+    };
+
+    pinFile = (hash) => {
+        return this.node.pin.add(hash);
+    };
+
+    getPinnedFiles = async () => {
+        return this._asyncGeneratorToArray(this.node.pin.ls())
+    };
+
+    getFile = async (hash) => {
+        if(await this.checkFileExists(hash)) {
+            const data = await this._asyncGeneratorToArray(this.node.cat(hash));
+            return Buffer.concat(data);
+        }
+
+        throw Error(`IPFS: ${hash} not found`);
+    };
+}
+
+const ipfs = new IPFS();
+module.exports = ipfs;
