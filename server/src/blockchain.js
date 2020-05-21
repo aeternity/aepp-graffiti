@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const {Universal: Ae} = require('@aeternity/aepp-sdk');
+const {Universal, Node} = require('@aeternity/aepp-sdk');
 const blockchain = {};
 
 const contractSource = fs.readFileSync('./src/GraffitiAuction.aes', 'utf-8');
@@ -13,9 +13,8 @@ blockchain.init = async () => {
     if (!process.env.AETERNITY_URL) throw "AETERNITY_URL is not set";
     if (!process.env.CONTRACT_ADDRESS) throw "CONTRACT_ADDRESS is not set";
 
-    client = await Ae({
-        url: process.env.AETERNITY_URL,
-        internalUrl: process.env.AETERNITY_URL,
+    client = await Universal({
+        nodes: [ { name: 'aeternity', instance: await Node({ url: process.env.AETERNITY_URL }) } ],
         compilerUrl: "https://compiler.aepps.com",
     }).catch(console.error);
 
