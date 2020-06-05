@@ -28,8 +28,8 @@
     </div>
 
     <div v-if="isEmptyListState" class="w-full">
-      <swiper :options="swiperOption" ref="mySwiper" @slideChange="slideChange">
-        <swiper-slide class="ae-max-width">
+      <Swiper :options="swiperOption" ref="mySwiper" @slideChange="slideChange">
+        <SwiperSlide class="ae-max-width">
           <div class="mt-2 mb-2">
             <DarkCard>
               <div class="flex flex-col relative w-full">
@@ -53,14 +53,14 @@
               </div>
             </DarkCard>
           </div>
-        </swiper-slide>
-      </swiper>
+        </SwiperSlide>
+      </Swiper>
     </div>
 
     <div v-if="isShowListState" class="w-full">
 
-      <swiper :options="swiperOption" ref="mySwiper" @slideChange="slideChange">
-        <swiper-slide v-for="slot in slots" :key="slot.id" class="ae-max-width">
+      <Swiper :options="swiperOption" ref="mySwiper" @slideChange="slideChange">
+        <SwiperSlide v-for="slot in slots" :key="slot.id" class="ae-max-width">
           <div class="mt-2 mb-2">
             <DarkCard>
               <div class="flex flex-col relative w-full">
@@ -107,8 +107,8 @@
               </div>
             </DarkCard>
           </div>
-        </swiper-slide>
-      </swiper>
+        </SwiperSlide>
+      </Swiper>
       <div class="w-full mt-4 mb-8 flex justify-center">
         <transition>
           <ae-button class="ae-max-width" face="round" fill="primary" @click="next" extend v-if="!nextButtonDisabled">
@@ -129,18 +129,18 @@
   import Countdown from '~/components/Countdown'
   import { AeButton, AeDivider } from '@aeternity/aepp-components/src/components'
   import WhiteHeader from '~/components/WhiteHeader'
-  import 'swiper/dist/css/swiper.css'
+  import 'swiper/css/swiper.css'
   import config from '~/config'
   import aeternity from '~/utils/aeternityNetwork'
 
-  import { swiper, swiperSlide } from 'vue-awesome-swiper'
+  import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
   import DarkCard from '../components/DarkCard'
 
   const SHOW_LIST = 1, EMPTY_LIST = 2, LOADING = 3
 
   export default {
     name: 'Slots',
-    components: {DarkCard, AeDivider, WhiteHeader, AeButton, Countdown, BiggerLoader, swiper, swiperSlide },
+    components: {DarkCard, AeDivider, WhiteHeader, AeButton, Countdown, BiggerLoader, Swiper, SwiperSlide },
     data () {
       return {
         state: LOADING,

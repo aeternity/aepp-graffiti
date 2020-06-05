@@ -21,8 +21,10 @@
 
   import { AeMain } from '@aeternity/aepp-components/src/components'
   import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
-  import aeternity from '~/utils/aeternityNetwork.js'
+  import aeternity from './utils/aeternityNetwork.js'
   import BiggerLoader from './components/BiggerLoader'
+  import { EventBus } from './utils/eventBus';
+  import {wallet} from './utils/walletSearch.js'
 
   export default {
     name: 'app',
@@ -42,31 +44,37 @@
         return this.clientAvailable = true
       // Bypass check if there is already an active wallet
       try {
+
+        EventBus.$on('networkChange', () => this.$router.go(0));
+        EventBus.$on('addressChange', () => this.$router.go(0));
+
         if (aeternity.hasActiveWallet()) {
           return this.clientAvailable = true
-        } else if (aeternity.client && !aeternity.contract) {
-            await aeternity.initProvider()
-            return this.clientAvailable = true
         }
 
-        if (!(await aeternity.initClient())) {
-          this.clientAvailable = true
-          return await this.$router.push('landingpage')
-        } else {
-          this.clientAvailable = true
+        const result = await Promise.race([
+          new Promise((resolve) => wallet.init(() => {
+            this.clientAvailable = true;
+            resolve();
+          })),
+          new Promise((resolve) => setTimeout(resolve, 13000, 'TIMEOUT')),
+        ]);
+        console.log(result);
 
-        }
+        // Fall back to static client
+        // Otherwise init the aeternity sdk
+        if (!(await aeternity.initClient()))
+          return console.error('Wallet init failed');
 
-        //await wallet.init()
-        //console.log(wallet.walletName)
+        this.clientAvailable = true;
+
       } catch (e) {
         console.error('INIT ERROR', e)
         this.error = 'Could not connect to your wallet. Make sure to open in base-aepp at base.aepps.com or base-aepp from app store and that you grant this application access to your wallet.'
         this.errorCTA = 'Retry'
         this.errorClick = () => {
-          window.location.reload()
+          this.$router.go(0)
         }
-
       }
     }
   }
