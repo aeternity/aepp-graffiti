@@ -11,7 +11,7 @@
         </span>
       </div>
       <div class="mt-8 text-black">
-        <ae-input type="number" label="Total Bid" step="0.01" placeholder="1" min="0" aemount :value="amount"
+        <ae-input type="number" label="Total Bid" step="0.01" placeholder="1" min="0" aemount  :value="amount"
                   @input="updateData" :error="!!error">
           <template slot="header">
             <span class="text-grey">AE</span>
@@ -46,6 +46,8 @@
   import Utils from '~/utils/blockchainUtil'
   import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
   import aeternity from '~/utils/aeternityNetwork'
+  import { AE_AMOUNT_FORMATS } from '@aeternity/aepp-sdk/es/utils/amount-formatter'
+
 
   export default {
     name: 'Amount',
@@ -114,7 +116,7 @@
 
       try {
         this.perMinute = this.amount / this.transformedImage.dronetime
-        this.balance = Utils.atomsToAe(await aeternity.client.balance(aeternity.address, { format: false }))
+        this.balance = Utils.atomsToAe(await aeternity.client.balance(aeternity.address, { format: AE_AMOUNT_FORMATS.AETTOS }))
       } catch (e) {
         console.error(e)
         this.balance = 0

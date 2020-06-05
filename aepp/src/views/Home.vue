@@ -17,7 +17,7 @@
         {{reloadingResult}}
       </Toast>
     </div>
-    <div @click="$router.push('contribute')" class="fixed bottom-0 right-0 p-8">
+    <div @click="$router.push('contribute')" class="fixed bottom-0 right-0 p-8" v-if="!staticClient">
       <ae-icon name="plus" fill="primary" face="round"
                class="ae-icon-size shadow"></ae-icon>
     </div>
@@ -53,7 +53,8 @@
         errorCTA: null,
         ignoreErrors: (window.location.host.includes('localhost')),
         isReloading: false,
-        reloadingResult: null
+        reloadingResult: null,
+        staticClient: aeternity.static
       }
     },
     computed: {
@@ -86,7 +87,7 @@
       if (this.firstTimeOpened) return this.$router.push('onboarding')
       try {
         // Top up users balance if user is on testnet and balance is smaller than 5
-        if (aeternity.isTestnet() && aeternity.balance <= 5) {
+        if (!aeternity.isMainnet() && aeternity.balance <= 5) {
           await axios.post(`https://testnet.faucet.aepps.com/account/${aeternity.address}`, {}, { headers: { 'content-type': 'application/x-www-form-urlencoded' } }).catch(console.error)
         }
         /*if(!aeternity.isTestnet()){
