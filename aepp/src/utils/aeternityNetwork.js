@@ -23,19 +23,18 @@ aeternity.updateHeight = async () => {
 
 aeternity.initProvider = async () => {
   try {
-    aeternity.address = await aeternity.client.address()
     aeternity.height = await aeternity.client.height()
 
     const networkId = (await aeternity.client.getNodeInfo()).nodeNetworkId;
     const changedNetwork = aeternity.networkId !== networkId && aeternity.networkId !== null;
-    console.log(aeternity.networkId, networkId)
     aeternity.networkId = networkId
     if (changedNetwork) EventBus.$emit('networkChange');
+    aeternity.network = aeternity.isMainnet() ? 'mainnet' : ''
 
+    aeternity.address = await aeternity.client.address()
     aeternity.balance = await aeternity.client.balance(aeternity.address)
       .then(balance => `${BlockchainUtil.atomsToAe(balance)}`.replace(',', ''))
       .catch(() => '0')
-    aeternity.network = aeternity.isMainnet() ? 'mainnet' : ''
     aeternity.contract = await aeternity.client.getContractInstance(contractSource, {contractAddress: config.blockchainSettings[aeternity.networkId]})
     return true
   } catch (e) {
@@ -56,9 +55,9 @@ aeternity.initStaticClient = async () => {
     compilerUrl: COMPILER_URL,
     nodes: [
       {
-        name: 'testnet',
+        name: 'node',
         instance: await Node({
-          url: TESTNET_URL,
+          url: MAINNET_URL,
         }),
       }],
   });
@@ -103,7 +102,7 @@ aeternity.isMainnet = () => {
 aeternity.initClient = async () => {
   if (process && process.env && process.env.PRIVATE_KEY && process.env.PUBLIC_KEY) {
     aeternity.client = await Universal({
-      nodes: [{name: 'testnet', instance: await Node({url: TESTNET_URL})}],
+      nodes: [{name: 'node', instance: await Node({url: MAINNET_URL})}],
       compilerUrl: COMPILER_URL,
       accounts: [
         MemoryAccount({keypair: {secretKey: process.env.PRIVATE_KEY, publicKey: process.env.PUBLIC_KEY}}),
