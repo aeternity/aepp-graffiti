@@ -57,14 +57,17 @@
             this.clientAvailable = true;
             resolve();
           })),
-          new Promise((resolve) => setTimeout(resolve, 13000, 'TIMEOUT')),
+          new Promise((resolve) => setTimeout(resolve, 8000, 'TIMEOUT')),
         ]);
         console.log(result);
 
         // Fall back to static client
         // Otherwise init the aeternity sdk
-        if (!(await aeternity.initClient()))
-          return console.error('Wallet init failed');
+        if (!(await aeternity.initClient())) {
+          console.error('Wallet init failed');
+          this.clientAvailable = true;
+          //return await this.$router.push('landingpage');
+        }
 
         this.clientAvailable = true;
 

@@ -16,9 +16,14 @@
             Show Onboarding
           </ae-button>
         </li>
-        <li>
+        <li v-if="!staticClient">
           <ae-button @click="$router.push('overview')">
             My Bids
+          </ae-button>
+        </li>
+        <li v-if="staticClient">
+          <ae-button @click="$router.push('landingpage')">
+            Landingpage
           </ae-button>
         </li>
         <li>
@@ -52,6 +57,7 @@
 <script>
   import { AeBackdrop, AeButton, AeCard, AeDropdown, AeIcon } from '@aeternity/aepp-components/src/components'
   import DarkCard from './DarkCard'
+  import aeternity from '../utils/aeternityNetwork'
 
   export default {
     name: 'WhiteHeader',
@@ -67,7 +73,8 @@
     },
     data () {
       return {
-        backDropVisible: false
+        backDropVisible: false,
+        staticClient: aeternity.static
       }
     },
     computed: {
