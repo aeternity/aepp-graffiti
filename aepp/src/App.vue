@@ -66,16 +66,17 @@
         if (!(await aeternity.initClient())) {
           console.error('Wallet init failed');
           this.clientAvailable = true;
-          //return await this.$router.push('landingpage');
+          return await this.$router.push('landingpage');
         }
 
         this.clientAvailable = true;
 
       } catch (e) {
         console.error('INIT ERROR', e)
-        this.error = 'Could not connect to your wallet. Make sure to open in base-aepp at base.aepps.com or base-aepp from app store and that you grant this application access to your wallet.'
-        this.errorCTA = 'Retry'
+        this.error = 'Could not connect to your wallet.'
+        this.errorCTA = 'Ok'
         this.errorClick = () => {
+          this.$router.push('landingpage')
           this.$router.go(0)
         }
       }

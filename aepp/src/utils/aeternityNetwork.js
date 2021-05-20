@@ -1,4 +1,4 @@
-import {Node, Universal, MemoryAccount} from '@aeternity/aepp-sdk/es';
+import {Node, Universal, MemoryAccount, Crypto} from '@aeternity/aepp-sdk/es';
 import {EventBus} from './eventBus';
 import BlockchainUtil from '../utils/blockchainUtil'
 import config from '../config'
@@ -52,6 +52,9 @@ aeternity.initStaticClient = async () => {
 
   // TESTNET
   return Universal({
+    accounts: [
+      MemoryAccount({keypair: Crypto.generateKeyPair()}),
+    ],
     compilerUrl: COMPILER_URL,
     nodes: [
       {
