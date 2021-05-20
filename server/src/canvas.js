@@ -6,7 +6,7 @@ const ipfsWrapper = require('./ipfs.js');
 const storage = require('./storage.js');
 const svgUtil = require('./util/svg');
 const svgstore = require('svgstore');
-const SVGO = require('svgo');
+const {optimize, extendDefaultPlugins} = require('svgo');
 
 const canvas = {};
 
@@ -125,16 +125,19 @@ canvas.mergeSVG = async (sources) => {
     // REMOVES </svg> at the end to allow for insertion of use-strings
     const mergedString = spritesString.substr(0, spritesString.length - 6) + useStrings + "</svg>";
 
-    const svgo = new SVGO({
+    const optimizedString = (await optimize(mergedString, {
         full: true,
         floatPrecision: 0,
-        plugins: [
-            {convertPathData: true},
-            {mergePaths: true},
-        ]
-    });
-
-    const optimizedString = (await svgo.optimize(mergedString)).data;
+        plugins: extendDefaultPlugins([
+            {
+                name: 'convertPathData',
+                active: true,
+            }, {
+                name: 'mergePaths',
+                active: true,
+            }
+        ])
+    })).data;
 
     fs.writeFileSync(path.join(__dirname, canvas.pathByHeight() + ".svg"), optimizedString);
     fs.writeFileSync(path.join(__dirname, canvas.pathLatest) + ".svg", optimizedString);

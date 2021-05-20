@@ -129,7 +129,7 @@
   import Countdown from '~/components/Countdown'
   import { AeButton, AeDivider } from '@aeternity/aepp-components/src/components'
   import WhiteHeader from '~/components/WhiteHeader'
-  import 'swiper/css/swiper.css'
+  import 'swiper/swiper-bundle.css'
   import config from '~/config'
   import aeternity from '~/utils/aeternityNetwork'
 

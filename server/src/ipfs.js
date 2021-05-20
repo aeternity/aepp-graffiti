@@ -1,4 +1,4 @@
-const ipfsClient = require('ipfs-http-client');
+const { create } = require('ipfs-http-client');
 
 class IPFS {
 
@@ -6,11 +6,10 @@ class IPFS {
 
     constructor() {
         if (!process.env.IPFS_URL) throw "IPFS_URL is not set";
-        this.node = ipfsClient(process.env.IPFS_URL);
+        this.node = create(process.env.IPFS_URL);
     }
 
-
-    _asyncGeneratorToArray = async (generator) => {
+    asyncGeneratorToArray = async (generator) => {
         const all = [];
         for await (const result of generator) {
             all.push(result);
@@ -32,23 +31,20 @@ class IPFS {
     };
 
     addFile = async (buffer) => {
-        const generator = this.node.add({
+        return this.node.add({
             content: buffer,
         });
-        return this._asyncGeneratorToArray(generator);
     };
 
     pinFile = (hash) => {
         return this.node.pin.add(hash);
     };
 
-    getPinnedFiles = async () => {
-        return this._asyncGeneratorToArray(this.node.pin.ls())
-    };
-
     getFile = async (hash) => {
-        const data = await this._asyncGeneratorToArray(this.node.cat(hash));
-        if (data.length) return Buffer.concat(data);
+        if (await ipfs.checkFileExists(hash)) {
+            const data = await this.asyncGeneratorToArray(this.node.cat(hash));
+            return Buffer.concat(data);
+        }
 
         throw Error(`IPFS: ${hash} not found`);
     };

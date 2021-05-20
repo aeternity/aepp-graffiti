@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:lts
 
 RUN apt update
 RUN apt install -y software-properties-common ca-certificates wget curl ssh git python build-essential
