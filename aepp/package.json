@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@aeternity/aepp-components": "github:aeternity/aepp-components.git#develop",
-    "@aeternity/aepp-sdk": "^8.0.0",
+    "@aeternity/aepp-sdk": "^8.2.1",
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
     "dronetracer": "github:kenodressel/DroneTracer.git#master",

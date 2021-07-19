@@ -9,7 +9,7 @@
     },
     "license": "ISC",
     "dependencies": {
-        "@aeternity/aepp-sdk": "6.0.2",
+        "@aeternity/aepp-sdk": "8.2.1",
         "aeproject-lib": "1.0.2"
     },
     "devDependencies": {

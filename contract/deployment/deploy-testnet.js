@@ -1,11 +1,10 @@
 const fs = require('fs');
-const Universal = require('@aeternity/aepp-sdk').Universal;
+const {Universal, MemoryAccount, Node} = require('@aeternity/aepp-sdk');
 
 const deploy = async () => {
 
     const config = {
-        host: 'https://sdk-testnet.aepps.com/',
-        internalHost: 'https://sdk-testnet.aepps.com/',
+        host: 'https://testnet.aeternity.io/',
         compilerUrl: 'https://compiler.aepps.com'
     };
 
@@ -15,10 +14,11 @@ const deploy = async () => {
     };
 
     const client = await Universal({
-        url: config.host,
-        internalUrl: config.internalHost,
-        keypair: keypair,
-        compilerUrl: config.compilerUrl
+        nodes: [{name: 'node', instance: await Node({url: config.host})}],
+        compilerUrl: config.compilerUrl,
+        accounts: [
+            MemoryAccount({keypair: keypair}),
+        ],
     });
 
     let contractSource = fs.readFileSync('../contracts/GraffitiAuction.aes', 'utf-8');
