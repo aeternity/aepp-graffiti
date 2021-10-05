@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const {Universal, Node, MemoryAccount, Crypto} = require('@aeternity/aepp-sdk');
+const {Universal, Node} = require('@aeternity/aepp-sdk');
 const blockchain = {};
 
 const contractSource = fs.readFileSync('./src/GraffitiAuction.aes', 'utf-8');
@@ -21,7 +21,6 @@ blockchain.init = async () => {
                     url: process.env.AETERNITY_URL,
                 }),
             }],
-        accounts: [MemoryAccount({keypair: Crypto.generateKeyPair()})],
         compilerUrl: "https://compiler.aepps.com",
     }).catch(console.error);
 

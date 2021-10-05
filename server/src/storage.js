@@ -16,6 +16,7 @@ storage.init = () => {
     const params = {
         Bucket: process.env.S3_BUCKET
     };
+
     client.listObjects(params, function (err, data) {
         if (err) return console.error("unable to list dir:", err.stack);
         data.Contents.map(remoteFile => {
@@ -23,7 +24,22 @@ storage.init = () => {
             alreadyStored[ipfsHash] = Object.assign({}, alreadyStored[ipfsHash], {[ext]: true});
         });
         console.log(alreadyStored)
+
+        fs.readdir(path.join(__dirname, `../data/backup`), (_, localFiles) => {
+            localFiles.forEach(localFile => {
+                const [ipfsHash, ext] = localFile.split('.');
+                if (shouldUpload(ipfsHash, ext)){
+                    alreadyStored[ipfsHash] = Object.assign({}, alreadyStored[ipfsHash], {[ext]: true});
+                    fs.readFile(path.join(__dirname, `../data/backup`, localFile), 'utf8', (_, file) => {
+                        console.log("uploading not backed up local file", localFile)
+                        backupRemote(localFile, file)
+                    })
+                }
+            });
+        });
     });
+
+    storage.uploadAllToIPFS()
 };
 
 storage.uploadAllToIPFS = () => {
@@ -36,15 +52,16 @@ storage.uploadAllToIPFS = () => {
             await promiseAcc;
 
             const [ipfsHash, ext] = remoteFile.Key.split('.');
+            if(await ipfsWrapper.checkFileExists(ipfsHash)) return Promise.resolve()
+
             alreadyStored[ipfsHash] = Object.assign({}, alreadyStored[ipfsHash], {[ext]: true});
 
-            console.log("downloading s3", ipfsHash)
             try {
+                console.log("downloading s3", ipfsHash)
                 const file = await storage.retrieveSVG(ipfsHash);
                 const ipfsUpload = await ipfsWrapper.addFile(file);
                 ipfsWrapper.pinFile(ipfsHash);
-                console.log("uploading ipfs", ipfsUpload[0].path);
-                console.log("downloading ipfs", await ipfsWrapper.getFile(ipfsHash));
+                console.log("uploaded ipfs", ipfsUpload.path);
                 return ipfsUpload;
             } catch (e) {
                 console.warn(e);
