@@ -243,7 +243,7 @@
         try {
           this.height = await this.client.height()
 
-          const allAuctionSlots = await this.contractInstance.methods.all_auction_slots()
+          const allAuctionSlots = await this.contractInstance.methods.all_auction_slots(aeternity.tempCallOptions)
 
           this.slots = allAuctionSlots.decodedResult
             .sort((a, b) => a.end_block_height - b.end_block_height)

@@ -8,12 +8,15 @@ const TESTNET_URL = 'https://testnet.aeternity.io';
 const MAINNET_URL = 'https://mainnet.aeternity.io';
 const COMPILER_URL = 'https://compiler.aepps.com';
 
+const tempCallOptions = { gas: 100000000000 };
+
 const aeternity = {
   client: null,
   address: null,
   height: null,
   networkId: null,
-  static: false
+  static: false,
+  tempCallOptions: tempCallOptions,
 }
 
 aeternity.updateHeight = async () => {
@@ -36,6 +39,8 @@ aeternity.initProvider = async () => {
       .then(balance => `${BlockchainUtil.atomsToAe(balance)}`.replace(',', ''))
       .catch(() => '0')
     aeternity.contract = await aeternity.client.getContractInstance(contractSource, {contractAddress: config.blockchainSettings[aeternity.networkId]})
+    aeternity.client.api.protectedDryRunTxs = aeternity.client.api.dryRunTxs;
+
     return true
   } catch (e) {
     console.warn(e)
@@ -74,7 +79,6 @@ aeternity.initStaticClient = async () => {
       }],
   });
   */
-
 };
 
 /**
