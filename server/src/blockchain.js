@@ -26,7 +26,7 @@ blockchain.init = async () => {
     }).catch(console.error);
 
     contract = await client.getContractInstance(contractSource, {contractAddress: process.env.CONTRACT_ADDRESS});
-    aeternity.client.api.protectedDryRunTxs = aeternity.client.api.dryRunTxs;
+    client.api.protectedDryRunTxs = client.api.dryRunTxs;
 
     console.log('initialized aeternity sdk');
     return client;

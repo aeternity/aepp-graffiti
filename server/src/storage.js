@@ -25,21 +25,25 @@ storage.init = () => {
         });
         console.log(alreadyStored)
 
-        fs.readdir(path.join(__dirname, `../data/backup`), (_, localFiles) => {
-            localFiles.forEach(localFile => {
-                const [ipfsHash, ext] = localFile.split('.');
-                if (shouldUpload(ipfsHash, ext)){
-                    alreadyStored[ipfsHash] = Object.assign({}, alreadyStored[ipfsHash], {[ext]: true});
-                    fs.readFile(path.join(__dirname, `../data/backup`, localFile), 'utf8', (_, file) => {
-                        console.log("uploading not backed up local file", localFile)
-                        backupRemote(localFile, file)
-                    })
-                }
-            });
-        });
+        if (process.env.BACKUP_REMOTE) storage.uploadAllRemote();
     });
 
-    storage.uploadAllToIPFS()
+    if (process.env.BACKUP_IPFS) storage.uploadAllToIPFS()
+};
+
+storage.uploadAllRemote = () => {
+    fs.readdir(path.join(__dirname, `../data/backup`), (_, localFiles) => {
+        localFiles.forEach(localFile => {
+            const [ipfsHash, ext] = localFile.split('.');
+            if (shouldUpload(ipfsHash, ext)){
+                alreadyStored[ipfsHash] = Object.assign({}, alreadyStored[ipfsHash], {[ext]: true});
+                fs.readFile(path.join(__dirname, `../data/backup`, localFile), 'utf8', (_, file) => {
+                    console.log("uploading not backed up local file", localFile)
+                    backupRemote(localFile, file)
+                })
+            }
+        });
+    });
 };
 
 storage.uploadAllToIPFS = () => {
