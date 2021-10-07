@@ -7,6 +7,7 @@ const contractSource = fs.readFileSync('./src/GraffitiAuction.aes', 'utf-8');
 
 let client = null;
 let contract = null;
+let tempCallOptions = { gas: 100000000000 };
 
 blockchain.init = async () => {
 
@@ -25,6 +26,7 @@ blockchain.init = async () => {
     }).catch(console.error);
 
     contract = await client.getContractInstance(contractSource, {contractAddress: process.env.CONTRACT_ADDRESS});
+    aeternity.client.api.protectedDryRunTxs = aeternity.client.api.dryRunTxs;
 
     console.log('initialized aeternity sdk');
     return client;
@@ -38,14 +40,14 @@ blockchain.height = async () => {
 blockchain.getMetaData = async () => {
     if (!client) await blockchain.init();
 
-    const response = await contract.methods.get_auction_metadata().catch(console.error);
+    const response = await contract.methods.get_auction_metadata(tempCallOptions).catch(console.error);
     return response.decodedResult
 };
 
 blockchain.auctionSlots = async () => {
     if (!client) await blockchain.init();
 
-    const response = await contract.methods.all_auction_slots().catch(console.error);
+    const response = await contract.methods.all_auction_slots(tempCallOptions).catch(console.error);
     return response.decodedResult;
 };
 
