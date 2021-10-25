@@ -1,4 +1,4 @@
-name: Web Pipeline
+name: Server Pipeline
 
 on:
   push:
@@ -12,22 +12,11 @@ on:
 jobs:
   main:
     runs-on: ubuntu-latest
-    env:
-      TARGET: ${{ format('/home/{0}/superhero-ui', secrets.SSR_STAGE_USER) }}
       
-    name: Web Build/Test/Docker
+    name: Server Build/Docker
     steps:
-      - if: github.ref != 'refs/heads/develop'
-        uses: actions/checkout@v2
-        with:
-          ref: develop
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 100
-
-      - if: github.ref != 'refs/heads/develop'
-        run: git branch develop origin/develop
-
+      
       - name: Log in to Docker Hub
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
