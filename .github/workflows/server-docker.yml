@@ -60,12 +60,16 @@ jobs:
         shell: bash
         run: |
           echo "::set-output name=git-sha::$(git rev-parse --short HEAD)"
-      
+
+      - name: List dir for debug
+        run: |
+          ls -la .
+
       - name: Build and push docker image
         if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'synchronize'
         uses: docker/build-push-action@v2
         with:
-          context: server/
+          context: server
           file: Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
