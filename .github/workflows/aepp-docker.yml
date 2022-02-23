@@ -52,7 +52,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'main') }}
             type=ref,event=tag
-            type=ref,event=pr
+            type=ref,value=stg,event=pr
       
       - name: Get commit sha on PR Sync
         if: github.event_name == 'pull_request' && github.event.action == 'synchronize'  
