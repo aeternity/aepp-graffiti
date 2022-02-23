@@ -8,7 +8,7 @@ on:
 env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
   ENV: "stg"
-  APP: "aepp-grafitti"
+  APP: "aepp-graffiti"
 
 jobs:
   main:
@@ -52,7 +52,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'main') }}
             type=ref,event=tag
-            type=ref,value=stg,event=pr
+            type=raw,value=stg,event=pr
       
       - name: Get commit sha on PR Sync
         if: github.event_name == 'pull_request' && github.event.action == 'synchronize'  
@@ -94,7 +94,7 @@ jobs:
         uses: aeternity/ae-github-actions/argocd-pr-sync@v4
         with:
           git-sha: ${{ steps.git-sha.outputs.git-sha }}
-          url-prefix: pr-${{ env.PR_NUMBER }}
+          url-prefix: stg
           env: ${{ env.ENV }}
           app: ${{ env.APP }}
 
@@ -102,7 +102,7 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.action == 'opened'
         uses: aeternity/ae-github-actions/argocd-deploy@v4
         with:
-          url-prefix: pr-${{ env.PR_NUMBER }}
+          url-prefix: stg
           env: ${{ env.ENV }}
           app: ${{ env.APP }}
 
@@ -110,7 +110,7 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.action == 'closed' && startsWith(github.head_ref, 'release') != true
         uses: aeternity/ae-github-actions/argocd-undeploy@v4
         with:
-          url-prefix: pr-${{ env.PR_NUMBER }}
+          url-prefix: stg
           env: ${{ env.ENV }}
           app: ${{ env.APP }}
 
@@ -120,7 +120,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: Deployed to https://pr-${{ env.PR_NUMBER }}-${{ env.APP }}.${{ env.ENV }}.aepps.com
+          msg: Deployed to https://stg-${{ env.APP }}.${{ env.ENV }}.aepps.com
           check_for_duplicate_msg: true
 
       - name: Push changes
