@@ -1,4 +1,4 @@
-name: Grafitti Server Pipeline
+name: Aepp Grafitti Staging Pipeline
 
 on:
   pull_request:
@@ -8,17 +8,17 @@ on:
 env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
   ENV: "stg"
-  APP: "graffiti-server"
+  APP: "aepp-graffiti"
 
 jobs:
   main:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     name: Web build docker
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      
+
       - name: Set up Docker Buildx
         id: buildx
         # Use the action from the master, as we've seen some inconsistencies with @v1
@@ -48,25 +48,25 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: aeternity/graffiti-server
+          images: aeternity/aepp-grafitti
           tags: |
             type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'main') }}
             type=ref,event=tag
-            type=ref,event=pr
-      
+            type=raw,value=stg,event=pr
+
       - name: Get commit sha on PR Sync
-        if: github.event_name == 'pull_request' && github.event.action == 'synchronize'  
+        if: github.event_name == 'pull_request' && github.event.action == 'synchronize'
         id: git-sha
         shell: bash
         run: |
           echo "::set-output name=git-sha::$(git rev-parse --short HEAD)"
-      
+
       - name: Build and push docker image
         if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'synchronize'
         uses: docker/build-push-action@v2
         with:
-          context: ./server
-          file: ./server/Dockerfile
+          context: ./aepp
+          file: ./aepp/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -88,13 +88,13 @@ jobs:
           ref: stg
           persist-credentials: false
           fetch-depth: 0
-      
+
       - name: Staging PR Sync
         if: github.event_name == 'pull_request' && github.event.action == 'synchronize'
         uses: aeternity/ae-github-actions/argocd-pr-sync@v4
         with:
           git-sha: ${{ steps.git-sha.outputs.git-sha }}
-          url-prefix: pr-${{ env.PR_NUMBER }}
+          url-prefix: stg
           env: ${{ env.ENV }}
           app: ${{ env.APP }}
 
@@ -102,7 +102,7 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.action == 'opened'
         uses: aeternity/ae-github-actions/argocd-deploy@v4
         with:
-          url-prefix: pr-${{ env.PR_NUMBER }}
+          url-prefix: stg
           env: ${{ env.ENV }}
           app: ${{ env.APP }}
 
@@ -110,7 +110,7 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.action == 'closed' && startsWith(github.head_ref, 'release') != true
         uses: aeternity/ae-github-actions/argocd-undeploy@v4
         with:
-          url-prefix: pr-${{ env.PR_NUMBER }}
+          url-prefix: stg
           env: ${{ env.ENV }}
           app: ${{ env.APP }}
 
@@ -120,7 +120,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          msg: Deployed to https://pr-${{ env.PR_NUMBER }}-${{ env.APP }}.${{ env.ENV }}.aepps.com
+          msg: Deployed to https://stg-${{ env.APP }}.${{ env.ENV }}.aepps.com
           check_for_duplicate_msg: true
 
       - name: Push changes
