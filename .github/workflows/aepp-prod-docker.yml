@@ -1,4 +1,4 @@
-name: Production Dex UI Pipeline
+name: Production Aepp Graffiti Pipeline
 
 on:
   push:
@@ -14,7 +14,7 @@ env:
 jobs:
   main:
     runs-on: ubuntu-latest
-    name: Web build docker
+    name: Production Aepp Graffiti Pipeline
     steps:
       - uses: actions/checkout@v2
         with:
