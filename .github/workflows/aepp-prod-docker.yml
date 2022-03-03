@@ -2,6 +2,8 @@ name: Production Aepp Graffiti Pipeline
 
 on:
   push:
+    paths:
+      - 'aepp/**'
     branches:
       - master
     release:

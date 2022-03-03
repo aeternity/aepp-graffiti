@@ -2,6 +2,8 @@ name: Grafitti Server Staging Pipeline
 
 on:
   pull_request:
+    paths:
+      - 'server/**'
     branches: [ master ]
     types: [ opened, synchronize, closed ]
 
@@ -12,13 +14,13 @@ env:
 
 jobs:
   main:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     name: Web build docker
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      
+
       - name: Set up Docker Buildx
         id: buildx
         # Use the action from the master, as we've seen some inconsistencies with @v1
@@ -53,14 +55,14 @@ jobs:
             type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'main') }}
             type=ref,event=tag
             type=ref,event=pr
-      
+
       - name: Get commit sha on PR Sync
-        if: github.event_name == 'pull_request' && github.event.action == 'synchronize'  
+        if: github.event_name == 'pull_request' && github.event.action == 'synchronize'
         id: git-sha
         shell: bash
         run: |
           echo "::set-output name=git-sha::$(git rev-parse --short HEAD)"
-      
+
       - name: Build and push docker image
         if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'synchronize'
         uses: docker/build-push-action@v2
@@ -88,7 +90,7 @@ jobs:
           ref: stg
           persist-credentials: false
           fetch-depth: 0
-      
+
       - name: Staging PR Sync
         if: github.event_name == 'pull_request' && github.event.action == 'synchronize'
         uses: aeternity/ae-github-actions/argocd-pr-sync@v4

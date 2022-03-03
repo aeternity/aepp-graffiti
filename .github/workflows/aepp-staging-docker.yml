@@ -2,6 +2,8 @@ name: Aepp Grafitti Staging Pipeline
 
 on:
   pull_request:
+    paths:
+      - 'aepp/**'
     branches: [ master ]
     types: [ opened, synchronize, closed ]
 
