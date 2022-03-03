@@ -17,7 +17,7 @@ concurrency: graffiti_staging_environment
 jobs:
   main:
     runs-on: ubuntu-latest
-    name: Web build docker
+    name: Server Grafitti Staging Build Docker
     steps:
       - uses: actions/checkout@v2
         with:
