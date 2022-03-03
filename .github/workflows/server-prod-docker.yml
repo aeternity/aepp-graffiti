@@ -13,6 +13,8 @@ env:
   ENV: "prd"
   APP: "graffiti-server"
 
+concurrency: graffiti_production_environment
+
 jobs:
   main:
     runs-on: ubuntu-latest
