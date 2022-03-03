@@ -12,6 +12,8 @@ env:
   ENV: "stg"
   APP: "graffiti-server"
 
+concurrency: graffiti_staging_environment
+
 jobs:
   main:
     runs-on: ubuntu-latest
