@@ -1,6 +1,4 @@
-const API_URL = 'https://graffiti-server.stg.aepps.com'
-//const API_URL = 'http://localhost:3000';
-// const API_URL = 'http://192.168.0.157:3000';
+const API_URL = process.env.SERVER_URL;
 
 export default {
   // HARDCODED SETTINGS

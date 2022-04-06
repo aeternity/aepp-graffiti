@@ -5,7 +5,7 @@ const webpack = require('webpack');
 
 new webpack.DefinePlugin({
   'process.env':{
-    'SERVER_URL': JSON.stringify('https://graffiti-server.prd.aepps.com')
+    'SERVER_URL': JSON.stringify('https://graffiti-server.stg.aepps.com')
   }
 }),
 

@@ -9,7 +9,8 @@ USER node
 
 RUN npm install
 COPY --chown=node:node . /home/node/app
-RUN npm run build
+ARG COMMAND
+RUN npm run $COMMAND
 
 FROM nginx:1.13.7-alpine
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
