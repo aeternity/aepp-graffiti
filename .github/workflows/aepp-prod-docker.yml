@@ -78,7 +78,7 @@ jobs:
         with:
           context: ./aepp
           file: ./aepp/Dockerfile
-          build-args: build
+          build-args: COMMAND=build
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
