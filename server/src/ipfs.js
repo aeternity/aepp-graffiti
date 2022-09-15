@@ -9,6 +9,10 @@ class IPFS {
         this.node = create(process.env.IPFS_URL);
     }
 
+    id = async () => {
+        return this.node.id();
+    }
+
     asyncGeneratorToArray = async (generator) => {
         const all = [];
         for await (const result of generator) {

@@ -157,7 +157,7 @@
 </template>
 
 <script>
-  import { Universal } from '@aeternity/aepp-sdk/es/ae/universal'
+  import { Universal, Node } from '@aeternity/aepp-sdk/es'
   import Util from '~/utils/blockchainUtil'
   import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components/src/components'
   import BiggerLoader from '~/components/BiggerLoader'
@@ -165,6 +165,7 @@
   import config from '~/config'
   import axios from 'axios'
   import contractSource from '~/assets/GraffitiAuction.aes'
+  import aeternity from '../../utils/aeternityNetwork'
 
   export default {
     name: 'Admin',
@@ -296,15 +297,21 @@
       }
     },
     async created () {
-      const url = this.$route.query.testnet ? 'https://sdk-testnet.aepps.com/' : 'https://sdk-mainnet.aepps.com/'
+      const url = this.$route.query.testnet ? 'https://testnet.aeternity.io/' : 'https://mainnet.aeternity.io/'
       const networkId = this.$route.query.testnet ? 'ae_uat' : 'ae_mainnet'
 
       this.client = await Universal({
-        url: url,
-        internalUrl: url,
+        nodes: [
+          {
+            name: 'node',
+            instance: await Node({
+              url,
+            }),
+          }],
         compilerUrl: 'https://compiler.aepps.com'
       }).catch(console.error)
 
+      this.client.api.protectedDryRunTxs = this.client.api.dryRunTxs;
       this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.blockchainSettings[networkId] })
 
       this.runHealthChecks()
