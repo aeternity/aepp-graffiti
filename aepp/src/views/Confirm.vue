@@ -170,7 +170,7 @@
             this.ipfsAddr,
             this.position.x,
             this.position.y,
-            { amount: Util.aeToAtoms(this.bid.amount).toFixed() })
+            { amount: Util.aeToAtoms(this.bid.amount).toFixed(), gas: 300000 })
         } catch (e) {
           console.error(e)
           throw Error(JSON.stringify(e.decodedResult))

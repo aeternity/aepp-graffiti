@@ -1,4 +1,4 @@
-@compiler >= 4
+@compiler >= 6
 
 include "List.aes"
 include "Pair.aes"
