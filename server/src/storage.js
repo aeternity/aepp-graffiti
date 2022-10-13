@@ -2,6 +2,8 @@ const fs = require('fs');
 const S3 = require('aws-sdk/clients/s3');
 const path = require('path');
 const ipfsWrapper = require('./ipfs.js');
+const blockchain = require("./blockchain");
+const isIPFS = require('is-ipfs');
 
 const client = new S3({
     accessKeyId: process.env.S3_KEY,
@@ -10,95 +12,117 @@ const client = new S3({
 });
 
 const storage = {};
-const alreadyStored = {};
 
-storage.init = () => {
-    const params = {
-        Bucket: process.env.S3_BUCKET
-    };
+storage.init = async () => {
+    if (process.env.SYNC_STORAGE) {
+        const fileLocations = await storage.compileFileList();
+        await storage.synchronizeStorage(fileLocations);
 
-    client.listObjects(params, function (err, data) {
-        if (err) return console.error("unable to list dir:", err.stack);
-        data.Contents.map(remoteFile => {
-            const [ipfsHash, ext] = remoteFile.Key.split('.');
-            alreadyStored[ipfsHash] = Object.assign({}, alreadyStored[ipfsHash], {[ext]: true});
-        });
-        console.log(alreadyStored)
-
-        if (process.env.BACKUP_REMOTE) storage.uploadAllRemote();
-    });
-
-    if (process.env.BACKUP_IPFS) storage.uploadAllToIPFS()
+        console.log("missing files:", Object.entries(await storage.compileFileList())
+            .filter(([ipfsHash, storages]) => isIPFS.multihash(ipfsHash) && (!storages.s3 || !storages.local || !storages.ipfs))
+            .map(([ipfsHash]) => ipfsHash));
+    }
 };
 
-storage.uploadAllRemote = () => {
-    fs.readdir(path.join(__dirname, `../data/backup`), (_, localFiles) => {
-        localFiles.forEach(localFile => {
-            const [ipfsHash, ext] = localFile.split('.');
-            if (shouldUpload(ipfsHash, ext)){
-                alreadyStored[ipfsHash] = Object.assign({}, alreadyStored[ipfsHash], {[ext]: true});
-                fs.readFile(path.join(__dirname, `../data/backup`, localFile), 'utf8', (_, file) => {
-                    console.log("uploading not backed up local file", localFile)
-                    backupRemote(localFile, file)
-                })
+storage.synchronizeStorage = async (fileLocations) => {
+    const downloadToLocal = async (ipfsHash, storages) => {
+        if (storages.local) return true;
+        if (storages.s3) {
+            const content = await storage.retrieveSVG(ipfsHash).catch(console.error)
+            if (content) {
+                await backupLocal(`${ipfsHash}.svg`, content);
+                process.stdout.write('-')
+                fileLocations[ipfsHash].local = true
+                return true
             }
-        });
-    });
+        }
+        if (storages.ipfs) {
+            const content = await ipfsWrapper.getFile(ipfsHash).catch(console.error)
+            if (content) {
+                await backupLocal(`${ipfsHash}.svg`, content);
+                process.stdout.write('-')
+                fileLocations[ipfsHash].local = true
+                return true
+            }
+        }
+    }
+
+    const uploadToRemote = async (ipfsHash, storages) => {
+        if (!storages.s3) {
+            await storage.backupSVG(ipfsHash, readLocal(`${ipfsHash}.svg`))
+            process.stdout.write('+')
+            fileLocations[ipfsHash].s3 = true
+        }
+        if (!storages.ipfs) {
+            const uploaded = await ipfsWrapper.addFile(readLocal(`${ipfsHash}.svg`))
+            await ipfsWrapper.pinFile(uploaded.path)
+            console.log(uploaded.path, ipfsHash)
+            process.stdout.write('*')
+            fileLocations[ipfsHash].ipfs = true
+        }
+        if (!storages.ipfsPin) {
+            process.stdout.write('p')
+            await ipfsWrapper.pinFile(ipfsHash)
+        }
+    };
+
+    for (const [ipfsHash, storages] of Object.entries(fileLocations)) {
+        if (isIPFS.multihash(ipfsHash)) {
+            const hasLocal = await downloadToLocal(ipfsHash, storages);
+            if (hasLocal) await uploadToRemote(ipfsHash, storages);
+        }
+    }
 };
 
-storage.uploadAllToIPFS = () => {
-    const params = {
-        Bucket: process.env.S3_BUCKET
-    };
-    client.listObjects(params, function (err, data) {
-        if (err) return console.error("unable to list dir:", err.stack);
-        data.Contents.reduce(async (promiseAcc, remoteFile) => {
-            await promiseAcc;
+storage.compileFileList = async () => {
+    const fileLocations = {};
 
-            const [ipfsHash, ext] = remoteFile.Key.split('.');
-            if(await ipfsWrapper.checkFileExists(ipfsHash)) return Promise.resolve()
+    let isTruncated = true;
+    let marker;
+    while (isTruncated) {
+        let params = {Bucket: process.env.S3_BUCKET};
+        if (marker) params.Marker = marker;
+        const response = await client.listObjects(params).promise();
+        response.Contents.forEach(remoteFile => {
+            const [ipfsHash] = remoteFile.Key.split('.');
+            fileLocations[ipfsHash] = {s3: true}
+        });
+        isTruncated = response.IsTruncated
+        if (isTruncated) marker = response.Contents.slice(-1)[0].Key;
+    }
 
-            alreadyStored[ipfsHash] = Object.assign({}, alreadyStored[ipfsHash], {[ext]: true});
-
-            try {
-                console.log("downloading s3", ipfsHash)
-                const file = await storage.retrieveSVG(ipfsHash);
-                const ipfsUpload = await ipfsWrapper.addFile(file);
-                ipfsWrapper.pinFile(ipfsHash);
-                console.log("uploaded ipfs", ipfsUpload.path);
-                return ipfsUpload;
-            } catch (e) {
-                console.warn(e);
-                return Promise.resolve();
-            }
-        }, Promise.resolve());
-        console.log("alreadyStored", alreadyStored)
+    const localFiles = fs.readdirSync(path.join(__dirname, `../data/backup`));
+    localFiles.forEach(localFile => {
+        const [ipfsHash] = localFile.split('.');
+        if (fileLocations[ipfsHash] !== undefined) fileLocations[ipfsHash].local = true
+        else fileLocations[ipfsHash] = {local: true}
     });
-}
 
-const shouldUpload = (ipfsHash, ext) => {
-    return !alreadyStored[ipfsHash] || !alreadyStored[ipfsHash][ext];
+    await blockchain.init();
+    await blockchain.auctionSlots().then(slots => {
+        slots.forEach(slot => {
+            slot.successful_bids.forEach(bid => {
+                if (fileLocations[bid.data.artwork_reference] !== undefined) fileLocations[bid.data.artwork_reference].contract = true
+                else fileLocations[bid.data.artwork_reference] = {contract: true}
+            })
+        })
+    })
+
+    const ipfsPins = await ipfsWrapper.pinList();
+    for (const ipfsHash of Object.keys(fileLocations)) {
+        fileLocations[ipfsHash].ipfs = await ipfsWrapper.checkFileExists(ipfsHash);
+        fileLocations[ipfsHash].ipfsPin = ipfsPins.includes(ipfsHash);
+    }
+
+    return fileLocations
 };
 
 storage.backupSVG = async (ipfsHash, svgFileBuffer) => {
     try {
-        if (!shouldUpload(ipfsHash, 'svg')) return;
         backupLocal(`${ipfsHash}.svg`, svgFileBuffer);
         await backupRemote(`${ipfsHash}.svg`, svgFileBuffer);
-        alreadyStored[ipfsHash] = Object.assign({}, alreadyStored[ipfsHash], {svg: true});
     } catch (e) {
         console.error(`${ipfsHash}.svg upload failed with:`, e);
-    }
-};
-
-storage.backupBid = async (ipfsHash, bid) => {
-    try {
-        if (!shouldUpload(ipfsHash, 'json')) return;
-        backupLocal(`${ipfsHash}.json`, JSON.stringify(bid));
-        await backupRemote(`${ipfsHash}.json`, JSON.stringify(bid));
-        alreadyStored[ipfsHash] = Object.assign({}, alreadyStored[ipfsHash], {json: true});
-    } catch (e) {
-        console.error(`${ipfsHash}.json upload failed with:`, e);
     }
 };
 
@@ -116,27 +140,19 @@ storage.retrieveSVG = (ipfsHash) => {
 };
 
 const backupRemote = (remoteName, file) => {
-    return new Promise(function (resolve, reject) {
-
-        const params = {
-            Body: file,
-            Bucket: process.env.S3_BUCKET,
-            Key: remoteName
-        };
-
-        client.putObject(params, (err) => {
-            if (err) {
-                console.error("unable to upload:", err.stack);
-                return reject();
-            }
-            resolve();
-        });
-    });
+    return client.putObject({
+        Body: file,
+        Bucket: process.env.S3_BUCKET,
+        Key: remoteName
+    }).promise();
 };
-
 
 const backupLocal = (fileName, file) => {
     fs.writeFileSync(path.join(__dirname, `../data/backup/${fileName}`), file);
+};
+
+const readLocal = (fileName) => {
+    return fs.readFileSync(path.join(__dirname, `../data/backup/${fileName}`), 'utf-8');
 };
 
 module.exports = storage;

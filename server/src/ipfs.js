@@ -1,4 +1,5 @@
 const { create } = require('ipfs-http-client');
+const isIPFS = require('is-ipfs');
 
 class IPFS {
 
@@ -22,7 +23,7 @@ class IPFS {
     };
 
     checkFileExists = async (hash) => {
-        if(!hash) return true
+        if (!isIPFS.multihash(hash)) return false;
         const result = await Promise.race([
             this.node.files.stat(`/ipfs/${hash}`),
             new Promise((resolve) => {
@@ -42,8 +43,20 @@ class IPFS {
     };
 
     pinFile = (hash) => {
-        return this.node.pin.add(hash);
+        return Promise.race([
+            this.node.pin.add(hash),
+            new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(null);
+                }, 1000);
+            })
+        ]);
     };
+
+    pinList = async () => {
+        const pins = await this.asyncGeneratorToArray(this.node.pin.ls());
+        return pins.map(pin => pin.cid.toString());
+    }
 
     getFile = async (hash) => {
         if (await ipfs.checkFileExists(hash)) {

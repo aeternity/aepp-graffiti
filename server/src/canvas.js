@@ -3,7 +3,6 @@ const path = require('path');
 const svg2png = require('svg2png');
 const blockchain = require('./blockchain.js');
 const ipfsWrapper = require('./ipfs.js');
-const storage = require('./storage.js');
 const svgUtil = require('./util/svg');
 const svgstore = require('svgstore');
 const {optimize} = require('svgo');
@@ -19,18 +18,8 @@ const pixelsPerCentimeter = 1;
 const smallerScale = 0.3;
 const width = canvasCentimeterWidth * pixelsPerCentimeter;
 const height = canvasCentimeterHeight * pixelsPerCentimeter;
-const shardSettings = {
-    sets: [
-        {
-            horizontalShards: 1,
-            verticalShards: 1,
-            scaleFactor: 1
-        }
-    ]
-};
 
 let current_height = 0;
-
 canvas.latestSeqId = -1;
 
 intervalJob = async () => {
@@ -183,11 +172,6 @@ canvas.render = async () => {
         canvas.latestSeqId = latestSeqId;
     }
 
-    // backup data
-    Promise.all(successful_bids
-        .map(async bid => await storage.backupBid(bid.data.artwork_reference, bid)))
-        .catch((e) => console.warn('bid upload failed', e.message));
-
     const startIpfs = new Date().getTime();
     // fetching files from ipfs
     const ipfsSources = await Promise.all(successful_bids.map(bid => {
@@ -205,11 +189,6 @@ canvas.render = async () => {
         .map(async data => {
             const {width, height, svg} = svgUtil.getSVGDimensions(data.filebuffer.toString('utf8'));
             if (!svg) return console.error('Could not get width and height from svg ' + data.bid.data.artwork_reference);
-
-            storage.backupSVG(data.bid.data.artwork_reference, svg).catch((e) => {
-                console.warn('svg upload failed');
-                console.warn(e.message);
-            });
 
             return {
                 svg: svg,
