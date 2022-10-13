@@ -62,7 +62,7 @@ app.post('/sanity/:check', errorHandler(sanity.runCheck));
 
 
 // general helpers for all routes
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
     console.error(err.stack);
     if (res.headersSent) return;
     res.status(500).send(err.message);
@@ -73,21 +73,25 @@ app.use((req, res) => {
     res.sendStatus(404);
 });
 
-try {
-    canvas.init();
-} catch (e) {
-    console.warn("First canvas.init call failed, trying again in 30 seconds");
+const start = async () => {
     try {
-        setTimeout(() => canvas.init(), 30000);
+        await storage.init();
     } catch (e) {
-        console.error("Could not connect to blockchain client.");
+        console.error("Could not initialize to storage.", e);
     }
+
+    try {
+        await canvas.init();
+    } catch (e) {
+        console.warn("First canvas.init call failed, trying again in 30 seconds");
+        try {
+            setTimeout(() => canvas.init(), 30000);
+        } catch (e) {
+            console.error("Could not connect to blockchain client.");
+        }
+    }
+
+    app.listen(3000);
 }
 
-try {
-    storage.init();
-} catch (e) {
-    console.error("Could not initialize to storage.", e);
-}
-
-app.listen(3000);
+void start();
