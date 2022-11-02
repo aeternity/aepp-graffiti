@@ -195,11 +195,8 @@
       }
     },
     computed: {
-      blockchainSettings () {
-        return config.blockchainSettings
-      },
-      apiURL () {
-        return config.apiUrl
+      config () {
+        return config.config
       },
       timeZoneString () {
         if (!this.timezone || this.timezone === 0) return null
@@ -233,12 +230,12 @@
           testFiles: null,
           testContract: null
         }
-        axios.get(`${this.apiURL}/health/ipfsNode`).then(() => this.health.ipfsNode = true).catch(() => {
+        axios.get(`${this.config.apiURL}/health/ipfsNode`).then(() => this.health.ipfsNode = true).catch(() => {
           this.health.ipfsNode = false
         })
-        axios.get(`${this.apiURL}/health/blockchainNode`).then(() => this.health.blockchainNode = true).catch(() => this.health.blockchainNode = false)
-        axios.get(`${this.apiURL}/health/testFiles`).then(() => this.health.testFiles = true).catch(() => this.health.testFiles = false)
-        axios.get(`${this.apiURL}/health/testContract`).then(() => this.health.testContract = true).catch(() => this.health.testContract = false)
+        axios.get(`${this.config.apiURL}/health/blockchainNode`).then(() => this.health.blockchainNode = true).catch(() => this.health.blockchainNode = false)
+        axios.get(`${this.config.apiURL}/health/testFiles`).then(() => this.health.testFiles = true).catch(() => this.health.testFiles = false)
+        axios.get(`${this.config.apiURL}/health/testContract`).then(() => this.health.testContract = true).catch(() => this.health.testContract = false)
       },
       async loadData () {
         try {
@@ -297,7 +294,7 @@
       }
     },
     async created () {
-      const url = this.$route.query.testnet ? 'https://testnet.aeternity.io/' : 'https://mainnet.aeternity.io/'
+      const url = this.$route.query.testnet ? this.config.testnetUrl : this.config.mainnetUrl
       const networkId = this.$route.query.testnet ? 'ae_uat' : 'ae_mainnet'
 
       this.client = await Universal({
@@ -308,11 +305,11 @@
               url,
             }),
           }],
-        compilerUrl: 'https://compiler.aepps.com'
+        compilerUrl: this.config.compilerUrl
       }).catch(console.error)
 
       this.client.api.protectedDryRunTxs = this.client.api.dryRunTxs;
-      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.blockchainSettings[networkId] })
+      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.config.blockchainSettings[networkId] })
 
       this.runHealthChecks()
       this.loadData()

@@ -3,11 +3,9 @@ import Detector from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/wal
 import BrowserWindowMessageConnection from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/connection/browser-window-message';
 import aeternity from './aeternityNetwork';
 import {EventBus} from "./eventBus";
+import config from '../config'
 
 // Send wallet connection info to Aepp through content script
-const TESTNET_URL = 'https://testnet.aeternity.io';
-const MAINNET_URL = 'https://mainnet.aeternity.io';
-const COMPILER_URL = 'https://latest.compiler.aepps.com';
 
 export const wallet = {
   client: null,
@@ -57,10 +55,10 @@ export const wallet = {
     this.client = await RpcAepp({
       name: 'AEPP',
       nodes: [
-        {name: 'ae_mainnet', instance: await Node({url: MAINNET_URL})},
-        {name: 'ae_uat', instance: await Node({url: TESTNET_URL})}
+        {name: 'ae_mainnet', instance: await Node({url: config.mainnetUrl})},
+        {name: 'ae_uat', instance: await Node({url: config.testnetUrl})}
       ],
-      compilerUrl: COMPILER_URL,
+      compilerUrl: config.compilerUrl,
       onNetworkChange (params) {
         this.selectNode(params.networkId); // params.networkId needs to be defined as node in RpcAepp
         aeternity.initProvider();

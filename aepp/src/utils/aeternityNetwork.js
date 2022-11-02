@@ -4,10 +4,6 @@ import BlockchainUtil from '../utils/blockchainUtil'
 import config from '../config'
 import contractSource from '../assets/GraffitiAuction.aes'
 
-const TESTNET_URL = 'https://testnet.aeternity.io';
-const MAINNET_URL = 'https://mainnet.aeternity.io';
-const COMPILER_URL = 'https://compiler.aepps.com';
-
 const tempCallOptions = { gas: 100000000000 };
 
 const aeternity = {
@@ -57,12 +53,12 @@ aeternity.initStaticClient = async () => {
 
   // TESTNET
   return Universal({
-    compilerUrl: COMPILER_URL,
+    compilerUrl: config.compilerUrl,
     nodes: [
       {
         name: 'node',
         instance: await Node({
-          url: MAINNET_URL,
+          url: config.mainnetUrl,
         }),
       }],
   });
@@ -106,8 +102,8 @@ aeternity.isMainnet = () => {
 aeternity.initClient = async () => {
   if (process && process.env && process.env.PRIVATE_KEY && process.env.PUBLIC_KEY) {
     aeternity.client = await Universal({
-      nodes: [{name: 'node', instance: await Node({url: MAINNET_URL})}],
-      compilerUrl: COMPILER_URL,
+      nodes: [{name: 'node', instance: await Node({url: config.mainnetUrl})}],
+      compilerUrl: config.compilerUrl,
       accounts: [
         MemoryAccount({keypair: {secretKey: process.env.PRIVATE_KEY, publicKey: process.env.PUBLIC_KEY}}),
       ],

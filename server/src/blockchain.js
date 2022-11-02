@@ -13,6 +13,7 @@ blockchain.init = async () => {
 
     if (!process.env.AETERNITY_URL) throw "AETERNITY_URL is not set";
     if (!process.env.CONTRACT_ADDRESS) throw "CONTRACT_ADDRESS is not set";
+    if (!process.env.COMPILER_URL) throw "COMPILER_URL is not set";
 
     client = await Universal({
         nodes: [
@@ -22,7 +23,7 @@ blockchain.init = async () => {
                     url: process.env.AETERNITY_URL,
                 }),
             }],
-        compilerUrl: "https://compiler.aepps.com",
+        compilerUrl: process.env.COMPILER_URL,
     }).catch(console.error);
 
     contract = await client.getContractInstance(contractSource, {contractAddress: process.env.CONTRACT_ADDRESS});
