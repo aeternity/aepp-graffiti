@@ -2,7 +2,7 @@ const API_URL = 'https://backend.graffiti.aeternity.art'
 //const API_URL = 'http://localhost:3000';
 // const API_URL = 'http://192.168.0.157:3000';
 
-const COMPILER_URL = 'https://compiler.aepps.com/'
+const COMPILER_URL = 'https://v6.compiler.aepps.com/'
 const TESTNET_URL = 'https://testnet.aeternity.io';
 const MAINNET_URL = 'https://mainnet.aeternity.io';
 
