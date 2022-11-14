@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "webpack --config ./webpack.prod.js --progress",
+    "stg": "webpack --config ./webpack.stg.js --progress",
     "dev": "webpack-dev-server --config ./webpack.dev.js --verbose --progress",
     "build:stats": "webpack --config ./webpack.prod.js  --profile --json > stats.json"
   },

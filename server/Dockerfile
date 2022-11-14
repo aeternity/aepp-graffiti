@@ -1,4 +1,4 @@
-FROM node:lts
+FROM node:16
 
 RUN apt update
 RUN apt install -y software-properties-common ca-certificates wget curl ssh git python build-essential
@@ -9,5 +9,5 @@ COPY . /app
 RUN npm install
 
 RUN apt purge -y software-properties-common ca-certificates wget curl ssh git python build-essential && apt autoremove -y
-
+ENV OPENSSL_CONF=/dev/null
 CMD ["node", "server.js"]
