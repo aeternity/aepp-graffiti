@@ -52,6 +52,9 @@ app.get('/teaser.json', errorHandler(logic.teaserJson));
 app.get('/bid/:id', errorHandler(logic.getSingleBid));
 
 // Health checks
+app.get('/health', (req, res) => {
+    res.sendStatus(200);
+});
 app.get('/health/ipfsNode', errorHandler(health.ipfsNode));
 app.get('/health/blockchainNode', errorHandler(health.blockchainNode));
 app.get('/health/testFiles', errorHandler(health.normalIPFSFiles));
