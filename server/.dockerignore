@@ -5,3 +5,5 @@ package-lock.json
 data/*
 !data/backup/.empty
 !data/rendered/height/.empty
+.env_sample
+docker-compose.yml

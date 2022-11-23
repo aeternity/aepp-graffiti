@@ -9,11 +9,11 @@
     "build:stats": "webpack --config ./webpack.prod.js  --profile --json > stats.json"
   },
   "dependencies": {
-    "@aeternity/aepp-components": "git+ssh://git@github.com/aeternity/aepp-components.git#develop",
+    "@aeternity/aepp-components": "git+https://git@github.com/aeternity/aepp-components.git#develop",
     "@aeternity/aepp-sdk": "^9.0.1",
     "axios": "^0.22.0",
     "bignumber.js": "^9.0.1",
-    "dronetracer": "git+https://git@github.com:kenodressel/DroneTracer.git#master",
+    "dronetracer": "git+https://git@github.com/kenodressel/DroneTracer.git#master",
     "jimp": "^0.16.1",
     "swiper": "^6.6.2",
     "vue": "^2.6.14",
