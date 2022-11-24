@@ -6,10 +6,10 @@ const ipfsWrapper = require('./ipfs.js');
 const svgUtil = require('./util/svg');
 const svgstore = require('svgstore');
 const {optimize} = require('svgo');
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
 
 const canvas = {};
-
-
 const renderInterval = 10000;
 
 const canvasCentimeterWidth = 33 * 100;
@@ -109,17 +109,36 @@ canvas.mergeSVG = async (sources) => {
     const spritesString = sprites.toString();
 
     // REMOVES </svg> at the end to allow for insertion of use-strings
-    const mergedString = spritesString.substr(0, spritesString.length - 6) + useStrings + "</svg>";
+    const mergedString = spritesString.substring(0, spritesString.length - 6) + useStrings + "</svg>";
 
-    const optimizedString = (await optimize(mergedString, {
+    // fix for https://github.com/domenic/svg2png/issues/117
+    const window = new JSDOM('').window;
+    const DOMPurify = createDOMPurify(window);
+
+    // https://github.com/LeSuisse/vue-dompurify-html/issues/1721#issuecomment-1034918659
+    DOMPurify.setConfig({
+        USE_PROFILES: {svg: true, svgFilters: true},
+        ADD_TAGS: ['use'],
+        ADD_ATTRIBUTES: ['xlink', 'xlink:href', 'href']
+    });
+    DOMPurify.addHook('afterSanitizeAttributes', function (node) {
+        if (node.hasAttribute('xlink:href') && !node.getAttribute('xlink:href').match(/^#/)) {
+            node.remove();
+        }
+    });
+    const svgClean = DOMPurify.sanitize(mergedString);
+
+    // optimize for better usage as raw svg
+    const optimizedString = (await optimize(svgClean, {
         full: true,
         floatPrecision: 0,
     })).data;
-
     fs.writeFileSync(path.join(__dirname, canvas.pathByHeight() + ".svg"), optimizedString);
     fs.writeFileSync(path.join(__dirname, canvas.pathLatest) + ".svg", optimizedString);
     console.log('saved svg', 'timing', new Date().getTime() - start, 'ms');
-    return mergedString;
+
+    // return unoptimized svg to png converter as it causes some issues
+    return svgClean;
 };
 
 canvas.render = async () => {
