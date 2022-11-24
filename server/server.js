@@ -34,7 +34,7 @@ app.use(fileUpload({
     files: 1
 }));
 
-app.use('/rendered', express.static(path.join(__dirname, "/data/rendered", process.env.PATH_IDENTIFIER)));
+app.use('/rendered', express.static(path.join(__dirname, "/data/rendered")));
 
 // get image from ipfs / local cache
 app.get('/ipfs/:hash.svg', errorHandler(logic.ipfs));
@@ -86,11 +86,11 @@ const start = async () => {
     try {
         await canvas.init();
     } catch (e) {
-        console.warn("First canvas.init call failed, trying again in 30 seconds");
+        console.warn("First canvas.init call failed, trying again in 30 seconds", e);
         try {
             setTimeout(() => canvas.init(), 30000);
         } catch (e) {
-            console.error("Could not connect to blockchain client.");
+            console.error("Could not connect to blockchain client.", e);
         }
     }
 
