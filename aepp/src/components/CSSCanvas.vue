@@ -98,7 +98,7 @@
       }
     },
     mounted () {
-      this.backgroundCSS = `url(${config.canvas.urlSmall(aeternity.network)}) no-repeat`
+      this.backgroundCSS = `url(${config.canvas.urlSmall(aeternity.networkId)}) no-repeat`
 
       this.$refs.background.addEventListener('mousedown', this.onMouseDownEvent)
       this.$refs.background.addEventListener('mousemove', this.onMouseMoveEvent)

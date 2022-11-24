@@ -62,7 +62,7 @@
         canvasToWallRation: 1,
         moveTarget: null,
         currentStatus: STATUS_LOADING,
-        backgroundUrl: config.canvas.urlSmall(aeternity.network),
+        backgroundUrl: config.canvas.urlSmall(aeternity.networkId),
         cacheTimestamp: Date.now(),
         reloadInterval: null
       }
@@ -112,12 +112,12 @@
         let foundUpdate = false
 
         if (this.scale * this.$refs.backgroundCanvas.width > 4 * 200) {
-          if (this.backgroundUrl === config.canvas.url(aeternity.network)) return
-          this.backgroundUrl = config.canvas.url(aeternity.network)
+          if (this.backgroundUrl === config.canvas.urlSvg(aeternity.networkId)) return
+          this.backgroundUrl = config.canvas.urlSvg(aeternity.networkId)
           foundUpdate = true
         } else {
-          if (this.backgroundUrl === config.canvas.urlSmall(aeternity.network)) return
-          this.backgroundUrl = config.canvas.urlSmall(aeternity.network)
+          if (this.backgroundUrl === config.canvas.urlSmall(aeternity.networkId)) return
+          this.backgroundUrl = config.canvas.urlSmall(aeternity.networkId)
           foundUpdate = true
         }
 

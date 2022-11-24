@@ -15,15 +15,25 @@ Install the dependencies
 cd aepp-graffiti/server && npm install
 ```
 
+Environments for Aeternity Blockchain, IPFS and the Graffiti Contract are needed.
+
+```
+CONTRACT_ADDRESS=
+IPFS_URL=
+NODE_URL=
+```
+
+Optionally a full sync of storages at startup can be enabled using `SYNC_STORAGE=true`.
+
 There seems to be some issue in the svg library with requires `OPENSSL_CONF=/dev/null` to be set to work.
 
 In order for the backend to be able to backup and restore source images you also need to provide an aws s3 bucket where the backups are held. This is configured via the following 
 environment variables:
 ```
-S3_KEY=YOURKEY;
-S3_SECRET=YOURSECRET;
-S3_REGION=your-bucket-region;
-S3_BUCKET=your-bucket-name;
+S3_KEY=;
+S3_SECRET=;
+S3_REGION=;
+S3_BUCKET=;
 ```
 Once the setup is completed you can simply run
 ```

@@ -122,7 +122,7 @@
 
           this.currentLoadingStep = LOADING_IPFS
           try {
-            const response = await axios.post(`${config.apiUrl}/upload`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
+            const response = await axios.post(`${config.apiUrl[aeternity.networkId]}/upload`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
             this.ipfsAddr = response.data.hash
           } catch (e) {
             console.error(e)

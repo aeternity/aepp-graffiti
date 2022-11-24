@@ -184,7 +184,7 @@
                             bid.finished = Util.slotIsPast(slot, height)
                             bid.slotId = slot.id
                             bid.minimumAmount = Math.min(...slot.successful_bids.map(x => x.amount_per_time).map(x => Util.atomsToAe(x).toFixed(4)))
-                            bid.url = config.apiUrl + '/ipfs/' + bid.data.artwork_reference + '.svg'
+                            bid.url = config.apiUrl[aeternity.networkId] + '/ipfs/' + bid.data.artwork_reference + '.svg'
                             return bid
                         })
                         return allBids

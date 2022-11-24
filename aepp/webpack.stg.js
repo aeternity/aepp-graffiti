@@ -3,13 +3,13 @@ const common = require('./webpack.common.js');
 const path = require('path');
 const webpack = require('webpack');
 
-new webpack.DefinePlugin({
-  'process.env':{
-    'SERVER_URL': JSON.stringify('https://graffiti-server.stg.aepps.com')
-  }
-}),
-
 module.exports = merge(common, {
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.MAINNET_SERVER_URL': JSON.stringify('https://graffiti-server-mainnet.stg.aepps.com'),
+      'process.env.TESTNET_SERVER_URL': JSON.stringify('https://graffiti-server-testnet.stg.aepps.com')
+    })
+  ],
   mode: 'production',
   output: {
     filename: 'bundle.js?[hash]',

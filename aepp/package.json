@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "webpack --config ./webpack.prod.js --progress",
-    "stg": "webpack --config ./webpack.stg.js --progress",
+    "build:prd": "webpack --config ./webpack.prod.js --progress",
+    "build:stg": "webpack --config ./webpack.stg.js --progress",
+    "build:dev": "webpack --config ./webpack.dev.js --progress",
     "dev": "webpack-dev-server --config ./webpack.dev.js --verbose --progress",
     "build:stats": "webpack --config ./webpack.prod.js  --profile --json > stats.json"
   },

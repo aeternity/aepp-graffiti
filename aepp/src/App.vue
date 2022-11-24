@@ -52,14 +52,13 @@
           return this.clientAvailable = true
         }
 
-        const result = await Promise.race([
+        await Promise.race([
           new Promise((resolve) => wallet.init(() => {
             this.clientAvailable = true;
             resolve();
           })),
           new Promise((resolve) => setTimeout(resolve, 8000, 'TIMEOUT')),
         ]);
-        console.log(result);
 
         // Fall back to static client
         // Otherwise init the aeternity sdk

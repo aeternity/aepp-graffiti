@@ -23,7 +23,7 @@
             </div>
 
             <div v-show="imageLoaded" class="border-2 p-2 rounded">
-              <img alt="artwork" :src="`${config.apiUrl}/ipfs/${bidData.data.artwork_reference}.svg`"
+              <img alt="artwork" :src="`${config.apiUrl[aeternity.networkId]}/ipfs/${bidData.data.artwork_reference}.svg`"
                    @load="imageLoaded = true">
             </div>
             <div>
@@ -49,18 +49,17 @@
 </template>
 
 <script>
-  import WhiteHeader from '../components/WhiteHeader'
   import axios from 'axios'
   import config from '~/config'
   import Utils from '../utils/blockchainUtil.js'
   import BiggerLoader from '../components/BiggerLoader'
-  import { AeButton, AeIdenticon, AeIdentity } from '@aeternity/aepp-components/src/components'
+  import { AeButton, AeIdenticon } from '@aeternity/aepp-components/src/components'
   import aeternity from '../utils/aeternityNetwork.js'
   import DarkCard from '../components/DarkCard'
 
   export default {
     name: 'Bid',
-    components: { DarkCard, AeButton, AeIdenticon, AeIdentity, BiggerLoader, WhiteHeader },
+    components: { DarkCard, AeButton, AeIdenticon, BiggerLoader },
     data () {
       return {
         bidData: null,
@@ -69,6 +68,9 @@
       }
     },
     computed: {
+      aeternity () {
+        return aeternity
+      },
       config () {
         return config
       },
@@ -99,7 +101,7 @@
         return this.error = `400<br />Bad request. Please provide a numerical ID (eg. '/bid/1').`
       }
       try {
-        const bid = await axios.get(`${config.apiUrl}/bid/${this.$route.params.id}`)
+        const bid = await axios.get(`${config.apiUrl[aeternity.networkId]}/bid/${this.$route.params.id}`)
         this.bidData = bid.data
       } catch (e) {
         if (String(e.message).includes('404')) {
