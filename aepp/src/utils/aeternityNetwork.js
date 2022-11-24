@@ -1,4 +1,4 @@
-import {Node, Universal, MemoryAccount} from '@aeternity/aepp-sdk/es';
+import {Node, Universal} from '@aeternity/aepp-sdk/es';
 import {EventBus} from './eventBus';
 import BlockchainUtil from '../utils/blockchainUtil'
 import config from '../config'
@@ -28,7 +28,6 @@ aeternity.initProvider = async () => {
     const changedNetwork = aeternity.networkId !== networkId && aeternity.networkId !== null;
     aeternity.networkId = networkId
     if (changedNetwork) EventBus.$emit('networkChange');
-    aeternity.network = aeternity.isMainnet() ? 'mainnet' : ''
 
     aeternity.address = await aeternity.client.address()
     aeternity.balance = await aeternity.client.balance(aeternity.address)
@@ -51,14 +50,14 @@ aeternity.initProvider = async () => {
 aeternity.initStaticClient = async () => {
   aeternity.static = true;
 
-  // TESTNET
+  // MAINNET
   return Universal({
     compilerUrl: config.compilerUrl,
     nodes: [
       {
         name: 'node',
         instance: await Node({
-          url: config.mainnetUrl,
+          url: config.nodeUrl.ae_mainnet,
         }),
       }],
   });
@@ -70,7 +69,7 @@ aeternity.initStaticClient = async () => {
       {
         name: 'mainnet',
         instance: await Node({
-          url: MAINNET_URL,
+          url: config.nodeUrl.ae_uat,
         }),
       }],
   });
@@ -87,30 +86,10 @@ aeternity.hasActiveWallet = () => {
 };
 
 /**
- * Checks if the initialized client is connected to the ae-mainnet
- * @returns {boolean}
- */
-aeternity.isMainnet = () => {
-  return aeternity.networkId === 'ae_mainnet';
-};
-
-
-/**
  * Initializes the aeternity sdk to be imported in other occasions
  * @returns {Promise<boolean>}
  */
 aeternity.initClient = async () => {
-  if (process && process.env && process.env.PRIVATE_KEY && process.env.PUBLIC_KEY) {
-    aeternity.client = await Universal({
-      nodes: [{name: 'node', instance: await Node({url: config.mainnetUrl})}],
-      compilerUrl: config.compilerUrl,
-      accounts: [
-        MemoryAccount({keypair: {secretKey: process.env.PRIVATE_KEY, publicKey: process.env.PUBLIC_KEY}}),
-      ],
-    });
-    return aeternity.initProvider();
-  }
-
   if (!aeternity.client) aeternity.client = await aeternity.initStaticClient();
   return aeternity.initProvider();
 };

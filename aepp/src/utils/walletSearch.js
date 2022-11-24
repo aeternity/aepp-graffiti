@@ -55,8 +55,8 @@ export const wallet = {
     this.client = await RpcAepp({
       name: 'AEPP',
       nodes: [
-        {name: 'ae_mainnet', instance: await Node({url: config.mainnetUrl})},
-        {name: 'ae_uat', instance: await Node({url: config.testnetUrl})}
+        {name: 'ae_mainnet', instance: await Node({url: config.nodeUrl.ae_mainnet})},
+        {name: 'ae_uat', instance: await Node({url: config.nodeUrl.ae_uat})}
       ],
       compilerUrl: config.compilerUrl,
       onNetworkChange (params) {

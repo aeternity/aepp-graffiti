@@ -172,6 +172,7 @@
     components: { AeLoader, BiggerLoader, AeBadge, AeButton, AeIcon },
     data () {
       return {
+        networkId: 'ae_mainnet',
         slots: [],
         height: 0,
         avgBlockTime: 3 * 60,
@@ -196,7 +197,7 @@
     },
     computed: {
       config () {
-        return config.config
+        return config
       },
       timeZoneString () {
         if (!this.timezone || this.timezone === 0) return null
@@ -230,12 +231,12 @@
           testFiles: null,
           testContract: null
         }
-        axios.get(`${this.config.apiURL}/health/ipfsNode`).then(() => this.health.ipfsNode = true).catch(() => {
+        axios.get(`${this.config.apiUrl[this.networkId]}/health/ipfsNode`).then(() => this.health.ipfsNode = true).catch(() => {
           this.health.ipfsNode = false
         })
-        axios.get(`${this.config.apiURL}/health/blockchainNode`).then(() => this.health.blockchainNode = true).catch(() => this.health.blockchainNode = false)
-        axios.get(`${this.config.apiURL}/health/testFiles`).then(() => this.health.testFiles = true).catch(() => this.health.testFiles = false)
-        axios.get(`${this.config.apiURL}/health/testContract`).then(() => this.health.testContract = true).catch(() => this.health.testContract = false)
+        axios.get(`${this.config.apiUrl[this.networkId]}/health/blockchainNode`).then(() => this.health.blockchainNode = true).catch(() => this.health.blockchainNode = false)
+        axios.get(`${this.config.apiUrl[this.networkId]}/health/testFiles`).then(() => this.health.testFiles = true).catch(() => this.health.testFiles = false)
+        axios.get(`${this.config.apiUrl[this.networkId]}/health/testContract`).then(() => this.health.testContract = true).catch(() => this.health.testContract = false)
       },
       async loadData () {
         try {
@@ -248,7 +249,7 @@
             .map(slot => {
               return {
                 id: slot.id,
-                downloadLink: `${config.apiUrl}/slots/${slot.id}`,
+                downloadLink: `${config.apiUrl[this.networkId]}/slots/${slot.id}`,
                 timing: {
                   past: Util.slotIsPast(slot, this.height),
                   active: Util.slotIsActive(slot, this.height),
@@ -284,7 +285,7 @@
         this.inspectBidsLoading = true
         this.inspectBids = null
         bids = bids.map(bid => {
-          bid.url = config.apiUrl + '/ipfs/' + bid.data.artwork_reference + '.svg'
+          bid.url = config.apiUrl[this.networkId] + '/ipfs/' + bid.data.artwork_reference + '.svg'
           bid.amountAe = Util.atomsToAe(bid.amount)
           bid.amount_per_timeAe = Util.atomsToAe(bid.amount_per_time).toFixed(4)
           return bid
@@ -294,22 +295,21 @@
       }
     },
     async created () {
-      const url = this.$route.query.testnet ? this.config.testnetUrl : this.config.mainnetUrl
-      const networkId = this.$route.query.testnet ? 'ae_uat' : 'ae_mainnet'
+      this.networkId = this.$route.query.testnet ? 'ae_uat' : 'ae_mainnet'
 
       this.client = await Universal({
         nodes: [
           {
             name: 'node',
             instance: await Node({
-              url,
+              url: this.config.nodeUrl[this.networkId],
             }),
           }],
         compilerUrl: this.config.compilerUrl
       }).catch(console.error)
 
       this.client.api.protectedDryRunTxs = this.client.api.dryRunTxs;
-      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.config.blockchainSettings[networkId] })
+      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.config.blockchainSettings[this.networkId] })
 
       this.runHealthChecks()
       this.loadData()

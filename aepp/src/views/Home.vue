@@ -87,7 +87,7 @@
       if (this.firstTimeOpened) return this.$router.push('onboarding')
       try {
         // Top up users balance if user is on testnet and balance is smaller than 5
-        if (!aeternity.isMainnet() && aeternity.balance <= 5) {
+        if (aeternity.networkId === 'ae_uat' && aeternity.balance <= 5) {
           await axios.post(`https://testnet.faucet.aepps.com/account/${aeternity.address}`, {}, { headers: { 'content-type': 'application/x-www-form-urlencoded' } }).catch(console.error)
         }
         /*if(!aeternity.isTestnet()){

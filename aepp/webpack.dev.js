@@ -1,9 +1,16 @@
-const merge = require('webpack-merge');
-const common = require('./webpack.common.js');
+const merge = require('webpack-merge')
+const common = require('./webpack.common.js')
 
-const path = require('path');
+const path = require('path')
+const webpack = require('webpack')
 
 module.exports = merge(common, {
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.MAINNET_SERVER_URL': JSON.stringify(process.env.MAINNET_SERVER_URL || 'https://graffiti-server-mainnet.dev.aepps.com'),
+      'process.env.TESTNET_SERVER_URL': JSON.stringify(process.env.TESTNET_SERVER_URL ||'https://graffiti-server-testnet.dev.aepps.com')
+    })
+  ],
   mode: 'development',
   devtool: 'eval-source-map',
   devServer: {
@@ -11,9 +18,8 @@ module.exports = merge(common, {
     port: 8081,
     historyApiFallback: true,
     disableHostCheck: true,
-    host: '0.0.0.0'
+    host: 'localhost'
   },
-
   output: {
     filename: 'bundle.js?[hash]',
     publicPath: '/'
@@ -40,4 +46,4 @@ module.exports = merge(common, {
       }
     ]
   }
-});
+})
