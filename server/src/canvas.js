@@ -28,8 +28,7 @@ intervalJob = async () => {
     await canvas.render();
 };
 
-canvas.pathIdentifier = process.env.PATH_IDENTIFIER;
-canvas.fullPathWithIdentifier = `../data/rendered/${canvas.pathIdentifier}`;
+canvas.fullPathWithIdentifier = '../data/rendered';
 
 canvas.pathLatest = `${canvas.fullPathWithIdentifier}/latest`;
 canvas.pathByHeightDir = `${canvas.fullPathWithIdentifier}/height`;
@@ -47,8 +46,6 @@ createDirs = () => {
 };
 
 canvas.init = async () => {
-    if (!process.env.PATH_IDENTIFIER) throw "PATH_IDENTIFIER is not set";
-
     createDirs();
     await blockchain.init();
     await intervalJob();
@@ -58,16 +55,15 @@ canvas.init = async () => {
 };
 
 canvas.svgToPNGBuffer = (svg, pixelWidth, pixelHeight) => {
-    return svg2png.sync(Buffer.from(svg), {
+    return svg2png(Buffer.from(svg), {
         width: pixelWidth,
         height: pixelHeight
     });
 };
 
-canvas.mergePNG = (svg) => {
-
+canvas.mergePNG = async (svg) => {
     const startSmall = new Date().getTime();
-    const bufferSmall = canvas.svgToPNGBuffer(svg,
+    const bufferSmall = await canvas.svgToPNGBuffer(svg,
         canvasCentimeterWidth * smallerScale,
         canvasCentimeterHeight * smallerScale);
     fs.writeFileSync(path.join(__dirname, canvas.pathByHeight() + "_small.png"), bufferSmall);
@@ -75,9 +71,10 @@ canvas.mergePNG = (svg) => {
     console.log('saved smaller png', 'timing', new Date().getTime() - startSmall, 'ms');
 
     const start = new Date().getTime();
-    const buffer = canvas.svgToPNGBuffer(svg,
+    const buffer = await canvas.svgToPNGBuffer(svg,
         canvasCentimeterWidth * pixelsPerCentimeter,
         canvasCentimeterHeight * pixelsPerCentimeter);
+
     fs.writeFileSync(path.join(__dirname, canvas.pathByHeight() + ".png"), buffer);
     fs.writeFileSync(path.join(__dirname, canvas.pathLatest) + ".png", buffer);
     console.log('saved png', 'timing', new Date().getTime() - start, 'ms');
@@ -125,43 +122,20 @@ canvas.mergeSVG = async (sources) => {
     return mergedString;
 };
 
-canvas.shardSVG = (svgString, settings) => {
-    const currentViewbox = `viewBox="0 0 ${canvasCentimeterWidth * pixelsPerCentimeter} ${canvasCentimeterHeight * pixelsPerCentimeter}"`;
-    let horizontalIndex = 0;
-    let verticalIndex = 0;
-    const shardWidth = canvasCentimeterWidth * pixelsPerCentimeter / settings.horizontalShards;
-    const shardHeight = canvasCentimeterHeight * pixelsPerCentimeter / settings.verticalShards;
-
-
-    for (let i = 0; i < settings.horizontalShards * settings.verticalShards; i++) {
-        horizontalIndex = i % settings.horizontalShards;
-        verticalIndex = Math.floor(i / settings.verticalShards);
-
-        const xOffset = shardWidth * horizontalIndex;
-        const yOffset = shardHeight * verticalIndex;
-
-        let updatedSVGStrig = svgString.replace(currentViewbox, `viewBox="${xOffset} ${yOffset} ${shardWidth} ${shardHeight}"`);
-        updatedSVGStrig = updatedSVGStrig.replace(`width="${canvasCentimeterWidth * pixelsPerCentimeter}"`, `width="${shardWidth * settings.scaleFactor}"`);
-        updatedSVGStrig = updatedSVGStrig.replace(`height="${canvasCentimeterHeight * pixelsPerCentimeter}"`, `height="${shardHeight * settings.scaleFactor}"`);
-
-        const png = canvas.svgToPNGBuffer(updatedSVGStrig);
-        fs.writeFileSync(path.join(__dirname, `../data/rendered/shards`, `${settings.horizontalShards}${settings.verticalShards}_${horizontalIndex}_${verticalIndex}.png`), png);
-    }
-};
-
-
 canvas.render = async () => {
 
     const start = new Date().getTime();
 
     // get all files from ipfs that were included in bids
     const auctionSlots = await blockchain.auctionSlots().catch(console.error);
+
+    // using Number to convert bigint here is save as those are not expected to grow over bounds
     const successful_bids = auctionSlots
-        .sort((a, b) => a.end_block_height - b.end_block_height) // sort slots ascending by end block height
-        .map(slot => slot.successful_bids.sort((a, b) => a.seq_id - b.seq_id)) // sort bids in slot ascending
+        .sort((a, b) => Number(a.end_block_height) - Number(b.end_block_height)) // sort slots ascending by end block height
+        .map(slot => slot.successful_bids.sort((a, b) => Number(a.seq_id) - Number(b.seq_id))) // sort bids in slot ascending
         .reduce((acc, val) => acc.concat(val), []); // flatten inner arrays
 
-    const latestSeqId = Math.max(...successful_bids.map(x => x.seq_id).concat([0]));
+    const latestSeqId = Math.max(...successful_bids.map(x => Number(x.seq_id)).concat([0]));
 
 
     if (canvas.latestSeqId === latestSeqId) {
@@ -193,8 +167,8 @@ canvas.render = async () => {
             return {
                 svg: svg,
                 id: data.bid.seq_id,
-                x: data.bid.data.coordinates.x * pixelsPerCentimeter,
-                y: data.bid.data.coordinates.y * pixelsPerCentimeter,
+                x: Number(data.bid.data.coordinates.x) * pixelsPerCentimeter,
+                y: Number(data.bid.data.coordinates.y) * pixelsPerCentimeter,
                 width,
                 height
             };
@@ -202,7 +176,7 @@ canvas.render = async () => {
 
     const svg = await canvas.mergeSVG(transformedSources);
 
-    canvas.mergePNG(svg);
+    await canvas.mergePNG(svg);
     console.log('did merge and write', transformedSources.length, 'timing', new Date().getTime() - start, 'ms');
 };
 

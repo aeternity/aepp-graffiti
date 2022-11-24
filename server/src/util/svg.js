@@ -85,16 +85,16 @@ const sanityCheck = (dataToCheck) => {
 
         let origin = String(result.svg._attributes['wallCanvas:origin']);
         if (!origin) {
-            result.svg._attributes['wallCanvas:origin'] = `${data.bid.data.coordinates.x * centimeterToMillimeter} ${data.bid.data.coordinates.y * centimeterToMillimeter}`
+            result.svg._attributes['wallCanvas:origin'] = `${Number(data.bid.data.coordinates.x) * centimeterToMillimeter} ${Number(data.bid.data.coordinates.y) * centimeterToMillimeter}`
         }
 
         const x = Number(origin.split(" ")[0]);
         const y = Number(origin.split(" ")[1]);
 
-        if (x !== data.bid.data.coordinates.x * centimeterToMillimeter || y !== data.bid.data.coordinates.y * centimeterToMillimeter) {
+        if (x !== Number(data.bid.data.coordinates.x) * centimeterToMillimeter || y !== Number(data.bid.data.coordinates.y) * centimeterToMillimeter) {
             sanityFails[data.bid.seq_id] = 'Contract coordinates is not equal to svg data';
             console.error(data.bid.seq_id + ': Contract coordinates is not equal to svg data');
-            console.error(data.bid.seq_id + `: Contract: x:${data.bid.data.coordinates.x * centimeterToMillimeter} y:${data.bid.data.coordinates.y * centimeterToMillimeter}`);
+            console.error(data.bid.seq_id + `: Contract: x:${Number(data.bid.data.coordinates.x) * centimeterToMillimeter} y:${Number(data.bid.data.coordinates.y) * centimeterToMillimeter}`);
             console.error(data.bid.seq_id + `: SVG-Data: x:${x} y:${y}`);
 
             data.base64 = Base64.encode(convert.js2xml(result, {compact: true}));

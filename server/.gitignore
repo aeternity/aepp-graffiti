@@ -2,7 +2,6 @@ node_modules/
 .idea/
 .idea/**
 *.iml
-package-lock.json
 data/
 !*/data/backup/.empty
 !*/data/rendered/height/.empty

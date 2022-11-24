@@ -15,12 +15,16 @@ const storage = {};
 
 storage.init = async () => {
     if (process.env.SYNC_STORAGE) {
+        console.log('starting storage sync, can be disabled by removing SYNC_STORAGE=')
         const fileLocations = await storage.compileFileList();
         await storage.synchronizeStorage(fileLocations);
 
         console.log("missing files:", Object.entries(await storage.compileFileList())
             .filter(([ipfsHash, storages]) => isIPFS.multihash(ipfsHash) && (!storages.s3 || !storages.local || !storages.ipfs))
             .map(([ipfsHash]) => ipfsHash));
+        console.log('finished storage sync')
+    } else {
+        console.log('optional storage sync can be enabled by setting SYNC_STORAGE=true')
     }
 };
 

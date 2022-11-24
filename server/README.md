@@ -14,11 +14,10 @@ Install the dependencies
 ```
 cd aepp-graffiti/server && npm install
 ```
-Setup an [aeternity node](https://github.com/aeternity/aeternity) and an 
-[ipfs node](https://docs.ipfs.io/introduction/install/). This can be easily done using docker. Check the 
-docker-compose.yml file for the recommended images.
 
-In order to run you also need to provide an aws s3 bucket where the backups are held. This is configured via the following 
+There seems to be some issue in the svg library with requires `OPENSSL_CONF=/dev/null` to be set to work.
+
+In order for the backend to be able to backup and restore source images you also need to provide an aws s3 bucket where the backups are held. This is configured via the following 
 environment variables:
 ```
 S3_KEY=YOURKEY;
