@@ -52,10 +52,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: aeternity/aepp-grafitti
+          images: aeternitybot/grafitti-frontend
           tags: |
             type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'master') }}
-            type=ref,event=tag
             type=raw,value=stg,event=pr
 
       - name: Get commit sha on PR Sync
