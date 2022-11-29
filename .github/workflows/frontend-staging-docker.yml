@@ -1,4 +1,4 @@
-name: Aepp Grafitti Staging Pipeline
+name: Frontend Grafitti Staging Pipeline
 
 on:
   pull_request:
@@ -10,14 +10,14 @@ on:
 env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
   ENV: "stg"
-  APP: "aepp-graffiti"
+  APP: "graffiti-frontend"
 
 concurrency: graffiti_staging_environment
 
 jobs:
   main:
     runs-on: ubuntu-latest
-    name: Aepp Grafitti Staging Build Docker
+    name: Frontend Grafitti Staging Pipeline
     steps:
       - uses: actions/checkout@v2
         with:
@@ -54,7 +54,7 @@ jobs:
         with:
           images: aeternity/aepp-grafitti
           tags: |
-            type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'main') }}
+            type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'master') }}
             type=ref,event=tag
             type=raw,value=stg,event=pr
 
