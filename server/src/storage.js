@@ -60,7 +60,7 @@ storage.synchronizeStorage = async (fileLocations) => {
         if (!storages.ipfs) {
             const uploaded = await ipfsWrapper.addFile(readLocal(`${ipfsHash}.svg`))
             await ipfsWrapper.pinFile(uploaded.path)
-            console.log(uploaded.path, ipfsHash)
+            if (uploaded.path !== ipfsHash) console.log(uploaded.path, ipfsHash)
             process.stdout.write('*')
             fileLocations[ipfsHash].ipfs = true
         }
@@ -112,13 +112,17 @@ storage.compileFileList = async () => {
         })
     })
 
+    const fileLocationsOnlyContract = Object.fromEntries(Object.entries(fileLocations).filter(([_, value]) => value.contract));
+
     const ipfsPins = await ipfsWrapper.pinList();
-    for (const ipfsHash of Object.keys(fileLocations)) {
-        fileLocations[ipfsHash].ipfs = await ipfsWrapper.checkFileExists(ipfsHash);
-        fileLocations[ipfsHash].ipfsPin = ipfsPins.includes(ipfsHash);
+    console.log('downloaded ipfs pin list', ipfsPins.length);
+    for (const ipfsHash of Object.keys(fileLocationsOnlyContract)) {
+        fileLocationsOnlyContract[ipfsHash].ipfs = await ipfsWrapper.checkFileExists(ipfsHash);
+        fileLocationsOnlyContract[ipfsHash].ipfsPin = ipfsPins.includes(ipfsHash);
+        if (!fileLocationsOnlyContract[ipfsHash].ipfs) console.log('missing in ipfs:', ipfsHash)
     }
 
-    return fileLocations
+    return fileLocationsOnlyContract
 };
 
 storage.backupSVG = async (ipfsHash, svgFileBuffer) => {
