@@ -36,7 +36,7 @@ export default {
   },
   blockchainSettings: {
     ae_uat: 'ct_uJ5NKmuX7eX79QPerixR7Z8zEdxKCKJw1yzHjX1tsmRP17tuP', // testnet //ct_eLhLkGX2kfrqj6skdG4AxwjQk2MJy6nsWASnG8aEQFrQ2gDyp //ct_2SugvqB52guEV6fSTkuGjipzPMjeEf5urYQYnPe91cdkMmjJGy
-    ae_mainnet: 'ct_ftU4u1wEsiWd6YN4AAekEArJmLds4K8AB2k4UXKxn32Yrf5n5'// ct_2L8CMtgsb3cz9VbhYdtrSZPU8MbGDhH446WjTnFDm3snyMYTR'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
+    ae_mainnet: 'ct_rR1BHya4jLXR1d4FpTRfgB5YZmALELwm6kf7f64sVRSjmWtrj'// ct_ftU4u1wEsiWd6YN4AAekEArJmLds4K8AB2k4UXKxn32Yrf5n5 ct_2L8CMtgsb3cz9VbhYdtrSZPU8MbGDhH446WjTnFDm3snyMYTR ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
   },
   apiUrl,
   nodeUrl: {
