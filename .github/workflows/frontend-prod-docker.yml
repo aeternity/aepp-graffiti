@@ -9,7 +9,7 @@ on:
 
 env:
   ENV: "prd"
-  APP: "graffiti-frontend"
+  APP: "aepp-graffiti"
 
 concurrency: graffiti_production_environment
 
@@ -54,7 +54,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: aeternitybot/grafitti-frontend
+          images: aeternity/aepp-grafitti
           tags: |
             type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'master') }}
             type=raw,value=${{ steps.release.outputs.tag_name }},enable=${{ endsWith(GitHub.ref, 'master') }}
