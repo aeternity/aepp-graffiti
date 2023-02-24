@@ -14,6 +14,7 @@ USER node
 
 RUN npm ci
 COPY --chown=node:node . /home/node/app
+
 ARG COMMAND
 RUN npm run build:$COMMAND
 
