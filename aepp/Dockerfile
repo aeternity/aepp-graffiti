@@ -1,5 +1,7 @@
 FROM node:14 as aepp-build
+
 RUN apt update && apt install -y make gcc g++ python git libvips-dev libvips
+
 RUN mkdir -p /home/node/app
 WORKDIR /home/node/app
 
