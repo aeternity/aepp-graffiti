@@ -5,7 +5,7 @@ const deploy = async () => {
 
     const config = {
         host: 'https://testnet.aeternity.io/',
-        compilerUrl: 'https://compiler.aepps.com'
+        compilerUrl: 'https://v6.compiler.aepps.com'
     };
 
     const keypair = {
@@ -31,9 +31,9 @@ const deploy = async () => {
     console.log(init);
 
     const startHeight = (await client.height()) + 1;
-    const numberOfUnits = 8;
-    const blocksPerUnit = (60 / 3) * 24 * 7;
-    const blocksOverlap = (60 / 3) * 24;
+    const numberOfUnits = 6;
+    const blocksPerUnit = (60 / 3) * 24;
+    const blocksOverlap = (60 / 3) * 8;
 
     await [...Array(numberOfUnits).keys()].reduce(async (previousPromise, unit) => {
         await previousPromise;
@@ -42,7 +42,7 @@ const deploy = async () => {
         const end = startHeight + ((unit + 1) * blocksPerUnit);
         console.log(unit, start, end);
 
-        return contract.methods.add_auction_slot(1000, start, end, 1, 100).catch(console.error);
+        return contract.methods.add_auction_slot(10000, start, end, 1, 100).catch(console.error);
     }, Promise.resolve());
 
     const auctionSlots = await contract.methods.all_auction_slots();
