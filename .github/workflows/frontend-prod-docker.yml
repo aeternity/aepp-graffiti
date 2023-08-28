@@ -57,7 +57,6 @@ jobs:
           images: aeternity/aepp-grafitti
           tags: |
             type=raw,value=latest,enable=${{ endsWith(GitHub.ref, 'master') }}
-            type=raw,value=${{ steps.release.outputs.tag_name }},enable=${{ endsWith(GitHub.ref, 'master') }}
             type=ref,event=tag
 
       - name: Build and push docker image
@@ -91,7 +90,7 @@ jobs:
         uses: aeternity/ae-github-actions/argocd-pr-sync@v4
         with:
           git-sha: ${{ steps.git-sha.outputs.GIT_SHA }}
-          url-prefix: ${{ steps.release.outputs.tag_name }}
+          url-prefix: latest
           env: ${{ env.ENV }}
           app: ${{ env.APP }}
 
