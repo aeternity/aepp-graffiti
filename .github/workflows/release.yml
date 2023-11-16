@@ -1,0 +1,43 @@
+name: release
+
+on:
+  push:
+    tags: [ "*-v*" ]
+
+jobs:
+  publish-aepp:
+    if: startsWith(github.ref_name, 'aepp-')
+    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@2.0.0
+    secrets: inherit
+    with:
+      FILE: ./aepp/Dockerfile
+      CONTEXT: ./aepp
+      BUILD_ARGS: COMMAND=prd
+      DOCKERHUB_REPO: "aeternity/aepp-graffiti"
+  deploy-aepp:
+    if: startsWith(github.ref_name, 'aepp-')
+    needs: [publish-aepp]
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.0.0
+    secrets: inherit
+    with:
+      DEPLOY_ENV: prd
+      DEPLOY_APP: aepp-graffiti
+      DEPLOY_VERSION: ${{ github.ref_name }}
+      DEPLOY_SUBDOMAIN: graffiti
+  publish-server:
+    if: startsWith(github.ref_name, 'server-')
+    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@2.0.0
+    secrets: inherit
+    with:
+      FILE: ./server/Dockerfile
+      CONTEXT: ./server
+      DOCKERHUB_REPO: "aeternity/graffiti-server"
+  deploy-server:
+    if: startsWith(github.ref_name, 'server-')
+    needs: [publish-server]
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.0.0
+    secrets: inherit
+    with:
+      DEPLOY_ENV: prd
+      DEPLOY_APP: graffiti-server
+      DEPLOY_VERSION: ${{ github.ref_name }}

@@ -1,0 +1,61 @@
+name: pull-request
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      aepp: ${{ steps.changes.outputs.aepp }}
+      server: ${{ steps.changes.outputs.server }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          aepp:
+            - 'aepp/**'
+          server:
+            - 'server/**'
+  publish-aepp:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.aepp == 'true' }}
+    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@docker_params
+    secrets: inherit
+    with:
+      FILE: ./aepp/Dockerfile
+      CONTEXT: ./aepp
+      BUILD_ARGS: COMMAND=stg
+      DOCKERHUB_REPO: "aeternitybot/aepp-graffiti"
+  deploy-aepp:
+    needs: [changes, publish-aepp]
+    if: ${{ needs.changes.outputs.aepp == 'true' }}
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.0.0
+    secrets: inherit
+    with:
+      DEPLOY_ENV: stg
+      DEPLOY_APP: aepp-graffiti
+      DEPLOY_VERSION: "pr-${{ github.event.number }}"
+      DEPLOY_SUBDOMAIN: "pr-${{ github.event.number }}-graffiti"
+  publish-server:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.server == 'true' }}
+    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@docker_params
+    secrets: inherit
+    with:
+      FILE: ./server/Dockerfile
+      CONTEXT: ./server
+      DOCKERHUB_REPO: "aeternitybot/graffiti-server"
+  deploy-server:
+    needs: [changes, publish-server]
+    if: ${{ needs.changes.outputs.server == 'true' }}
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.0.0
+    secrets: inherit
+    with:
+      DEPLOY_ENV: stg
+      DEPLOY_APP: graffiti-server
+      DEPLOY_VERSION: "pr-${{ github.event.number }}"
+      DEPLOY_SUBDOMAIN: "pr-${{ github.event.number }}-graffiti-server"

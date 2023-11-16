@@ -1,0 +1,36 @@
+name: pull-request-cleanup
+
+on:
+  pull_request:
+    branches: [ master ]
+    types: [ closed ]
+
+jobs:
+  rollback-aepp:
+    uses: aeternity/github-actions/.github/workflows/_rollback-gitops.yml@v2.0.0
+    secrets: inherit
+    with:
+      DEPLOY_ENV: stg
+      DEPLOY_APP: aepp-graffiti
+      DEPLOY_VERSION: "pr-${{ github.event.number }}"
+      DEPLOY_SUBDOMAIN: "pr-${{ github.event.number }}-graffiti"
+  delete-tag-aepp:
+    uses: aeternity/github-actions/.github/workflows/_delete-tag-docker.yml@v2.0.0
+    secrets: inherit
+    with:
+      DOCKERHUB_REPO: "aeternitybot/aepp-graffiti"
+      DOCKERHUB_TAG: "pr-${{ github.event.number }}"
+  rollback-server:
+    uses: aeternity/github-actions/.github/workflows/_rollback-gitops.yml@v2.0.0
+    secrets: inherit
+    with:
+      DEPLOY_ENV: stg
+      DEPLOY_APP: graffiti-server
+      DEPLOY_VERSION: "pr-${{ github.event.number }}"
+      DEPLOY_SUBDOMAIN: "pr-${{ github.event.number }}-graffiti-server"
+  delete-tag-server:
+    uses: aeternity/github-actions/.github/workflows/_delete-tag-docker.yml@v2.0.0
+    secrets: inherit
+    with:
+      DOCKERHUB_REPO: "aeternitybot/graffiti-server"
+      DOCKERHUB_TAG: "pr-${{ github.event.number }}"
