@@ -23,7 +23,7 @@ jobs:
   publish-aepp:
     needs: [changes]
     if: ${{ needs.changes.outputs.aepp == 'true' }}
-    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@docker_params
+    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.1.0
     secrets: inherit
     with:
       FILE: ./aepp/Dockerfile
@@ -33,7 +33,7 @@ jobs:
   deploy-aepp:
     needs: [changes, publish-aepp]
     if: ${{ needs.changes.outputs.aepp == 'true' }}
-    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.0.0
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
     secrets: inherit
     with:
       DEPLOY_ENV: stg
@@ -43,7 +43,7 @@ jobs:
   publish-server:
     needs: [changes]
     if: ${{ needs.changes.outputs.server == 'true' }}
-    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@docker_params
+    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.1.0
     secrets: inherit
     with:
       FILE: ./server/Dockerfile
@@ -52,7 +52,7 @@ jobs:
   deploy-server:
     needs: [changes, publish-server]
     if: ${{ needs.changes.outputs.server == 'true' }}
-    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.0.0
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
     secrets: inherit
     with:
       DEPLOY_ENV: stg

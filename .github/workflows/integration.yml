@@ -33,7 +33,7 @@ jobs:
   deploy-aepp:
     needs: [changes, publish-aepp]
     if: ${{ needs.changes.outputs.aepp == 'true' }}
-    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.0.0
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
     secrets: inherit
     with:
       DEPLOY_ENV: stg
@@ -52,7 +52,7 @@ jobs:
   deploy-server:
     needs: [changes, publish-server]
     if: ${{ needs.changes.outputs.server == 'true' }}
-    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.0.0
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
     secrets: inherit
     with:
       DEPLOY_ENV: stg
