@@ -1,0 +1,18 @@
+name: release-please
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          command: manifest
+          changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"ci","section":"CI / CD","hidden":false},{"type":"test","section":"Testing","hidden":false},{"type":"refactor","section":"Refactorings","hidden":false},{"type":"chore","section":"Miscellaneous","hidden":false}]'
