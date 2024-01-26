@@ -23,7 +23,7 @@ jobs:
   publish-aepp:
     needs: [changes]
     if: ${{ needs.changes.outputs.aepp == 'true' }}
-    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@2.0.0
+    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.1.0
     secrets: inherit
     with:
       FILE: ./aepp/Dockerfile
@@ -43,7 +43,7 @@ jobs:
   publish-server:
     needs: [changes]
     if: ${{ needs.changes.outputs.server == 'true' }}
-    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@2.0.0
+    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.1.0
     secrets: inherit
     with:
       FILE: ./server/Dockerfile

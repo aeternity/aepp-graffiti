@@ -7,7 +7,7 @@ on:
 jobs:
   publish-aepp:
     if: startsWith(github.ref_name, 'aepp-')
-    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@2.0.0
+    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.1.0
     secrets: inherit
     with:
       FILE: ./aepp/Dockerfile
@@ -26,7 +26,7 @@ jobs:
       DEPLOY_SUBDOMAIN: graffiti
   publish-server:
     if: startsWith(github.ref_name, 'server-')
-    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@2.0.0
+    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.1.0
     secrets: inherit
     with:
       FILE: ./server/Dockerfile
