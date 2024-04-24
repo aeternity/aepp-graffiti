@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:20
 
 RUN apt update
 RUN apt install -y software-properties-common ca-certificates wget curl ssh git python build-essential

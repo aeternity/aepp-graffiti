@@ -4,5 +4,6 @@ node_modules/
 data/*
 !data/backup/.empty
 !data/rendered/height/.empty
-.env_sample
+.env.sample
+.env
 docker-compose.yml
