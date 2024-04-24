@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const canvas = require('./src/canvas.js');
 const fileUpload = require('express-fileupload');
@@ -9,6 +10,7 @@ const storage = require('./src/storage');
 const health = require('./src/health');
 const sanity = require('./src/sanity');
 const path = require('path');
+
 
 // HELPER FUNCTIONS
 

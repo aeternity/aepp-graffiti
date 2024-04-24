@@ -18,8 +18,8 @@ blockchain.init = async () => {
             }],
         });
 
-        contract = await client.getContractInstance({
-            aci: contractAci, contractAddress: process.env.CONTRACT_ADDRESS
+        contract = await client.initializeContract({
+            aci: contractAci, address: process.env.CONTRACT_ADDRESS
         });
 
         console.log('initialized aeternity sdk');
@@ -29,20 +29,20 @@ blockchain.init = async () => {
 
 blockchain.height = async () => {
     if (!client) await blockchain.init();
-    return await client.height().catch(console.error);
+    return await client.getHeight().catch(console.error);
 };
 
 blockchain.getMetaData = async () => {
     if (!client) await blockchain.init();
 
-    const response = await contract.methods.get_auction_metadata(tempCallOptions).catch(console.error);
+    const response = await contract.get_auction_metadata(tempCallOptions).catch(console.error);
     return response.decodedResult
 };
 
 blockchain.auctionSlots = async () => {
     if (!client) await blockchain.init();
 
-    const response = await contract.methods.all_auction_slots(tempCallOptions).catch(console.error);
+    const response = await contract.all_auction_slots(tempCallOptions).catch(console.error);
     return response.decodedResult;
 };
 

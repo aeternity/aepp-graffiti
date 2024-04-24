@@ -1,5 +1,23 @@
-{
-  "encodedAci": {
+[
+  {
+    "namespace": {
+      "name": "ListInternal",
+      "typedefs": []
+    }
+  },
+  {
+    "namespace": {
+      "name": "List",
+      "typedefs": []
+    }
+  },
+  {
+    "namespace": {
+      "name": "Pair",
+      "typedefs": []
+    }
+  },
+  {
     "contract": {
       "functions": [
         {
@@ -155,7 +173,7 @@
           }
         ]
       },
-      "type_defs": [
+      "typedefs": [
         {
           "name": "is_admin",
           "typedef": {
@@ -310,25 +328,5 @@
         }
       ]
     }
-  },
-  "externalEncodedAci": [
-    {
-      "namespace": {
-        "name": "ListInternal",
-        "type_defs": []
-      }
-    },
-    {
-      "namespace": {
-        "name": "List",
-        "type_defs": []
-      }
-    },
-    {
-      "namespace": {
-        "name": "Pair",
-        "type_defs": []
-      }
-    }
-  ]
-}
+  }
+]
