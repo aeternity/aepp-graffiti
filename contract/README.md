@@ -27,47 +27,6 @@ Next you need to call the smart contracts public function `place_bid` with the `
 the `x` and `y` coordinates. The full signature of the function is listed in the reference below. Here an example using 
 the [js-sdk](https://github.com/aeternity/aepp-sdk-js/)
 
-```
-const Ae = require('@aeternity/aepp-sdk').Universal;
-
-const runBid = async () =>  {
-
-    // Create the test-net client to interact with the blockchain
-    let client = await Ae({
-      url: 'https://sdk-testnet.aepps.com',
-      internalUrl: 'https://sdk-testnet.aepps.com',
-      keypair: {
-        "publicKey": "ak_fUq2NesPXcYZe...",
-        "secretKey": "7c6e602a94f30e4e..."
-       },
-      nativeMode: true,
-      networkId: 'ae_uat'
-    });
-
-    // Helper function to decode possible errors
-    const decodeError = async (e) => {
-        console.error(e);
-        if (e.rawTx) console.error('decodeError', await client.unpackAndVerify(e.rawTx));
-        if (e.returnValue) {
-            const decodedError = await client.contractDecodeData('string', e.returnValue).catch(e => console.error(e));
-            console.error('decodedError', decodedError);
-        }
-    };
-    
-    const contractAddress = 'ct_2P2vEqq3WQz6kzKLJFoqBbm46EMot64WvpP1xpvvANApLWcwnt';
-
-    // Call the contract from the client defined above
-    client.contractCall(contractAddress, 'sophia-address', contractAddress, 'place_bid', {
-        // auction_slot_id, estimatedTime, ipfs_hash, x, y
-        args: `(19, 20, "QmUG21B7wEfCCABvcZpWKF31Aqc8H2fdGBZ4VSAP6vGvQd", 30, 40)`,
-        options: { amount: 10000}
-    }).catch(decodeError).then(_ => console.log("Bid Successful"));
-}
-
-runBid();
-
-```
-
 ## Reference
 
 This section describes the smart contracts data types and its public methods.
