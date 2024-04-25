@@ -154,7 +154,7 @@
             async updateSlots() {
                 try {
 
-                    const slots = await aeternity.contract.all_auction_slots(aeternity.tempCallOptions)
+                    const slots = await aeternity.contract.all_auction_slots()
 
                     const height = await aeternity.height
 
