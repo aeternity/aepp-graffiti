@@ -1,7 +1,6 @@
 {
   "name": "aepp-graffiti",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
     "build:prd": "webpack --config ./webpack.prod.js --progress",
     "build:stg": "webpack --config ./webpack.stg.js --progress",
@@ -11,7 +10,7 @@
   },
   "dependencies": {
     "@aeternity/aepp-components": "git+https://git@github.com/aeternity/aepp-components.git#develop",
-    "@aeternity/aepp-sdk": "^9.0.1",
+    "@aeternity/aepp-sdk": "^13.3.2",
     "axios": "^0.22.0",
     "bignumber.js": "^9.0.1",
     "dronetracer": "git+https://git@github.com/kenodressel/DroneTracer.git#master",

@@ -59,7 +59,7 @@
           <div class="flex-1">Successful Bids</div>
           <div class="flex-1">Failed Bids</div>
         </div>
-        <div v-for="slot in slots" :key="slot.id">
+        <div v-for="slot in slots" :key="Number(slot.id)">
           <div class="flex flex-col p-2 border-t border-grey-light md:flex-row">
             <div class="flex-1">
               <div class="font-bold block md:hidden mt-3 mb-1">Slot</div>
@@ -136,7 +136,7 @@
           <div class="flex-1">Data</div>
           <div class="flex-1">Preview</div>
         </div>
-        <div v-for="bid in inspectBids.bids" :key="bid.seq_id">
+        <div v-for="bid in inspectBids.bids" :key="Number(bid.seq_id)">
           <div class="flex flex-col md:flex-row p-2 border-t border-grey-light">
             <div class="flex-1">
               Sequence: {{bid.seq_id}}<br>
@@ -157,15 +157,15 @@
 </template>
 
 <script>
-  import { Universal, Node } from '@aeternity/aepp-sdk/es'
+  import { AeSdk, Node } from '@aeternity/aepp-sdk'
   import Util from '~/utils/blockchainUtil'
   import { AeBadge, AeButton, AeIcon, AeLoader } from '@aeternity/aepp-components/src/components'
   import BiggerLoader from '~/components/BiggerLoader'
   import BigNumber from 'bignumber.js'
   import config from '~/config'
   import axios from 'axios'
-  import contractSource from '~/assets/GraffitiAuction.aes'
-  import aeternity from '../../utils/aeternityNetwork'
+  import GraffitiAuctionACI from '../../utils/GraffitiAuctionACI'
+  import {nodes} from '../../utils/aeternityNetwork'
 
   export default {
     name: 'Admin',
@@ -184,8 +184,6 @@
         time: null,
         timezone: null,
         resultBlock: null,
-        contractInstance: null,
-        client: null,
         health: {
           ipfsNode: null,
           blockchainNode: null,
@@ -213,7 +211,7 @@
     },
     methods: {
       blockToDate (goalBlock) {
-        const diff = goalBlock - this.height
+        const diff = Number(goalBlock) - this.height
         return new Date(diff * 180000 + Date.now()).toLocaleString([],
           {
             day: '2-digit',
@@ -238,14 +236,14 @@
         axios.get(`${this.config.apiUrl[this.networkId]}/health/testFiles`).then(() => this.health.testFiles = true).catch(() => this.health.testFiles = false)
         axios.get(`${this.config.apiUrl[this.networkId]}/health/testContract`).then(() => this.health.testContract = true).catch(() => this.health.testContract = false)
       },
-      async loadData () {
+      async loadData (aeSdk, contractInstance) {
         try {
-          this.height = await this.client.height()
+          this.height = await aeSdk.getHeight()
 
-          const allAuctionSlots = await this.contractInstance.methods.all_auction_slots(aeternity.tempCallOptions)
+          const allAuctionSlots = await contractInstance.all_auction_slots()
 
           this.slots = allAuctionSlots.decodedResult
-            .sort((a, b) => a.end_block_height - b.end_block_height)
+            .sort((a, b) => Number(a.end_block_height - b.end_block_height))
             .map(slot => {
               return {
                 id: slot.id,
@@ -262,13 +260,13 @@
                 end_block_height: slot.end_block_height,
                 capacityUsed: Util.slotCapacityUsed(slot),
                 success: {
-                  bids: slot.successful_bids.sort((a, b) => a.seq_id - b.seq_id),
+                  bids: slot.successful_bids.sort((a, b) => Number(a.seq_id - b.seq_id)),
                   amountSum: Util.atomsToAe(slot.successful_bids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
                   timeSum: slot.successful_bids.reduce((acc, x) => Number(x.time) + acc, 0),
                   amount_per_time: slot.successful_bids.map(x => x.amount_per_time).map(x => Util.atomsToAe(x).toFixed(4))
                 },
                 failed: {
-                  bids: slot.failed_bids.sort((a, b) => a.seq_id - b.seq_id),
+                  bids: slot.failed_bids.sort((a, b) => Number(a.seq_id - b.seq_id)),
                   amountSum: Util.atomsToAe(slot.failed_bids.reduce((acc, x) => acc.plus(x.amount), new BigNumber(0))),
                   timeSum: slot.failed_bids.reduce((acc, x) => Number(x.time) + acc, 0),
                   amount_per_time: slot.failed_bids.map(x => x.amount_per_time).map(x => Util.atomsToAe(x).toFixed(4))
@@ -278,6 +276,7 @@
             })
           this.loading = false
         } catch (e) {
+          console.error(e)
           this.error = e.message
         }
       },
@@ -297,24 +296,18 @@
     async created () {
       this.networkId = this.$route.query.testnet ? 'ae_uat' : 'ae_mainnet'
 
-      this.client = await Universal({
-        nodes: [
-          {
-            name: 'node',
-            instance: await Node({
-              url: this.config.nodeUrl[this.networkId],
-            }),
-          }],
-        compilerUrl: this.config.compilerUrl
-      }).catch(console.error)
+      const aeSdk = new AeSdk({nodes})
+      aeSdk.selectNode(this.networkId)
 
-      this.client.api.protectedDryRunTxs = this.client.api.dryRunTxs;
-      this.contractInstance = await this.client.getContractInstance(contractSource, { contractAddress: this.config.blockchainSettings[this.networkId] })
+      const contractInstance = await aeSdk.initializeContract({
+        aci: GraffitiAuctionACI,
+        address: config.blockchainSettings[this.networkId]
+      })
 
       this.runHealthChecks()
-      this.loadData()
+      void this.loadData(aeSdk, contractInstance)
       this.interval = setInterval(() => {
-        this.loadData()
+        void this.loadData(aeSdk, contractInstance)
         this.runHealthChecks()
       }, 30000)
     },

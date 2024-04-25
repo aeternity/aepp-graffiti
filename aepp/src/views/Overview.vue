@@ -14,7 +14,7 @@
     </div>
 
     <div class="w-full p-4 pb-24" v-if="isShowListState">
-      <div v-for="bid in bids" :key='bid.seq_id'>
+      <div v-for="bid in bids" :key='Number(bid.seq_id)'>
         <DarkCard class="mb-4">
           <div class="flex flex-col w-full">
             <div class="w-full mb-2">
@@ -154,7 +154,7 @@
             async updateSlots() {
                 try {
 
-                    const slots = await aeternity.contract.methods.all_auction_slots(aeternity.tempCallOptions)
+                    const slots = await aeternity.contract.all_auction_slots(aeternity.tempCallOptions)
 
                     const height = await aeternity.height
 
@@ -192,7 +192,7 @@
 
                     if (allBids.length === 0) return this.state = EMPTY_LIST
 
-                    this.bids = allBids.reduce((acc, val) => acc.concat(val), []).sort((a, b) => b.seq_id - a.seq_id)
+                    this.bids = allBids.reduce((acc, val) => acc.concat(val), []).sort((a, b) => Number(b.seq_id - a.seq_id))
 
                     if (this.bids.length > 0) this.state = SHOW_LIST
                     else return this.state = EMPTY_LIST

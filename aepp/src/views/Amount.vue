@@ -46,7 +46,7 @@
   import Utils from '~/utils/blockchainUtil'
   import CriticalErrorOverlay from '~/components/CriticalErrorOverlay'
   import aeternity from '~/utils/aeternityNetwork'
-  import { AE_AMOUNT_FORMATS } from '@aeternity/aepp-sdk/es/utils/amount-formatter'
+  import { AE_AMOUNT_FORMATS } from '@aeternity/aepp-sdk'
 
 
   export default {
@@ -116,7 +116,7 @@
 
       try {
         this.perMinute = this.amount / this.transformedImage.dronetime
-        this.balance = Utils.atomsToAe(await aeternity.client.balance(aeternity.address, { format: AE_AMOUNT_FORMATS.AETTOS }))
+        this.balance = Utils.atomsToAe(await aeternity.client.getBalance(aeternity.address, { format: AE_AMOUNT_FORMATS.AETTOS }))
       } catch (e) {
         console.error(e)
         this.balance = 0

@@ -1,8 +1,0 @@
-contract GraffitiAuction =
-  record auction_slot = {id : int, time_capacity : int, minimum_time_per_bid : int , maximum_time_per_bid : int, successful_bids : list(bid), failed_bids : list(bid), start_block_height : int, end_block_height : int}
-  record bid = {seq_id : int, user : address, amount : int, time : int, amount_per_time : int , data : artwork_data}
-  record artwork_data = {artwork_reference : string, coordinates : coordinates}
-  record coordinates = {x : int , y : int}
-
-  entrypoint all_auction_slots : () => list(auction_slot)
-  payable stateful entrypoint place_bid : (int,int,string,int,int) => auction_slot
