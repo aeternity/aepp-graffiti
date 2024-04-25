@@ -1,18 +1,20 @@
 {
-    "name": "graffiti-smart-contract",
-    "version": "0.1.0",
-    "scripts": {
-        "test": "aeproject test",
-        "deploy": "aeproject deploy",
-        "start-nodes": "aeproject node",
-        "stop-nodes": "aeproject node --stop"
-    },
-    "license": "ISC",
-    "dependencies": {
-        "@aeternity/aepp-sdk": "9.0.1",
-        "aeproject-lib": "1.0.2"
-    },
-    "devDependencies": {
-        "aeproject": "1.0.3"
-    }
+  "name": "graffiti-smart-contract",
+  "version": "0.1.0",
+  "scripts": {
+    "test": "mocha ./test/**/*.js --timeout 0 --exit",
+    "deploy": "aeproject deploy",
+    "start-nodes": "aeproject node",
+    "stop-nodes": "aeproject node --stop"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@aeternity/aepp-sdk": "^13.3.2"
+  },
+  "devDependencies": {
+    "@aeternity/aeproject": "^4.9.1",
+    "chai": "^4.4.1",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^10.4.0"
+  }
 }
