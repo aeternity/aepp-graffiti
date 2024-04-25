@@ -1,4 +1,3 @@
-const COMPILER_URL = 'https://v6.compiler.aepps.com/'
 const TESTNET_URL = 'https://testnet.aeternity.io'
 const MAINNET_URL = 'https://mainnet.aeternity.io'
 
@@ -43,5 +42,5 @@ export default {
     ae_uat: TESTNET_URL,
     ae_mainnet: MAINNET_URL
   },
-  compilerUrl: COMPILER_URL,
+  defaultNetworkId: 'ae_mainnet'
 }

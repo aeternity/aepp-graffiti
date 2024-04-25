@@ -7,6 +7,9 @@ import config from '~/config'
 
 Vue.use(Vuex)
 
+// eslint-disable-next-line no-undef
+BigInt.prototype.toJSON = function() { return Number(this); }
+
 const vuexPersist = new VuexPersist({
   key: 'ae-drone-v0',
   storage: window.sessionStorage

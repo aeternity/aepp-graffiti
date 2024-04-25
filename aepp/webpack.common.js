@@ -78,7 +78,8 @@ module.exports = {
         type: 'javascript/auto',
         test: /\.mjs$/,
         include: [
-          path.resolve(__dirname, "node_modules/@download/blockies")
+          path.resolve(__dirname, "node_modules/@download/blockies"),
+          path.resolve(__dirname, "node_modules/@aeternity/aepp-sdk")
         ],
         loader: 'babel-loader'
       },

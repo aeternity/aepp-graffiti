@@ -7,8 +7,8 @@ const webpack = require('webpack')
 module.exports = merge(common, {
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.MAINNET_SERVER_URL': JSON.stringify(process.env.MAINNET_SERVER_URL || 'https://graffiti-server-mainnet.dev.aepps.com'),
-      'process.env.TESTNET_SERVER_URL': JSON.stringify(process.env.TESTNET_SERVER_URL ||'https://graffiti-server-testnet.dev.aepps.com')
+      'process.env.MAINNET_SERVER_URL': JSON.stringify(process.env.MAINNET_SERVER_URL || 'https://graffiti-server-mainnet.prd.aepps.com'),
+      'process.env.TESTNET_SERVER_URL': JSON.stringify(process.env.TESTNET_SERVER_URL ||'https://graffiti-server-testnet.prd.aepps.com')
     })
   ],
   mode: 'development',

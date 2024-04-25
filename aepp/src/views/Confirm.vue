@@ -70,7 +70,6 @@
     components: { LoadingStep, CanvasWithControlls, AeText, AeList, AeListItem, AeButton },
     data () {
       return {
-        pub: 'ak_QY8VNEkhj7omMUjAvfVBq2NjTDy895LBYbk7qVxQo1qT8VqfE',
         balance: 0,
         client: null,
         ipfsAddr: null,
@@ -164,7 +163,7 @@
         // args: hash, x, y, time
         // amount: ae to contract amount
         try {
-          await aeternity.contract.methods.place_bid(
+          await aeternity.contract.place_bid(
             this.bid.slotId,
             Math.round(this.transformedImage.dronetime),
             this.ipfsAddr,

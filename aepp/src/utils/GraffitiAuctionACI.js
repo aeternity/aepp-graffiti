@@ -1,0 +1,332 @@
+export default [
+  {
+    "namespace": {
+      "name": "ListInternal",
+      "typedefs": []
+    }
+  },
+  {
+    "namespace": {
+      "name": "List",
+      "typedefs": []
+    }
+  },
+  {
+    "namespace": {
+      "name": "Pair",
+      "typedefs": []
+    }
+  },
+  {
+    "contract": {
+      "functions": [
+        {
+          "arguments": [
+            {
+              "name": "geolocation'",
+              "type": "string"
+            },
+            {
+              "name": "canvas_width'",
+              "type": "int"
+            },
+            {
+              "name": "canvas_height'",
+              "type": "int"
+            }
+          ],
+          "name": "init",
+          "payable": false,
+          "returns": "GraffitiAuction.state",
+          "stateful": false
+        },
+        {
+          "arguments": [],
+          "name": "get_auction_metadata",
+          "payable": false,
+          "returns": "GraffitiAuction.auction_metadata",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "time_capacity'",
+              "type": "int"
+            },
+            {
+              "name": "start_block_height'",
+              "type": "int"
+            },
+            {
+              "name": "end_block_height'",
+              "type": "int"
+            },
+            {
+              "name": "minimum_time_per_bid'",
+              "type": "int"
+            },
+            {
+              "name": "maximum_time_per_bid'",
+              "type": "int"
+            }
+          ],
+          "name": "add_auction_slot",
+          "payable": false,
+          "returns": "int",
+          "stateful": true
+        },
+        {
+          "arguments": [],
+          "name": "all_auction_slots",
+          "payable": false,
+          "returns": {
+            "list": [
+              "GraffitiAuction.auction_slot"
+            ]
+          },
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "id",
+              "type": "int"
+            }
+          ],
+          "name": "get_auction_slot",
+          "payable": false,
+          "returns": "GraffitiAuction.auction_slot",
+          "stateful": false
+        },
+        {
+          "arguments": [
+            {
+              "name": "auction_slot_id",
+              "type": "int"
+            },
+            {
+              "name": "time'",
+              "type": "int"
+            },
+            {
+              "name": "artwork_reference'",
+              "type": "string"
+            },
+            {
+              "name": "x'",
+              "type": "int"
+            },
+            {
+              "name": "y'",
+              "type": "int"
+            }
+          ],
+          "name": "place_bid",
+          "payable": true,
+          "returns": "GraffitiAuction.auction_slot",
+          "stateful": true
+        },
+        {
+          "arguments": [
+            {
+              "name": "to_address",
+              "type": "address"
+            }
+          ],
+          "name": "admin_withdraw_to_address",
+          "payable": false,
+          "returns": "int",
+          "stateful": true
+        },
+        {
+          "arguments": [],
+          "name": "admin_withdraw_to_admin",
+          "payable": false,
+          "returns": "int",
+          "stateful": true
+        }
+      ],
+      "kind": "contract_main",
+      "name": "GraffitiAuction",
+      "payable": false,
+      "state": {
+        "record": [
+          {
+            "name": "is_admin",
+            "type": "GraffitiAuction.is_admin"
+          },
+          {
+            "name": "auction_metadata",
+            "type": "GraffitiAuction.auction_metadata"
+          },
+          {
+            "name": "latest_auction_slot_id",
+            "type": "int"
+          },
+          {
+            "name": "latest_bid_seq_id",
+            "type": "int"
+          },
+          {
+            "name": "auction_slots",
+            "type": "GraffitiAuction.auction_slots_map"
+          }
+        ]
+      },
+      "typedefs": [
+        {
+          "name": "is_admin",
+          "typedef": {
+            "map": [
+              "address",
+              "bool"
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "auction_slots_map",
+          "typedef": {
+            "map": [
+              "int",
+              "GraffitiAuction.auction_slot"
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "auction_metadata",
+          "typedef": {
+            "record": [
+              {
+                "name": "geolocation",
+                "type": "string"
+              },
+              {
+                "name": "canvas_width",
+                "type": "int"
+              },
+              {
+                "name": "canvas_height",
+                "type": "int"
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "auction_slot",
+          "typedef": {
+            "record": [
+              {
+                "name": "id",
+                "type": "int"
+              },
+              {
+                "name": "time_capacity",
+                "type": "int"
+              },
+              {
+                "name": "minimum_time_per_bid",
+                "type": "int"
+              },
+              {
+                "name": "maximum_time_per_bid",
+                "type": "int"
+              },
+              {
+                "name": "successful_bids",
+                "type": {
+                  "list": [
+                    "GraffitiAuction.bid"
+                  ]
+                }
+              },
+              {
+                "name": "failed_bids",
+                "type": {
+                  "list": [
+                    "GraffitiAuction.bid"
+                  ]
+                }
+              },
+              {
+                "name": "start_block_height",
+                "type": "int"
+              },
+              {
+                "name": "end_block_height",
+                "type": "int"
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "bid",
+          "typedef": {
+            "record": [
+              {
+                "name": "seq_id",
+                "type": "int"
+              },
+              {
+                "name": "user",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "int"
+              },
+              {
+                "name": "time",
+                "type": "int"
+              },
+              {
+                "name": "amount_per_time",
+                "type": "int"
+              },
+              {
+                "name": "data",
+                "type": "GraffitiAuction.artwork_data"
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "artwork_data",
+          "typedef": {
+            "record": [
+              {
+                "name": "artwork_reference",
+                "type": "string"
+              },
+              {
+                "name": "coordinates",
+                "type": "GraffitiAuction.coordinates"
+              }
+            ]
+          },
+          "vars": []
+        },
+        {
+          "name": "coordinates",
+          "typedef": {
+            "record": [
+              {
+                "name": "x",
+                "type": "int"
+              },
+              {
+                "name": "y",
+                "type": "int"
+              }
+            ]
+          },
+          "vars": []
+        }
+      ]
+    }
+  }
+]

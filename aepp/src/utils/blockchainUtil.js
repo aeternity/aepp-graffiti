@@ -7,7 +7,7 @@ const slotIsActive = (slot, height) => slot.start_block_height <= height && slot
 const slotIsPast = (slot, height) => slot.end_block_height < height
 const slotIsFuture = (slot, height) => slot.start_block_height >= height
 const slotCapacityUsed = (slot) => slot.successful_bids.reduce((acc, x) => Number(x.time) + acc, 0)
-const slotCapacityRemaining = (slot) => slot.time_capacity - slotCapacityUsed(slot)
+const slotCapacityRemaining = (slot) => Number(slot.time_capacity) - slotCapacityUsed(slot)
 
 export default {
   atomsToAe, aeToAtoms, slotIsActive, slotIsPast, slotIsFuture, slotCapacityUsed, slotCapacityRemaining

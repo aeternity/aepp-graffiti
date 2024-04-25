@@ -60,7 +60,7 @@
     <div v-if="isShowListState" class="w-full">
 
       <Swiper :options="swiperOption" ref="mySwiper" @slideChange="slideChange">
-        <SwiperSlide v-for="slot in slots" :key="slot.id" class="ae-max-width">
+        <SwiperSlide v-for="slot in slots" :key="Number(slot.id)" class="ae-max-width">
           <div class="mt-2 mb-2">
             <DarkCard>
               <div class="flex flex-col relative w-full">
@@ -73,7 +73,7 @@
                   Slot will be open for estimated
                 </span>
                   <span class="font-mono text-xl">
-                  <Countdown :initialTime="(slot.end_block_height - height) * 180"></Countdown>
+                  <Countdown :initialTime="(Number(slot.end_block_height) - height) * 180"></Countdown>
                 </span>
                 </div>
 
@@ -185,11 +185,11 @@
     },
     methods: {
       slideChange () {
-        const realIndex = this.$refs.mySwiper.swiper.realIndex
+        const realIndex = this.$refs.mySwiper.$swiper.realIndex
         this.choice = this.slots.find(slot => slot.index === realIndex).id
       },
       async updateSlots () {
-        const allSlots = await aeternity.contract.methods.all_auction_slots(aeternity.tempCallOptions)
+        const allSlots = await aeternity.contract.all_auction_slots(aeternity.tempCallOptions)
 
         // For rendering purposes
         this.height = await aeternity.updateHeight()
@@ -198,7 +198,7 @@
 
         const nextSlots = allSlots.decodedResult
           .filter(slot => Util.slotIsFuture(slot, aeternity.height))
-          .sort((a, b) => a.start_block_height - b.start_block_height)
+          .sort((a, b) => Number(a.start_block_height - b.start_block_height))
 
         if (nextSlots.length) this.nextSlotAtHeight = nextSlots[0].start_block_height
 
@@ -207,7 +207,7 @@
           .map(slot => {
             slot.index = slotIndex++
             slot.minimumBid = Math.min.apply(Math, slot.successful_bids.map(function (bid) {
-              return bid.amount_per_time
+              return Number(bid.amount_per_time)
             }))
             slot.minimumBid = slot.successful_bids.length === 0 ? 0 : Util.atomsToAe(slot.minimumBid)
             slot.remainingDrawtime = Util.slotCapacityRemaining(slot)

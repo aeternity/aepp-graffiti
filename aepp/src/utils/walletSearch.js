@@ -1,75 +1,96 @@
-import { RpcAepp, Node } from '@aeternity/aepp-sdk/es';
-import Detector from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/wallet-detector';
-import BrowserWindowMessageConnection from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/connection/browser-window-message';
-import aeternity from './aeternityNetwork';
-import {EventBus} from "./eventBus";
-import config from '../config'
+import { BrowserWindowMessageConnection, walletDetector, AeSdkAepp, AeSdk } from '@aeternity/aepp-sdk';
+import aeternity, { nodes } from './aeternityNetwork';
+import { EventBus } from "./eventBus";
+import config from "../config";
 
 // Send wallet connection info to Aepp through content script
 
 export const wallet = {
-  client: null,
-  height: null,
-  pub: null,
-  balance: null,
-  walletName: null,
+    walletStatus: 'initial',
 
-  async disconnect () {
-    await this.client.disconnectWallet();
-    this.walletName = null;
-    this.pub = null;
-    this.balance = null;
-    await this.scanForWallets();
-  },
+    async initWalletOrFallbackStatic() {
+        wallet.walletStatus = 'connecting'
 
-  async getReverseWindow () {
-    const iframe = document.createElement('iframe');
-    iframe.src = 'https://base.aepps.com/';
-    //iframe.src = 'https://localhost:8080/';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-    return iframe.contentWindow;
-  },
-  async scanForWallets (successCallback) {
-    const scannerConnection = await BrowserWindowMessageConnection({
-      connectionInfo: { id: 'spy' },
-    });
-    const detector = await Detector({ connection: scannerConnection });
-    const handleWallets = async function ({ wallets, newWallet }) {
-      detector.stopScan();
-      const connected = await this.client.connectToWallet(await newWallet.getConnection());
-      this.client.selectNode(connected.networkId); // connected.networkId needs to be defined as node in RpcAepp
-      await this.client.subscribeAddress('subscribe', 'current');
-      aeternity.client = this.client;
-      aeternity.static = false;
-      await aeternity.initProvider();
-      successCallback();
-    };
+        try {
+            // try to connect to Superhero Wallet
+            aeternity.client = new AeSdkAepp({
+                name: 'AEPP',
+                nodes,
+                onNetworkChange: async (network) => {
+                    console.info('onNetworkChange:', network, aeternity.networkId !== network.networkId)
+                    await this.aeConnectToNode(network.networkId)
+                },
+                onAddressChange: async (addresses) => {
+                    console.info('onAddressChange:', addresses)
+                    await this.aeConnectToNode(aeternity.networkId)
+                    EventBus.$emit('addressChange');
+                },
+            })
 
-    detector.scan(handleWallets.bind(this));
-  },
-  async init (successCallback) {
-    // Open iframe with Wallet if run in top window
-    // window !== window.parent || await this.getReverseWindow();
+            await this.scanForWallets()
 
-    this.client = await RpcAepp({
-      name: 'AEPP',
-      nodes: [
-        {name: 'ae_mainnet', instance: await Node({url: config.nodeUrl.ae_mainnet})},
-        {name: 'ae_uat', instance: await Node({url: config.nodeUrl.ae_uat})}
-      ],
-      compilerUrl: config.compilerUrl,
-      onNetworkChange (params) {
-        this.selectNode(params.networkId); // params.networkId needs to be defined as node in RpcAepp
-        aeternity.initProvider();
-      },
-      onAddressChange(addresses) {
-        if(!addresses.current[aeternity.address])
-          EventBus.$emit('addressChange');
-      }
-    });
+            if (wallet.walletStatus === 'fallback_static') {
+                aeternity.static = true;
+                aeternity.client = new AeSdk({nodes})
+                await this.aeConnectToNode(config.defaultNetworkId)
+            }
+        } catch (error) {
+            console.error('initWallet error:', error)
+            return false
+        }
 
-    this.height = await this.client.height();
-    await this.scanForWallets(successCallback);
-  },
+        return true
+    },
+
+    async scanForWallets() {
+        wallet.walletStatus = 'scanning'
+
+        const detectedWallet = await Promise.race([new Promise((resolve) => {
+            const handleWallets = async () => {
+                stopScan()
+                resolve(true);
+            }
+
+            const scannerConnection = new BrowserWindowMessageConnection()
+            const stopScan = walletDetector(scannerConnection, handleWallets)
+        }), new Promise((resolve) => setTimeout(() => {
+            resolve(false);
+        }, 1000))]);
+
+        console.log('scanForWallets detectedWallet:', detectedWallet)
+
+        if (detectedWallet) {
+            await new Promise((resolve) => {
+                const handleWallets = async ({wallets, newWallet}) => {
+                    try {
+                        wallet.walletStatus = 'asking_permission'
+                        newWallet = newWallet || Object.values(wallets)[0]
+                        stopScan()
+
+                        wallet.activeWallet = newWallet
+
+                        const {networkId} = await aeternity.client.connectToWallet(newWallet.getConnection())
+                        await aeternity.client.subscribeAddress('subscribe', 'current')
+
+                        await this.aeConnectToNode(networkId);
+                        resolve()
+                    } catch (error) {
+                        console.error('scanForWallets error:', error)
+                        wallet.walletStatus = 'fallback_static'
+                        resolve()
+                    }
+                }
+
+                const scannerConnection = new BrowserWindowMessageConnection()
+                const stopScan = walletDetector(scannerConnection, handleWallets)
+            })
+        } else {
+            wallet.walletStatus = 'fallback_static'
+        }
+    },
+
+    async aeConnectToNode(selectedNetworkId) {
+        aeternity.client.selectNode(selectedNetworkId)
+        await aeternity.initProvider()
+    },
 };

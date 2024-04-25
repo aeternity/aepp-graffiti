@@ -52,24 +52,13 @@
           return this.clientAvailable = true
         }
 
-        await Promise.race([
-          new Promise((resolve) => wallet.init(() => {
-            this.clientAvailable = true;
-            resolve();
-          })),
-          new Promise((resolve) => setTimeout(resolve, 8000, 'TIMEOUT')),
-        ]);
-
-        // Fall back to static client
-        // Otherwise init the aeternity sdk
-        if (!(await aeternity.initClient())) {
-          console.error('Wallet init failed');
-          this.clientAvailable = true;
-          return await this.$router.push('landingpage');
-        }
-
+        await wallet.initWalletOrFallbackStatic();
         this.clientAvailable = true;
 
+        if (aeternity.static) {
+          console.error('Wallet init failed');
+          return await this.$router.push('landingpage');
+        }
       } catch (e) {
         console.error('INIT ERROR', e)
         this.error = 'Could not connect to your wallet.'
