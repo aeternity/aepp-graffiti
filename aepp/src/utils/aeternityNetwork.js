@@ -4,7 +4,6 @@ import BlockchainUtil from '../utils/blockchainUtil'
 import config from '../config'
 import GraffitiAuctionACI from '../utils/GraffitiAuctionACI'
 
-const tempCallOptions = {gas: 100000000000};
 
 export const nodes = [
   {name: 'ae_mainnet', instance: new Node(config.nodeUrl.ae_mainnet)},
@@ -17,7 +16,6 @@ const aeternity = {
   height: null,
   networkId: null,
   static: false,
-  tempCallOptions: tempCallOptions,
 }
 
 aeternity.updateHeight = async () => {
@@ -45,6 +43,25 @@ aeternity.initProvider = async () => {
     })
 
     //debugger;
+
+      /*
+    //for out of gas failures consider using something like
+
+    class CustomNode extends Node {
+      sendOperationRequest(args, spec) {
+        if (spec.path === '/v3/dry-run') {
+          spec = {
+            ...spec,
+            path: 'http://localhost:3113/v3/debug/transactions/dry-run',
+          };
+        }
+        return super.sendOperationRequest(args, spec);
+      }
+    }
+
+    // call option:  { gasMax: 6e10 }
+    */
+
     //aeternity.client.api.protectedDryRunTxs = aeternity.client.api.dryRunTxs;
 
     return true

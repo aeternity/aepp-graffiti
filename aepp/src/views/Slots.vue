@@ -189,7 +189,7 @@
         this.choice = this.slots.find(slot => slot.index === realIndex).id
       },
       async updateSlots () {
-        const allSlots = await aeternity.contract.all_auction_slots(aeternity.tempCallOptions)
+        const allSlots = await aeternity.contract.all_auction_slots()
 
         // For rendering purposes
         this.height = await aeternity.updateHeight()

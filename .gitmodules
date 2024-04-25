@@ -1,4 +1,0 @@
-[submodule "aepp-base"]
-	path = aepp-base
-	url = https://github.com/aeternity/aepp-base.git
-	branch = drone-graffiti-demo
