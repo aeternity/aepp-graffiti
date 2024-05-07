@@ -32,12 +32,21 @@ jobs:
       FILE: ./server/Dockerfile
       CONTEXT: ./server
       DOCKERHUB_REPO: "aeternity/graffiti-server"
-  deploy-server:
+  deploy-server-testnet:
     if: startsWith(github.ref_name, 'server-')
     needs: [publish-server]
     uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
     secrets: inherit
     with:
       DEPLOY_ENV: prd
-      DEPLOY_APP: graffiti-server
+      DEPLOY_APP: graffiti-server-testnet
+      DEPLOY_VERSION: ${{ github.ref_name }}
+  deploy-server-mainnet:
+    if: startsWith(github.ref_name, 'server-')
+    needs: [publish-server]
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
+    secrets: inherit
+    with:
+      DEPLOY_ENV: prd
+      DEPLOY_APP: graffiti-server-mainnet
       DEPLOY_VERSION: ${{ github.ref_name }}

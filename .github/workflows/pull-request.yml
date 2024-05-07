@@ -49,13 +49,13 @@ jobs:
       FILE: ./server/Dockerfile
       CONTEXT: ./server
       DOCKERHUB_REPO: "aeternitybot/graffiti-server"
-  deploy-server:
+  deploy-server-testnet:
     needs: [changes, publish-server]
     if: ${{ needs.changes.outputs.server == 'true' }}
     uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
     secrets: inherit
     with:
       DEPLOY_ENV: stg
-      DEPLOY_APP: graffiti-server
+      DEPLOY_APP: graffiti-server-testnet
       DEPLOY_VERSION: "pr-${{ github.event.number }}"
-      DEPLOY_SUBDOMAIN: "pr-${{ github.event.number }}-graffiti-server"
+      DEPLOY_SUBDOMAIN: "pr-${{ github.event.number }}-graffiti-server-testnet"
