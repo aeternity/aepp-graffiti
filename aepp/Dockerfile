@@ -15,6 +15,12 @@ USER node
 RUN npm ci
 COPY --chown=node:node . /home/node/app
 
+ARG MAINNET_SERVER_URL
+ENV MAINNET_SERVER_URL $MAINNET_SERVER_URL
+
+ARG TESTNET_SERVER_URL
+ENV TESTNET_SERVER_URL $TESTNET_SERVER_URL
+
 ARG COMMAND
 RUN npm run build:$COMMAND
 
@@ -22,3 +28,5 @@ FROM nginx:alpine
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=aepp-build /home/node/app/dist /usr/share/nginx/html
+
+EXPOSE 80

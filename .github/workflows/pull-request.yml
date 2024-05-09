@@ -11,7 +11,10 @@ jobs:
     with:
       FILE: ./aepp/Dockerfile
       CONTEXT: ./aepp
-      BUILD_ARGS: COMMAND=stg
+      BUILD_ARGS: |
+        COMMAND=stg
+        MAINNET_SERVER_URL=https://graffiti-server-mainnet.stg.aepps.com
+        TESTNET_SERVER_URL=https://pr-${{ github.event.number }}-graffiti-server-testnet.stg.aepps.com
       DOCKERHUB_REPO: "aeternitybot/aepp-graffiti"
   deploy-aepp:
     needs: [publish-aepp]
