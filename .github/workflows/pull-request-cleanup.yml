@@ -25,9 +25,9 @@ jobs:
     secrets: inherit
     with:
       DEPLOY_ENV: stg
-      DEPLOY_APP: graffiti-server
+      DEPLOY_APP: graffiti-server-testnet
       DEPLOY_VERSION: "pr-${{ github.event.number }}"
-      DEPLOY_SUBDOMAIN: "pr-${{ github.event.number }}-graffiti-server"
+      DEPLOY_SUBDOMAIN: "pr-${{ github.event.number }}-graffiti-server-testnet"
   delete-tag-server:
     uses: aeternity/github-actions/.github/workflows/_delete-tag-docker.yml@v2.1.0
     secrets: inherit
