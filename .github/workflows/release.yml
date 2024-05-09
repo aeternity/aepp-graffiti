@@ -33,7 +33,7 @@ jobs:
       CONTEXT: ./server
       DOCKERHUB_REPO: "aeternity/graffiti-server"
   deploy-server-testnet:
-    if: startsWith(github.ref_name, 'server-')
+    if: startsWith(github.ref_name, 'graffiti-server-')
     needs: [publish-server]
     uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
     secrets: inherit
@@ -42,7 +42,7 @@ jobs:
       DEPLOY_APP: graffiti-server-testnet
       DEPLOY_VERSION: ${{ github.ref_name }}
   deploy-server-mainnet:
-    if: startsWith(github.ref_name, 'server-')
+    if: startsWith(github.ref_name, 'graffiti-server-')
     needs: [publish-server]
     uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
     secrets: inherit
