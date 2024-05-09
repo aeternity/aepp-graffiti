@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/aeternity/aepp-graffiti/compare/graffiti-server-v1.0.3...graffiti-server-v1.0.4) (2024-05-09)
+
+
+### Bug Fixes
+
+* artificial release ([696abf5](https://github.com/aeternity/aepp-graffiti/commit/696abf56b84346b10549e15194024ea79a45c5a0))
+
 ## [1.0.3](https://github.com/aeternity/aepp-graffiti/compare/graffiti-server-v1.0.2...graffiti-server-v1.0.3) (2024-05-09)
 
 
