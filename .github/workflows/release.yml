@@ -25,7 +25,7 @@ jobs:
       DEPLOY_VERSION: ${{ github.ref_name }}
       DEPLOY_SUBDOMAIN: graffiti
   publish-server:
-    if: startsWith(github.ref_name, 'server-')
+    if: startsWith(github.ref_name, 'graffiti-server-')
     uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.1.0
     secrets: inherit
     with:
