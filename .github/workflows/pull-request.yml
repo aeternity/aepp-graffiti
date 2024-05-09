@@ -5,24 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      aepp: ${{ steps.changes.outputs.aepp }}
-      server: ${{ steps.changes.outputs.server }}
-    steps:
-    - uses: actions/checkout@v3
-    - uses: dorny/paths-filter@v2
-      id: changes
-      with:
-        filters: |
-          aepp:
-            - 'aepp/**'
-          server:
-            - 'server/**'
   publish-aepp:
-    needs: [changes]
-    if: ${{ needs.changes.outputs.aepp == 'true' }}
     uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.1.0
     secrets: inherit
     with:
@@ -31,8 +14,7 @@ jobs:
       BUILD_ARGS: COMMAND=stg
       DOCKERHUB_REPO: "aeternitybot/aepp-graffiti"
   deploy-aepp:
-    needs: [changes, publish-aepp]
-    if: ${{ needs.changes.outputs.aepp == 'true' }}
+    needs: [publish-aepp]
     uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
     secrets: inherit
     with:
@@ -41,8 +23,6 @@ jobs:
       DEPLOY_VERSION: "pr-${{ github.event.number }}"
       DEPLOY_SUBDOMAIN: "pr-${{ github.event.number }}-graffiti"
   publish-server:
-    needs: [changes]
-    if: ${{ needs.changes.outputs.server == 'true' }}
     uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.1.0
     secrets: inherit
     with:
@@ -50,8 +30,7 @@ jobs:
       CONTEXT: ./server
       DOCKERHUB_REPO: "aeternitybot/graffiti-server"
   deploy-server-testnet:
-    needs: [changes, publish-server]
-    if: ${{ needs.changes.outputs.server == 'true' }}
+    needs: [publish-server]
     uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
     secrets: inherit
     with:
