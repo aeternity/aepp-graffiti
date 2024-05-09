@@ -17,3 +17,4 @@ Once the setup is completed you can simply run
 ```
 npm run dev
 ```
+
