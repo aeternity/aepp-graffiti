@@ -1,0 +1,24 @@
+name: release
+
+on:
+  push:
+    tags: [ "aepp-graffiti-v*" ]
+
+jobs:
+  publish-aepp:
+    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.2.0
+    secrets: inherit
+    with:
+      FILE: ./aepp/Dockerfile
+      CONTEXT: ./aepp
+      BUILD_ARGS: COMMAND=prd
+      DOCKERHUB_REPO: "aeternity/aepp-graffiti"
+  deploy-aepp:
+    needs: [publish-aepp]
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.2.0
+    secrets: inherit
+    with:
+      DEPLOY_ENV: prd
+      DEPLOY_APP: aepp-graffiti
+      DEPLOY_TAG: ${{ github.ref_name }}
+      DEPLOY_SUBDOMAIN: graffiti

@@ -1,7 +1,6 @@
 {
   "release-type": "node",
   "packages": {
-    ".": {},
     "aepp": {},
     "server": {}
   }
