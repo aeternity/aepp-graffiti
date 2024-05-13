@@ -12,7 +12,7 @@ jobs:
       FILE: ./aepp/Dockerfile
       CONTEXT: ./aepp
       BUILD_ARGS: COMMAND=stg
-      DOCKERHUB_REPO: "aeternitybot/aepp-graffiti"
+      DOCKERHUB_REPO: "aeternity/aepp-graffiti"
   deploy-aepp:
     needs: [publish-aepp]
     uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
@@ -28,7 +28,7 @@ jobs:
     with:
       FILE: ./server/Dockerfile
       CONTEXT: ./server
-      DOCKERHUB_REPO: "aeternitybot/graffiti-server"
+      DOCKERHUB_REPO: "aeternity/graffiti-server"
   deploy-server-testnet:
     needs: [publish-server]
     uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
