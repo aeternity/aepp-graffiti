@@ -6,16 +6,16 @@ on:
 
 jobs:
   publish-aepp:
-    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.1.0
+    uses: aeternity/github-actions/.github/workflows/_publish-ecr.yml@v2.3.1
     secrets: inherit
     with:
       FILE: ./aepp/Dockerfile
       CONTEXT: ./aepp
       BUILD_ARGS: COMMAND=stg
-      DOCKERHUB_REPO: "aeternitybot/aepp-graffiti"
+      REPOSITORY: "aeternity/aepp-graffiti"
   deploy-aepp:
     needs: [publish-aepp]
-    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.3.1
     secrets: inherit
     with:
       DEPLOY_ENV: stg
@@ -23,15 +23,15 @@ jobs:
       DEPLOY_VERSION: ${{ github.ref_name }}
       DEPLOY_SUBDOMAIN: graffiti
   publish-server:
-    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.1.0
+    uses: aeternity/github-actions/.github/workflows/_publish-ecr.yml@v2.3.1
     secrets: inherit
     with:
       FILE: ./server/Dockerfile
       CONTEXT: ./server
-      DOCKERHUB_REPO: "aeternitybot/graffiti-server"
+      REPOSITORY: "aeternity/graffiti-server"
   deploy-server-testnet:
     needs: [publish-server]
-    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.1.0
+    uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.3.1
     secrets: inherit
     with:
       DEPLOY_ENV: stg

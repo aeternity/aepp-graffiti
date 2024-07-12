@@ -6,12 +6,12 @@ on:
 
 jobs:
   publish-server:
-    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.2.0
+    uses: aeternity/github-actions/.github/workflows/_publish-ecr.yml@v2.2.0
     secrets: inherit
     with:
       FILE: ./server/Dockerfile
       CONTEXT: ./server
-      DOCKERHUB_REPO: "aeternity/graffiti-server"
+      REPOSITORY: "aeternity/graffiti-server"
   deploy-server-testnet:
     needs: [publish-server]
     uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.2.0
