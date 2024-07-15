@@ -20,7 +20,7 @@ jobs:
     with:
       REPOSITORY: "aepp-graffiti"
       TAG: "pr-${{ github.event.number }}"
-  cleanup:
+  cleanup-aepp:
     uses: aeternity/github-actions/.github/workflows/_cleanup-ecr.yml@v2.3.1
     needs: [ delete-tag-aepp ]
     secrets: inherit
@@ -40,7 +40,7 @@ jobs:
     with:
       REPOSITORY: "graffiti-server"
       TAG: "pr-${{ github.event.number }}"
-  cleanup:
+  cleanup-server:
     uses: aeternity/github-actions/.github/workflows/_cleanup-ecr.yml@v2.3.1
     needs: [ delete-tag-server ]
     secrets: inherit
