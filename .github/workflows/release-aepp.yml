@@ -6,13 +6,13 @@ on:
 
 jobs:
   publish-aepp:
-    uses: aeternity/github-actions/.github/workflows/_publish-docker.yml@v2.2.0
+    uses: aeternity/github-actions/.github/workflows/_publish-ecr.yml@v2.2.0
     secrets: inherit
     with:
       FILE: ./aepp/Dockerfile
       CONTEXT: ./aepp
       BUILD_ARGS: COMMAND=prd
-      DOCKERHUB_REPO: "aeternity/aepp-graffiti"
+      REPOSITORY: "aeternity/aepp-graffiti"
   deploy-aepp:
     needs: [publish-aepp]
     uses: aeternity/github-actions/.github/workflows/_deploy-gitops.yml@v2.2.0

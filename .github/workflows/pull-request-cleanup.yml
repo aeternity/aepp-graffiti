@@ -7,7 +7,7 @@ on:
 
 jobs:
   rollback-aepp:
-    uses: aeternity/github-actions/.github/workflows/_rollback-gitops.yml@v2.1.0
+    uses: aeternity/github-actions/.github/workflows/_rollback-gitops.yml@v2.3.1
     secrets: inherit
     with:
       DEPLOY_ENV: stg
@@ -15,13 +15,19 @@ jobs:
       DEPLOY_VERSION: "pr-${{ github.event.number }}"
       DEPLOY_SUBDOMAIN: "pr-${{ github.event.number }}-graffiti"
   delete-tag-aepp:
-    uses: aeternity/github-actions/.github/workflows/_delete-tag-docker.yml@v2.1.0
+    uses: aeternity/github-actions/.github/workflows/_delete-tag-ecr.yml@v2.3.1
     secrets: inherit
     with:
-      DOCKERHUB_REPO: "aeternitybot/aepp-graffiti"
-      DOCKERHUB_TAG: "pr-${{ github.event.number }}"
+      REPOSITORY: "aepp-graffiti"
+      TAG: "pr-${{ github.event.number }}"
+  cleanup:
+    uses: aeternity/github-actions/.github/workflows/_cleanup-ecr.yml@v2.3.1
+    needs: [ delete-tag-aepp ]
+    secrets: inherit
+    with:
+      REPOSITORY: aepp-graffiti
   rollback-server:
-    uses: aeternity/github-actions/.github/workflows/_rollback-gitops.yml@v2.1.0
+    uses: aeternity/github-actions/.github/workflows/_rollback-gitops.yml@v2.3.1
     secrets: inherit
     with:
       DEPLOY_ENV: stg
@@ -29,8 +35,14 @@ jobs:
       DEPLOY_VERSION: "pr-${{ github.event.number }}"
       DEPLOY_SUBDOMAIN: "pr-${{ github.event.number }}-graffiti-server-testnet"
   delete-tag-server:
-    uses: aeternity/github-actions/.github/workflows/_delete-tag-docker.yml@v2.1.0
+    uses: aeternity/github-actions/.github/workflows/_delete-tag-ecr.yml@v2.3.1
     secrets: inherit
     with:
-      DOCKERHUB_REPO: "aeternitybot/graffiti-server"
-      DOCKERHUB_TAG: "pr-${{ github.event.number }}"
+      REPOSITORY: "graffiti-server"
+      TAG: "pr-${{ github.event.number }}"
+  cleanup:
+    uses: aeternity/github-actions/.github/workflows/_cleanup-ecr.yml@v2.3.1
+    needs: [ delete-tag-server ]
+    secrets: inherit
+    with:
+      REPOSITORY: graffiti-server
